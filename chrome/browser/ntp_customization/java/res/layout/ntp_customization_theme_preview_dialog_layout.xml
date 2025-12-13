@@ -5,13 +5,13 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="UnusedResources"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    tools:ignore="UnusedResources">
 
     <org.chromium.chrome.browser.ntp_customization.theme.upload_image.CropImageView
         android:id="@+id/preview_image"
@@ -22,6 +22,18 @@ found in the LICENSE file.
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/default_search_engine_logo"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ntp_logo_height"
+        android:importantForAccessibility="no"
+        android:layout_marginHorizontal="@dimen/ntp_customization_edit_icon_margin"
+        android:layout_marginTop="@dimen/ntp_logo_margin_top"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <ImageView
         android:id="@+id/pinch_to_resize_icon"
@@ -69,4 +81,5 @@ found in the LICENSE file.
         android:layout_marginEnd="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+</org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewLayout>

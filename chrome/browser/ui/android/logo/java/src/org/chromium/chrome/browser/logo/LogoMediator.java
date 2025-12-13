@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.logo;
 
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.doesDefaultSearchEngineHaveLogo;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoBridge.LogoObserver;
 import org.chromium.chrome.browser.logo.LogoCoordinator.VisibilityObserver;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.image_fetcher.ImageDataFetchResult;
@@ -268,6 +268,11 @@ public class LogoMediator implements TemplateUrlServiceObserver {
                     @Override
                     public void onLogoAvailable(LogoBridge.Logo logo, boolean fromCache) {
                         if (logo == null) {
+                            // When internet is disconnected, logo given by the LogoService is
+                            // null.
+                            NtpCustomizationConfigManager.getInstance()
+                                    .setDefaultSearchEngineLogoBitmap(null);
+
                             if (fromCache) {
                                 // There is no cached logo. Wait until we know whether there's a
                                 // fresh one before making any further decisions.
@@ -302,13 +307,7 @@ public class LogoMediator implements TemplateUrlServiceObserver {
     }
 
     private void updateVisibility() {
-        boolean doesDseHaveLogo =
-                mProfile != null
-                        ? TemplateUrlServiceFactory.getForProfile(mProfile)
-                                .doesDefaultSearchEngineHaveLogo()
-                        : ChromeSharedPreferences.getInstance()
-                                .readBoolean(APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, true);
-        mShouldShowLogo = doesDseHaveLogo;
+        mShouldShowLogo = doesDefaultSearchEngineHaveLogo(mProfile);
         mLogoModel.set(LogoProperties.VISIBILITY, mShouldShowLogo);
         for (LogoCoordinator.VisibilityObserver observer : mVisibilityObservers) {
             observer.onLogoVisibilityChanged();

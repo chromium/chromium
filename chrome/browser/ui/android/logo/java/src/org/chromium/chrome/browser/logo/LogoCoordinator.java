@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.logo;
 
+import static org.chromium.chrome.browser.logo.LogoUtils.getGoogleLogoDrawable;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -66,12 +68,8 @@ public class LogoCoordinator {
         mLogoView = logoView;
         PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LogoViewBinder());
 
-        Drawable defaultGoogleLogoDrawable = null;
-        if (ChromeFeatureList.sAndroidLogoViewRefactor.isEnabled()) {
-            defaultGoogleLogoDrawable =
-                    ContextCompat.getDrawable(context, R.drawable.ic_google_logo);
-            NtpCustomizationUtils.setTintForDefaultGoogleLogo(context, defaultGoogleLogoDrawable);
-        }
+        Drawable defaultGoogleLogoDrawable = getGoogleLogoDrawable(context);
+        NtpCustomizationUtils.setTintForDefaultGoogleLogo(context, defaultGoogleLogoDrawable);
 
         mMediator =
                 new LogoMediator(

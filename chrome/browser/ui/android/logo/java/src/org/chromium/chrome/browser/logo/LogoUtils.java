@@ -4,13 +4,19 @@
 
 package org.chromium.chrome.browser.logo;
 
+import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -50,9 +56,8 @@ public class LogoUtils {
     }
 
     /** Sets the layout params for the LogoView when the current logo is a google doodle. */
-    @VisibleForTesting
     public static void setLogoViewLayoutParamsForDoodle(
-            LogoView logoView, Resources resources, final @DoodleSize int doodleSize) {
+            View logoView, Resources resources, final @DoodleSize int doodleSize) {
         MarginLayoutParams layoutParams = (MarginLayoutParams) logoView.getLayoutParams();
         if (layoutParams == null) return;
 
@@ -87,8 +92,32 @@ public class LogoUtils {
         return new int[] {0, 0};
     }
 
+    /**
+     * Returns the default Google logo drawable.
+     *
+     * @param context The context used to load the resource.
+     * @return The Google logo drawable if the logo view refactor feature is enabled; otherwise
+     *     null.
+     */
+    public static @Nullable Drawable getGoogleLogoDrawable(Context context) {
+        if (!ChromeFeatureList.sAndroidLogoViewRefactor.isEnabled()) return null;
+
+        return ContextCompat.getDrawable(context, R.drawable.ic_google_logo);
+    }
+
+    /**
+     * Returns the appropriate size for a Doodle based on the current window mode.
+     *
+     * @param isInMultiWindowMode Whether the application is currently in multi-window mode.
+     * @return A {@link DoodleSize} constant (e.g., {@link DoodleSize#TABLET_SPLIT_SCREEN} or {@link
+     *     DoodleSize#REGULAR}) suitable for the current UI state.
+     */
+    public static @DoodleSize int getDoodleSize(boolean isInMultiWindowMode) {
+        return isInMultiWindowMode ? DoodleSize.TABLET_SPLIT_SCREEN : DoodleSize.REGULAR;
+    }
+
     public static void setLogoViewLayoutParamsForDoodle(
-            LogoView logoView, int logoHeight, int logoTopMargin) {
+            View logoView, int logoHeight, int logoTopMargin) {
         MarginLayoutParams layoutParams = (MarginLayoutParams) logoView.getLayoutParams();
 
         if (layoutParams.height == logoHeight) {

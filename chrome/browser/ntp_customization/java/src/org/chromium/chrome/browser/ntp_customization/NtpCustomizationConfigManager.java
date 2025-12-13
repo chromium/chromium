@@ -45,6 +45,7 @@ public class NtpCustomizationConfigManager {
     private @Nullable Bitmap mOriginalBitmap;
     private @Nullable BackgroundImageInfo mBackgroundImageInfo;
     private @Nullable NtpThemeColorInfo mNtpThemeColorInfo;
+    private @Nullable Bitmap mDefaultSearchEngineLogoImage;
     private boolean mIsMvtToggleOn;
 
     /** An interface to get NewTabPage's configuration updates. */
@@ -451,6 +452,14 @@ public class NtpCustomizationConfigManager {
 
     public @Nullable NtpThemeColorInfo getNtpThemeColorInfo() {
         return mNtpThemeColorInfo;
+    }
+
+    public void setDefaultSearchEngineLogoBitmap(@Nullable Bitmap logoBitmap) {
+        mDefaultSearchEngineLogoImage = logoBitmap;
+    }
+
+    public @Nullable Bitmap getDefaultSearchEngineLogoBitmap() {
+        return mDefaultSearchEngineLogoImage;
     }
 
     /**

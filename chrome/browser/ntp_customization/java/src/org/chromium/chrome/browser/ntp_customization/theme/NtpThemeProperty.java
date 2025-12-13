@@ -50,6 +50,18 @@ public class NtpThemeProperty {
     public static final PropertyModel.WritableObjectPropertyKey<OnApplyWindowInsetsListener>
             PREVIEW_SET_WINDOW_INSETS_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
 
+    // The bitmap for the logo in the preview dialog. If null, the default Google logo is used.
+    public static final PropertyModel.WritableObjectPropertyKey<Bitmap> SET_LOGO_BITMAP =
+            new PropertyModel.WritableObjectPropertyKey<>();
+
+    // The callback to adjust the logo's layout parameters.
+    public static final PropertyModel.WritableObjectPropertyKey<int[]> SET_LOGO_PARAMS =
+            new PropertyModel.WritableObjectPropertyKey<>();
+
+    // The visibility of the logo view.
+    public static final PropertyModel.WritableIntPropertyKey SET_LOGO_VISIBILITY =
+            new PropertyModel.WritableIntPropertyKey();
+
     public static final PropertyKey[] THEME_KEYS =
             new PropertyKey[] {
                 LEARN_MORE_BUTTON_CLICK_LISTENER,
@@ -64,5 +76,8 @@ public class NtpThemeProperty {
                 PREVIEW_SAVE_CLICK_LISTENER,
                 PREVIEW_CANCEL_CLICK_LISTENER,
                 PREVIEW_SET_WINDOW_INSETS_LISTENER,
+                SET_LOGO_BITMAP,
+                SET_LOGO_VISIBILITY,
+                SET_LOGO_PARAMS
             };
 }

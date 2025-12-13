@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO_FOR_DAILY_REFRESH;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_INFO;
@@ -77,6 +78,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.upload_image.CropImag
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -84,6 +86,7 @@ import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.util.ColorUtils;
@@ -927,7 +930,11 @@ public class NtpCustomizationUtils {
      * @param defaultGoogleLogoDrawable The drawable instance for default Google Logo.
      */
     public static void setTintForDefaultGoogleLogo(
-            Context context, Drawable defaultGoogleLogoDrawable) {
+            Context context, @Nullable Drawable defaultGoogleLogoDrawable) {
+        if (defaultGoogleLogoDrawable == null) {
+            return;
+        }
+
         @NtpBackgroundImageType
         int backgroundType = NtpCustomizationConfigManager.getInstance().getBackgroundImageType();
         getTintedGoogleLogoDrawableImpl(
@@ -1311,6 +1318,23 @@ public class NtpCustomizationUtils {
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    /**
+     * Checks if the current default search engine has a logo.
+     *
+     * <p>If the {@code profile} is available, this queries the {@link TemplateUrlService}.
+     * Otherwise, it falls back to the cached state stored in shared preferences from the last app
+     * launch.
+     *
+     * @param profile The current profile, or null if not yet initialized.
+     * @return True if the default search engine supports showing a logo, false otherwise.
+     */
+    public static boolean doesDefaultSearchEngineHaveLogo(@Nullable Profile profile) {
+        return profile != null
+                ? TemplateUrlServiceFactory.getForProfile(profile).doesDefaultSearchEngineHaveLogo()
+                : ChromeSharedPreferences.getInstance()
+                        .readBoolean(APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, true);
     }
 
     public static void resetSharedPreferenceForTesting() {

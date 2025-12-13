@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme.upload_image;
 
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.BITMAP_FOR_PREVIEW;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.PREVIEW_CANCEL_CLICK_LISTENER;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.doesDefaultSearchEngineHaveLogo;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.PREVIEW_KEYS;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.PREVIEW_SAVE_CLICK_LISTENER;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.PREVIEW_SET_WINDOW_INSETS_LISTENER;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.SET_LOGO_BITMAP;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.SET_LOGO_PARAMS;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.SET_LOGO_VISIBILITY;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -17,21 +17,22 @@ import android.graphics.Point;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -73,22 +74,28 @@ public class UploadImagePreviewCoordinator {
      * @param bitmap The bitmap to be previewed.
      */
     public UploadImagePreviewCoordinator(
-            Activity activity, Bitmap bitmap, Callback<Boolean> onBottomSheetClickedCallback) {
+            Activity activity,
+            Profile profile,
+            Bitmap bitmap,
+            Callback<Boolean> onBottomSheetClickedCallback) {
         mPreviewPropertyModel = new PropertyModel(PREVIEW_KEYS);
-        View contentView =
-                LayoutInflater.from(activity)
-                        .inflate(R.layout.ntp_customization_theme_preview_dialog_layout, null);
-        mCropImageView = contentView.findViewById(R.id.preview_image);
+        UploadImagePreviewLayout previewLayout =
+                (UploadImagePreviewLayout)
+                        LayoutInflater.from(activity)
+                                .inflate(
+                                        R.layout.ntp_customization_theme_preview_dialog_layout,
+                                        null);
+        mCropImageView = previewLayout.findViewById(R.id.preview_image);
 
         final ChromeDialog dialog =
                 new ChromeDialog(
                         activity,
                         R.style.ThemeOverlay_BrowserUI_Fullscreen,
                         /* shouldPadForWindowInsets= */ false);
-        dialog.setContentView(contentView);
+        dialog.setContentView(previewLayout);
 
         PropertyModelChangeProcessor.create(
-                mPreviewPropertyModel, contentView, UploadImagePreviewDialogViewBinder::bind);
+                mPreviewPropertyModel, previewLayout, UploadImagePreviewLayoutViewBinder::bind);
 
         mPreviewPropertyModel.set(NtpThemeProperty.BITMAP_FOR_PREVIEW, bitmap);
 
@@ -126,6 +133,10 @@ public class UploadImagePreviewCoordinator {
                     return insets;
                 });
 
+        if (ChromeFeatureList.sNewTabPageCustomizationV2ShowLogoAndSearchBox.getValue()) {
+            setUpLogo(activity, profile, mPreviewPropertyModel);
+        }
+
         dialog.show();
         NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewShow();
     }
@@ -160,6 +171,48 @@ public class UploadImagePreviewCoordinator {
         }
     }
 
+    /**
+     * Configures the search engine logo's visibility and content.
+     *
+     * <p>This method handles four distinct logo states:
+     *
+     * <ul>
+     *   <li><b>No Logo:</b> If {@code shouldShowLogo} is false, the view is hidden.
+     *   <li><b>Third-Party Loading:</b> If a third-party engine is selected but the bitmap is
+     *       {@code null} (e.g., currently fetching, offline, or unavailable), the view is hidden.
+     *   <li><b>Google Logo:</b> If Google is the DSE and {@code logoBitmap} is {@code null} (e.g.,
+     *       standard logo or Doodle is still loading), the default Google drawable is used.
+     *   <li><b>Doodle / Third-Party Logo:</b> If a valid bitmap is provided, it is displayed and
+     *       the layout parameters are dynamically adjusted.
+     * </ul>
+     *
+     * @param activity The current activity, used for resource retrieval and multi-window mode
+     *     checks.
+     * @param profile The user profile, used to determine the default search engine status.
+     * @param model The {@link PropertyModel} to update with the calculated logo state.
+     */
+    private void setUpLogo(Activity activity, Profile profile, PropertyModel model) {
+        boolean shouldShowLogo = doesDefaultSearchEngineHaveLogo(profile);
+        boolean isGoogleDSE =
+                TemplateUrlServiceFactory.getForProfile(profile).isDefaultSearchEngineGoogle();
+        Bitmap logoBitmap =
+                NtpCustomizationConfigManager.getInstance().getDefaultSearchEngineLogoBitmap();
+
+        if (!shouldShowLogo || (!isGoogleDSE && logoBitmap == null)) {
+            model.set(SET_LOGO_VISIBILITY, View.GONE);
+            return;
+        }
+
+        model.set(SET_LOGO_VISIBILITY, View.VISIBLE);
+        model.set(SET_LOGO_BITMAP, logoBitmap);
+        model.set(
+                SET_LOGO_PARAMS,
+                LogoUtils.getLogoViewLayoutParams(
+                        activity.getResources(),
+                        /* isLogoDoodle= */ logoBitmap != null,
+                        LogoUtils.getDoodleSize(activity.isInMultiWindowMode())));
+    }
+
     PropertyModel getPropertyModelForTesting() {
         return mPreviewPropertyModel;
     }
@@ -168,26 +221,7 @@ public class UploadImagePreviewCoordinator {
         mPreviewPropertyModel.set(NtpThemeProperty.PREVIEW_SAVE_CLICK_LISTENER, null);
         mPreviewPropertyModel.set(NtpThemeProperty.PREVIEW_CANCEL_CLICK_LISTENER, null);
         mPreviewPropertyModel.set(NtpThemeProperty.PREVIEW_SET_WINDOW_INSETS_LISTENER, null);
-    }
-
-    /** The Binder that connects the PropertyModel to the dialog's views. */
-    public static class UploadImagePreviewDialogViewBinder {
-        static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-            CropImageView cropImageView = view.findViewById(R.id.preview_image);
-            TextView saveButton = view.findViewById(R.id.save_button);
-            TextView cancelButton = view.findViewById(R.id.cancel_button);
-
-            if (propertyKey == BITMAP_FOR_PREVIEW) {
-                cropImageView.setImageBitmap(model.get(BITMAP_FOR_PREVIEW));
-            } else if (propertyKey == PREVIEW_SAVE_CLICK_LISTENER) {
-                saveButton.setOnClickListener(model.get(PREVIEW_SAVE_CLICK_LISTENER));
-            } else if (propertyKey == PREVIEW_CANCEL_CLICK_LISTENER) {
-                cancelButton.setOnClickListener(model.get(PREVIEW_CANCEL_CLICK_LISTENER));
-            } else if (propertyKey == PREVIEW_SET_WINDOW_INSETS_LISTENER) {
-                ViewCompat.setOnApplyWindowInsetsListener(
-                        saveButton, model.get(PREVIEW_SET_WINDOW_INSETS_LISTENER));
-            }
-        }
+        NtpCustomizationConfigManager.getInstance().setDefaultSearchEngineLogoBitmap(null);
     }
 
     /**

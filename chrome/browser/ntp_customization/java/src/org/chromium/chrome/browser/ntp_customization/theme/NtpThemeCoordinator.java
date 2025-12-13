@@ -133,7 +133,7 @@ public class NtpThemeCoordinator {
 
         mUploadPreviewCoordinator =
                 new UploadImagePreviewCoordinator(
-                        (Activity) mContext, bitmap, this::onPreviewClosed);
+                        (Activity) mContext, mProfile, bitmap, this::onPreviewClosed);
     }
 
     /**

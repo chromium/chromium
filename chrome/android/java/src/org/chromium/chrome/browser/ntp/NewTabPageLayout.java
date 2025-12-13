@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage.OnSearchBoxScrollListener;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties;
@@ -591,6 +592,9 @@ public class NewTabPageLayout extends LinearLayout
                         (logo) -> {
                             mSnapshotTileGridChanged = true;
                             mShowingNonStandardGoogleLogo = logo != null && mSearchProviderIsGoogle;
+                            NtpCustomizationConfigManager.getInstance()
+                                    .setDefaultSearchEngineLogoBitmap(
+                                            logo == null ? null : logo.image);
                         });
 
         mLogoView = findViewById(R.id.search_provider_logo);
