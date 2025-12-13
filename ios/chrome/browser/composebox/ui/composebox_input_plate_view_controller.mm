@@ -79,10 +79,6 @@ const CGFloat kGenericButtonHeight = 32.0f;
 const CGFloat kSendButtonDimension = 36.0f;
 /// The dimension of the button stack view.
 const CGFloat kButtonStackViewDimension = 36.0f;
-/// The duration for the glow effect.
-const CGFloat kGlowEffectDuration = 0.9;
-/// The width of the glow effect border.
-const CGFloat kGlowEffectWidth = 2.0f;
 /// Duration of a change in compact mode.
 const CGFloat kCompactModeAnimationDuration = 0.1;
 /// The opacity once the send button is disabled.
@@ -180,9 +176,6 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   BOOL _galleryActionsDisabled;
   /// Container for the omnibox.
   UIView* _omniboxContainer;
-
-  /// The cancellable callback for updating the glow effect.
-  base::CancelableOnceClosure _updateGlowCallback;
 
   // The theme of the composebox.
   ComposeboxTheme* _theme;
@@ -534,10 +527,6 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self.delegate composeboxViewController:self didTapSendButton:_sendButton];
 }
 
-- (void)stopGlowEffect {
-  [_glowEffectView stopGlow];
-}
-
 #pragma mark - UICollectionViewDelegateFlowLayout
 
 - (CGSize)collectionView:(UICollectionView*)collectionView
@@ -646,34 +635,11 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     return;
   }
 
-  // Cancel any previously scheduled updates.
-  _updateGlowCallback.Cancel();
-
   if (_AIModeEnabled || _imageGenerationEnabled) {
     // When turning on, ensure the glow is started. The view's state machine
     // will prevent it from restarting if it's already active.
     [_glowEffectView startGlow];
-  } else if (_glowEffectView.glowState == GlowState::kStoppingRotation) {
-    // If the user toggles off while the rotation is already stopping, stop the
-    // glow immediately.
-    [_glowEffectView stopGlow];
-    return;
   }
-
-  // Schedule the next state transition after the delay, regardless of whether
-  // the mode was turned on or off.
-  __weak __typeof__(self) weakSelf = self;
-  _updateGlowCallback.Reset(base::BindOnce(^{
-    [weakSelf updateGlow];
-  }));
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, _updateGlowCallback.callback(),
-      base::Seconds(kGlowEffectDuration));
-}
-
-/// Called after a delay to transition the glow effect to its next state.
-- (void)updateGlow {
-  [_glowEffectView stopGlow];
 }
 
 /// Responds to changes in the user interface style (e.g.: dark/light mode).
@@ -1168,14 +1134,13 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self.view addSubview:_inputPlateContainerView];
 
   _glowEffectView = ios::provider::CreateGlowEffect(
-      CGRectZero, kInputPlateCornerRadius, kGlowEffectWidth);
+      CGRectZero, kInputPlateCornerRadius, /*glowWidth is deprecated*/ 0);
   if (_glowEffectView) {
     _glowEffectView.translatesAutoresizingMaskIntoConstraints = NO;
     _glowEffectView.userInteractionEnabled = NO;
     [self.view insertSubview:_glowEffectView
                 aboveSubview:_inputPlateContainerView];
-    AddSameConstraintsWithInset(_inputPlateContainerView, _glowEffectView,
-                                kGlowEffectWidth);
+    AddSameConstraints(_inputPlateContainerView, _glowEffectView);
   }
 }
 
