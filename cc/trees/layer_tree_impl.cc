@@ -2298,6 +2298,10 @@ viz::ResourceId LayerTreeImpl::ResourceIdForUIResource(UIResourceId uid) const {
   return host_impl_->ResourceIdForUIResource(uid);
 }
 
+gfx::Size LayerTreeImpl::GetUIResourceSize(UIResourceId uid) const {
+  return host_impl_->GetUIResourceSize(uid);
+}
+
 bool LayerTreeImpl::IsUIResourceOpaque(UIResourceId uid) const {
   return host_impl_->IsUIResourceOpaque(uid);
 }

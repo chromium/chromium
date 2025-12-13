@@ -2,13 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/callback_helpers.h"
 #include "cc/layers/solid_color_layer_impl.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_host_impl_test_base.h"
+#include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/test/begin_frame_args_test.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -72,6 +79,38 @@ TEST_P(TreesInVizServerLayerTreeHostImplTest,
   // equat to submit info submit time.
   EXPECT_EQ(submit_info.value().time,
             metadata.trees_in_viz_timing_details.submit_compositor_frame);
+}
+
+TEST_P(TreesInVizServerLayerTreeHostImplTest,
+       CreateUIResourceFromImportedResource) {
+  const UIResourceId ui_resource_id = 1;
+  const gfx::Size size(100, 200);
+
+  auto client_shared_image = gpu::ClientSharedImage::CreateForTesting(
+      gpu::Mailbox::Generate(),
+      {viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
+       GrSurfaceOrigin::kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ},
+      gpu::SyncToken(),
+      /*texture_target=*/3553,
+      /*is_software=*/true);
+
+  viz::TransferableResource transfer_resource = viz::TransferableResource::Make(
+      client_shared_image, viz::TransferableResource::ResourceSource::kTest,
+      gpu::SyncToken());
+  transfer_resource.id = viz::ResourceId(10);
+
+  viz::ResourceId resource_id = host_impl_->resource_provider()->ImportResource(
+      transfer_resource, base::DoNothing());
+
+  host_impl_->CreateUIResourceFromImportedResource(ui_resource_id, resource_id,
+                                                   size, true);
+
+  EXPECT_EQ(resource_id, host_impl_->ResourceIdForUIResource(ui_resource_id));
+  EXPECT_EQ(size, host_impl_->GetUIResourceSize(ui_resource_id));
+  EXPECT_TRUE(host_impl_->IsUIResourceOpaque(ui_resource_id));
+
+  host_impl_->DeleteUIResource(ui_resource_id);
 }
 
 }  // namespace cc

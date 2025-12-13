@@ -1991,7 +1991,9 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
           /*evicted_callback=*/base::NullCallback());
 
       host_impl_->CreateUIResourceFromImportedResource(
-          ui_resource_request->uid, resource_id, ui_resource_request->opaque);
+          ui_resource_request->uid, resource_id,
+          ui_resource_request->transferable_resource->GetSize(),
+          ui_resource_request->opaque);
     } else {
       host_impl_->DeleteUIResource(ui_resource_request->uid);
     }

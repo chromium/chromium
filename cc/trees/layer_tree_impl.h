@@ -601,6 +601,7 @@ class CC_EXPORT LayerTreeImpl {
   void DidModifyTilePriorities(bool pending_update_tiles = false);
 
   viz::ResourceId ResourceIdForUIResource(UIResourceId uid) const;
+  gfx::Size GetUIResourceSize(UIResourceId uid) const;
   void ProcessUIResourceRequestQueue();
 
   bool IsUIResourceOpaque(UIResourceId uid) const;
