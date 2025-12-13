@@ -328,7 +328,8 @@ class CreditCardSaveManagerTest
             autofill_client().GetIdentityManager(), &personal_data()));
     payments_autofill_client().set_virtual_card_enrollment_manager(
         std::make_unique<MockVirtualCardEnrollmentManager>(
-            &payments_data_manager(), &payments_network_interface(),
+            &payments_data_manager(),
+            &multiple_request_payments_network_interface(),
             &autofill_client()));
     payments_autofill_client().SetLocalSaveCallbackOfferDecision(
         SaveCardOfferUserDecision::kAccepted);
@@ -539,6 +540,11 @@ class CreditCardSaveManagerTest
   payments::TestPaymentsNetworkInterface& payments_network_interface() {
     return static_cast<payments::TestPaymentsNetworkInterface&>(
         *payments_autofill_client().GetPaymentsNetworkInterface());
+  }
+  payments::MockMultipleRequestPaymentsNetworkInterface&
+  multiple_request_payments_network_interface() {
+    return *payments_autofill_client()
+                .GetMultipleRequestPaymentsNetworkInterface();
   }
   TestStrikeDatabase& strike_database() {
     return *autofill_client().GetStrikeDatabase();

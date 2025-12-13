@@ -138,16 +138,6 @@ const char kAutofillEnableFlatRateCardBenefitsFromCurinosDescription[] =
     "When enabled, flat rate card benefits sourced from Curinos will be shown "
     "in Autofill suggestions.";
 
-const char
-    kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollmentName[] =
-        "Enable multiple server request support for virtual card downstream "
-        "enrollment";
-const char
-    kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollmentDescription
-        [] = "When enabled, Chrome will be able to send preflight call for "
-             "enrollment earlier in the flow with the multiple server request "
-             "support.";
-
 const char kAutofillEnablePrefetchingRiskDataForRetrievalName[] =
     "Enable prefetching of risk data during payments autofill retrieval";
 const char kAutofillEnablePrefetchingRiskDataForRetrievalDescription[] =

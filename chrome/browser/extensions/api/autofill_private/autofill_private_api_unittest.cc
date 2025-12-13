@@ -305,62 +305,26 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, LogServerCardLinkClicked) {
       autofill::AutofillMetrics::PaymentsSigninState::kSignedOut, 1);
 }
 
-class VirtualCardMultipleRequestPrivateApiUnittest
-    : public AutofillPrivateApiUnitTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  VirtualCardMultipleRequestPrivateApiUnittest() {
-    feature_list_.InitWithFeatureState(
-        autofill::features::
-            kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment,
-        MultipleRequestInVcnDownstreamEnrollmentEnabled());
-  }
-
-  ~VirtualCardMultipleRequestPrivateApiUnittest() override = default;
-
-  bool MultipleRequestInVcnDownstreamEnrollmentEnabled() const {
-    return GetParam();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(AutofillPrivateApiUnitTest,
-                         VirtualCardMultipleRequestPrivateApiUnittest,
-                         ::testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(VirtualCardMultipleRequestPrivateApiUnittest,
-                       RemoveVirtualCard) {
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, RemoveVirtualCard) {
   using autofill::payments::TestPaymentsNetworkInterface;
   autofill::payments::MockMultipleRequestPaymentsNetworkInterface*
       mock_multiple_request_payments_network_interface_;
   autofill::payments::UpdateVirtualCardEnrollmentRequestDetails details;
-  if (MultipleRequestInVcnDownstreamEnrollmentEnabled()) {
-    auto mock_multiple_request_payments_network_interface = std::make_unique<
-        autofill::payments::MockMultipleRequestPaymentsNetworkInterface>(
-        autofill_client()->GetURLLoaderFactory(),
-        *autofill_client()->GetIdentityManager());
-    mock_multiple_request_payments_network_interface_ =
-        mock_multiple_request_payments_network_interface.get();
-    autofill_client()
-        ->GetPaymentsAutofillClient()
-        ->set_multiple_request_payments_network_interface(
-            std::move(mock_multiple_request_payments_network_interface));
-    EXPECT_CALL(*mock_multiple_request_payments_network_interface_,
-                UpdateVirtualCardEnrollment(testing::_, testing::_))
-        .WillOnce(testing::DoAll(
-            testing::SaveArg<0>(&details),
-            testing::Return(autofill::payments::RequestId("11223344"))));
-  } else {
-    autofill_client()
-        ->GetPaymentsAutofillClient()
-        ->set_payments_network_interface(
-            std::make_unique<TestPaymentsNetworkInterface>(
-                autofill_client()->GetURLLoaderFactory(),
-                autofill_client()->GetIdentityManager(),
-                &personal_data_manager()));
-  }
+  auto mock_multiple_request_payments_network_interface = std::make_unique<
+      autofill::payments::MockMultipleRequestPaymentsNetworkInterface>(
+      autofill_client()->GetURLLoaderFactory(),
+      *autofill_client()->GetIdentityManager());
+  mock_multiple_request_payments_network_interface_ =
+      mock_multiple_request_payments_network_interface.get();
+  autofill_client()
+      ->GetPaymentsAutofillClient()
+      ->set_multiple_request_payments_network_interface(
+          std::move(mock_multiple_request_payments_network_interface));
+  EXPECT_CALL(*mock_multiple_request_payments_network_interface_,
+              UpdateVirtualCardEnrollment(testing::_, testing::_))
+      .WillOnce(testing::DoAll(
+          testing::SaveArg<0>(&details),
+          testing::Return(autofill::payments::RequestId("11223344"))));
   // Required for adding the server card.
   payments_data_manager().SetSyncingForTest(
       /*is_syncing_for_test=*/true);
@@ -371,26 +335,8 @@ IN_PROC_BROWSER_TEST_P(VirtualCardMultipleRequestPrivateApiUnittest,
 
   EXPECT_TRUE(RunAutofillSubtest("removeVirtualCard"));
 
-  if (MultipleRequestInVcnDownstreamEnrollmentEnabled()) {
-    EXPECT_EQ(details.virtual_card_enrollment_request_type,
-              autofill::VirtualCardEnrollmentRequestType::kUnenroll);
-  } else {
-    EXPECT_THAT(
-        static_cast<TestPaymentsNetworkInterface*>(
-            autofill_client()
-                ->GetPaymentsAutofillClient()
-                ->GetPaymentsNetworkInterface())
-            ->update_virtual_card_enrollment_request_details(),
-        ::testing::AllOf(
-            ::testing::Field(
-                &autofill::payments::UpdateVirtualCardEnrollmentRequestDetails::
-                    instrument_id,
-                123),
-            ::testing::Field(
-                &autofill::payments::UpdateVirtualCardEnrollmentRequestDetails::
-                    virtual_card_enrollment_request_type,
-                autofill::VirtualCardEnrollmentRequestType::kUnenroll)));
-  }
+  EXPECT_EQ(details.virtual_card_enrollment_request_type,
+            autofill::VirtualCardEnrollmentRequestType::kUnenroll);
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,

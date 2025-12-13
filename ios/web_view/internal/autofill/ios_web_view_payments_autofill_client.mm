@@ -265,19 +265,10 @@ VirtualCardEnrollmentManager*
 IOSWebViewPaymentsAutofillClient::GetVirtualCardEnrollmentManager() {
   if (GetPrefService()->GetBoolean(ios_web_view::kCWVAutofillVCNUsageEnabled)) {
     if (!virtual_card_enrollment_manager_) {
-      PaymentsNetworkInterfaceVariation payments_network_interface;
-      if (base::FeatureList::IsEnabled(
-              features::
-                  kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)) {
-        payments_network_interface =
-            GetMultipleRequestPaymentsNetworkInterface();
-      } else {
-        payments_network_interface = GetPaymentsNetworkInterface();
-      }
       virtual_card_enrollment_manager_ =
           std::make_unique<VirtualCardEnrollmentManager>(
               &client_->GetPersonalDataManager().payments_data_manager(),
-              payments_network_interface, &client_.get());
+              GetMultipleRequestPaymentsNetworkInterface(), &client_.get());
     }
     return virtual_card_enrollment_manager_.get();
   }

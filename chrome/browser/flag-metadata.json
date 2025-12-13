@@ -921,14 +921,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "autofill-enable-multiple-request-in-virtual-card-downstream-enrollment",
-    "owners": [
-      "siyua@chromium.org",
-      "payments-autofill-team@google.com"
-    ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "autofill-enable-new-fop-display-android",
     "owners": [ "kschen@google.com", "qihuizhao@google.com", "osaul@google.com"],
     "expiry_milestone": 155
