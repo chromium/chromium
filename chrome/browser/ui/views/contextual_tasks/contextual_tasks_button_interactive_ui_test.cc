@@ -5,10 +5,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -89,6 +92,10 @@ class ContextualTasksEphemeralButtonInteractiveTest
     InteractiveBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
+    browser()
+        ->browser_window_features()
+        ->side_panel_ui()
+        ->DisableAnimationsForTesting();
   }
 
   GURL GetTestURL() {
@@ -127,43 +134,77 @@ class ContextualTasksEphemeralButtonInteractiveTest
     });
   }
 
+  // Simulate opening the contextual task side panel as if you clicked on a link
+  // in a contextual task.
+  auto SimulateOpeningContextualTaskSidePanel() {
+    return Do([&] {
+      contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser())
+          ->Show();
+    });
+  }
+
+  // Simulate closing the contextual task side panel as if you clicked on the
+  // close button in the contextual task side panel.
+  auto SimulateClosingContextualTaskSidePanel() {
+    return Do([&] {
+      contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser())
+          ->Close();
+    });
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
-                       EphemeralButtonUpdatesVisibility) {
+                       ButtonShowsAfterSidePanelWasClosed) {
   RunTestSequence(
       InstrumentTab(kFirstTab), AddInstrumentedTab(kSecondTab, GetTestURL()),
       SelectTab(kTabStripElementId, 0),
       EnsureNotPresent(ContextualTasksButton::kContextualTasksToolbarButton),
       CreateTaskForTab(0),
-      WaitForShow(ContextualTasksButton::kContextualTasksToolbarButton),
-      SelectTab(kTabStripElementId, 1),
-      WaitForHide(ContextualTasksButton::kContextualTasksToolbarButton),
-      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(ContextualTasksButton::kContextualTasksToolbarButton),
+      SimulateOpeningContextualTaskSidePanel(),
+      EnsureNotPresent(ContextualTasksButton::kContextualTasksToolbarButton),
+      SimulateClosingContextualTaskSidePanel(),
       WaitForShow(ContextualTasksButton::kContextualTasksToolbarButton));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
-                       HideEphemeralButtonWhenNotAssociatedToTask) {
+                       ButtonVisibilityIsTiedToTab) {
   RunTestSequence(
       InstrumentTab(kFirstTab), AddInstrumentedTab(kSecondTab, GetTestURL()),
       SelectTab(kTabStripElementId, 0),
       EnsureNotPresent(ContextualTasksButton::kContextualTasksToolbarButton),
-      CreateTaskForTab(0),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(ContextualTasksButton::kContextualTasksToolbarButton),
+      SelectTab(kTabStripElementId, 1),
+      WaitForHide(ContextualTasksButton::kContextualTasksToolbarButton));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
+                       HideButtonWhenNotAssociatedToTask) {
+  RunTestSequence(
+      InstrumentTab(kFirstTab), AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(ContextualTasksButton::kContextualTasksToolbarButton),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
       WaitForShow(ContextualTasksButton::kContextualTasksToolbarButton),
       RemoveTaskFromTab(0),
       WaitForHide(ContextualTasksButton::kContextualTasksToolbarButton));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
-                       EphemeralButtonVisibilityIsPreservedAsSidePanelToggles) {
+                       ButtonVisibilityIsPreservedAsSidePanelToggles) {
   RunTestSequence(
       InstrumentTab(kFirstTab), AddInstrumentedTab(kSecondTab, GetTestURL()),
       SelectTab(kTabStripElementId, 1),
       EnsureNotPresent(ContextualTasksButton::kContextualTasksToolbarButton),
       CreateTaskForTab(0), SelectTab(kTabStripElementId, 0),
+      SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
       WaitForShow(ContextualTasksButton::kContextualTasksToolbarButton),
       PressButton(ContextualTasksButton::kContextualTasksToolbarButton),
       WaitForShow(kSidePanelElementId),

@@ -13,6 +13,7 @@ source_set("contextual_tasks") {
 
   public_deps = [
     "//chrome/browser/ui/views/page_action",
+    "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/views/toolbar",
     "//components/contextual_tasks/public",
   ]
@@ -46,6 +47,7 @@ source_set("interactive_ui_tests") {
   deps = [
     ":contextual_tasks",
     "//chrome/browser/contextual_tasks",
+    "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/ui:ui_features",
     "//chrome/test:test_support",
     "//components/contextual_tasks/public",
