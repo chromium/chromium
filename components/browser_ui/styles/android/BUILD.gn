@@ -244,7 +244,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_sync_saved_locally_24dp.xml",
     "java/res/drawable/ic_tune_24dp.xml",
     "java/res/drawable/ic_update_grey.xml",
-    "java/res/drawable/ic_videocam_24dp.xml",
+    "java/res/drawable/ic_videocam_fill_24dp.xml",
     "java/res/drawable/ic_videocam_off_white_24dp.xml",
     "java/res/drawable/ic_visibility_black.xml",
     "java/res/drawable/ic_visibility_off_black.xml",

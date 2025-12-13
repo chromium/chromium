@@ -44,7 +44,7 @@ LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER,
 
 // Android only messages (an alternative UI to infobars)
 DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_PERMISSION_VIDEOCAM,
-                    R.drawable.ic_videocam_24dp)
+                    R.drawable.ic_videocam_fill_24dp)
 DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_PERMISSION_CAMERA,
                     R.drawable.ic_photo_camera_black)
 DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_PERMISSION_XR,

@@ -310,7 +310,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                             createRemoteAction(
                                     requestCode++,
                                     MediaSessionAction.TOGGLE_CAMERA,
-                                    R.drawable.ic_videocam_24dp,
+                                    R.drawable.ic_videocam_fill_24dp,
                                     R.string.accessibility_turn_off_camera,
                                     /* controlState= */ true),
                             createRemoteAction(

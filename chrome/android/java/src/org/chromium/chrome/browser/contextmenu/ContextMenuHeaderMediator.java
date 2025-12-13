@@ -214,7 +214,7 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
     private void setVideoIcon() {
         Drawable drawable =
                 ApiCompatibilityUtils.getDrawable(
-                        mContext.getResources(), R.drawable.gm_filled_videocam_24);
+                        mContext.getResources(), R.drawable.ic_videocam_fill_24dp);
         drawable.setColorFilter(
                 SemanticColorUtils.getDefaultIconColor(mContext), PorterDuff.Mode.SRC_IN);
         Bitmap bitmap =

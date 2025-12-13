@@ -74,7 +74,6 @@ android_resources("java_resources") {
     "res/drawable/gm_filled_select_window_24.xml",
     "res/drawable/gm_filled_select_window_off_24.xml",
     "res/drawable/gm_filled_usb_24.xml",
-    "res/drawable/gm_filled_videocam_24.xml",
     "res/drawable/ic_bluetooth_connected.xml",
     "res/drawable/ic_signal_cellular_0_bar.xml",
     "res/drawable/ic_signal_cellular_1_bar.xml",

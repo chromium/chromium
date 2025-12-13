@@ -211,7 +211,7 @@ public final class UiUtils {
             case Filters.FilterType.SITES:
                 return R.drawable.ic_globe_24dp;
             case Filters.FilterType.VIDEOS:
-                return R.drawable.ic_videocam_24dp;
+                return R.drawable.ic_videocam_fill_24dp;
             case Filters.FilterType.MUSIC:
                 return R.drawable.ic_music_note_24dp;
             case Filters.FilterType.IMAGES:

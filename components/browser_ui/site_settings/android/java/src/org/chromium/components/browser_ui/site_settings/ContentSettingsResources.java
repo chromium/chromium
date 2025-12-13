@@ -409,7 +409,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_local_network_access_block);
             case ContentSettingsType.MEDIASTREAM_CAMERA:
                 return new ResourceItem(
-                                R.drawable.gm_filled_videocam_24,
+                                R.drawable.ic_videocam_fill_24dp,
                                 R.string.website_settings_use_camera,
                                 ContentSetting.ASK,
                                 ContentSetting.BLOCK,
