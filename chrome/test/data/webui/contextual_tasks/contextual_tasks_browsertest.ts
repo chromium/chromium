@@ -34,7 +34,7 @@ suite('ContextualTasksAppTest', function() {
     assertEquals(await proxy.handler.getCallCount('getThreadUrl'), 1);
   });
 
-  test('gets task url when query param set', async () => {
+  test('gets task url when query param set and updates title', async () => {
     // Set a task Uuid as a query parameter.
     const taskId = '123';
     window.history.replaceState({}, '', `?task=${taskId}`);
@@ -52,6 +52,36 @@ suite('ContextualTasksAppTest', function() {
     assertDeepEquals(
         await proxy.handler.whenCalled('setTaskId'), {value: taskId});
     assertEquals(await proxy.handler.whenCalled('setThreadTitle'), query);
+
+    proxy.callbackRouterRemote.setThreadTitle(query);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertEquals(document.title, query);
+  });
+
+  test('sets title to default string when query param is not set', async () => {
+    // Set a task Uuid as a query parameter.
+    const taskId = '123';
+    window.history.replaceState({}, '', `?task=${taskId}`);
+
+    // Don't set the q query parameter for the AI page.
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    document.body.appendChild(document.createElement('contextual-tasks-app'));
+
+    assertDeepEquals(
+        await proxy.handler.whenCalled('getUrlForTask'), {value: taskId});
+    assertDeepEquals(
+        await proxy.handler.whenCalled('setTaskId'), {value: taskId});
+    assertEquals(await proxy.handler.whenCalled('setThreadTitle'), '');
+
+    proxy.callbackRouterRemote.setThreadTitle('');
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertEquals(document.title, 'AI Mode');
   });
 
   test('toolbar visibility changes for tab and side panel', async () => {

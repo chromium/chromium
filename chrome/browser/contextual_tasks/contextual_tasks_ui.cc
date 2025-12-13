@@ -132,6 +132,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       {"myActivity", IDS_CONTEXTUAL_TASKS_MENU_MY_ACTIVITY},
       {"help", IDS_CONTEXTUAL_TASKS_MENU_HELP},
       {"sourcesMenuTabsHeader", IDS_CONTEXTUAL_TASKS_SOURCES_MENU_TABS_HEADER},
+      {"title", IDS_CONTEXTUAL_TASKS_AI_MODE_TITLE},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
   source->AddLocalizedString(

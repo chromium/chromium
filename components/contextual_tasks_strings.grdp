@@ -4,6 +4,9 @@
   <message name ="IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE" desc="The title of contextual tasks.">
     Contextual tasks
   </message>
+  <message name="IDS_CONTEXTUAL_TASKS_AI_MODE_TITLE" desc="The title shown in the location bar and tab for AI Mode before a thread title is available." translateable="false">
+    AI Mode
+  </message>
   <message name="IDS_CONTEXTUAL_TASKS_MENU_OPEN_IN_NEW_TAB" desc="The 'Open in new tab' option in the 3-dot menu.">
     Open in new tab
   </message>
