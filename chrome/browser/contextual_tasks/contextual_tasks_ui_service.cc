@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_tasks/public/account_utils.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_url_utils.h"
@@ -86,8 +87,11 @@ base::Uuid GetTaskIdFromHostURL(const GURL& url) {
 
 ContextualTasksUiService::ContextualTasksUiService(
     Profile* profile,
-    ContextualTasksContextController* context_controller)
-    : profile_(profile), context_controller_(context_controller) {
+    ContextualTasksContextController* context_controller,
+    signin::IdentityManager* identity_manager)
+    : profile_(profile),
+      context_controller_(context_controller),
+      identity_manager_(identity_manager) {
   ai_page_host_ = GURL(kAiPageHost);
 }
 
@@ -275,6 +279,12 @@ bool ContextualTasksUiService::HandleNavigationImpl(
   }
 
   bool is_nav_to_ai = IsAiUrl(url_params.url);
+
+  // Don't intercept URLs to AI if they're not for the primary account.
+  if (is_nav_to_ai && !IsUrlForPrimaryAccount(url_params.url)) {
+    return false;
+  }
+
   bool is_nav_to_sign_in = IsSignInDomain(url_params.url);
 
   BrowserWindowInterface* browser = nullptr;
@@ -371,6 +381,10 @@ bool ContextualTasksUiService::HandleNavigationImpl(
 
   // Allow anything else.
   return false;
+}
+
+bool ContextualTasksUiService::IsUrlForPrimaryAccount(const GURL& url) {
+  return contextual_tasks::IsUrlForPrimaryAccount(identity_manager_, url);
 }
 
 GURL ContextualTasksUiService::GetContextualTaskUrlForTask(

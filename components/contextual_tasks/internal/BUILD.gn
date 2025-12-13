@@ -9,8 +9,6 @@ source_set("internal") {
   ]
 
   sources = [
-    "account_utils.cc",
-    "account_utils.h",
     "ai_thread_sync_bridge.cc",
     "ai_thread_sync_bridge.h",
     "composite_context_decorator.cc",
@@ -56,7 +54,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "account_utils_unittest.cc",
     "ai_thread_sync_bridge_unittest.cc",
     "composite_context_decorator_unittest.cc",
     "contextual_task_sync_bridge_unittest.cc",

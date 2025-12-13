@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CONTEXTUAL_TASKS_INTERNAL_ACCOUNT_UTILS_H_
-#define COMPONENTS_CONTEXTUAL_TASKS_INTERNAL_ACCOUNT_UTILS_H_
+#ifndef COMPONENTS_CONTEXTUAL_TASKS_PUBLIC_ACCOUNT_UTILS_H_
+#define COMPONENTS_CONTEXTUAL_TASKS_PUBLIC_ACCOUNT_UTILS_H_
 
 #include <optional>
 
@@ -40,4 +40,4 @@ bool IsUrlForPrimaryAccount(signin::IdentityManager* identity_manager,
 
 }  // namespace contextual_tasks
 
-#endif  // COMPONENTS_CONTEXTUAL_TASKS_INTERNAL_ACCOUNT_UTILS_H_
+#endif  // COMPONENTS_CONTEXTUAL_TASKS_PUBLIC_ACCOUNT_UTILS_H_

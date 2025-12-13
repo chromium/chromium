@@ -46,7 +46,7 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
  public:
   explicit MockUiServiceForUrlIntercept(
       ContextualTasksContextController* context_controller)
-      : ContextualTasksUiService(nullptr, context_controller) {}
+      : ContextualTasksUiService(nullptr, context_controller, nullptr) {}
   ~MockUiServiceForUrlIntercept() override = default;
 
   MOCK_METHOD(void,
@@ -71,6 +71,7 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
               (content::OpenURLParams url_params,
                ContextualTasksUI* webui_controller),
               (override));
+  MOCK_METHOD(bool, IsUrlForPrimaryAccount, (const GURL& url), (override));
 
   // Make the impl method public for this test.
   bool HandleNavigationImpl(content::OpenURLParams url_params,
@@ -106,6 +107,9 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
         std::make_unique<MockContextualTasksContextController>();
     service_for_nav_ = std::make_unique<MockUiServiceForUrlIntercept>(
         context_controller_.get());
+
+    ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
+        .WillByDefault(Return(true));
   }
 
   void TearDown() override {
@@ -246,6 +250,26 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted) {
   task_environment()->RunUntilIdle();
 }
 
+// If the AI page is for an account other than the primary one in chrome, don't
+// intercept the navigation.
+TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_AccountMismatch) {
+  GURL ai_url(kAiPageUrl);
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(GURL());
+
+  ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
+      .WillByDefault(Return(false));
+
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(ai_url, false), web_contents.get(), false));
+  task_environment()->RunUntilIdle();
+}
+
 // If the search results page is navigated to while viewing the UI in a tab,
 // ensure the correct event is fired.
 TEST_F(ContextualTasksUiServiceTest, SearchResultsNavigation_ViewedInTab) {
@@ -333,7 +357,7 @@ TEST_F(ContextualTasksUiServiceTest, GetThreadUrlFromTaskId) {
 }
 
 TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
-  ContextualTasksUiService service(nullptr, context_controller_.get());
+  ContextualTasksUiService service(nullptr, context_controller_.get(), nullptr);
   GURL intercepted_url("https://google.com/search?udm=50&q=test+query");
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(

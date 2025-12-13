@@ -7,6 +7,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/contextual_tasks/public/features.h"
 
 namespace contextual_tasks {
@@ -52,7 +53,8 @@ ContextualTasksUiServiceFactory::BuildServiceInstanceForBrowserContext(
 
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<ContextualTasksUiService>(
-      profile, ContextualTasksContextControllerFactory::GetForProfile(profile));
+      profile, ContextualTasksContextControllerFactory::GetForProfile(profile),
+      IdentityManagerFactory::GetForProfile(profile));
 }
 
 bool ContextualTasksUiServiceFactory::ServiceIsCreatedWithBrowserContext()

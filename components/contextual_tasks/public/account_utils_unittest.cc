@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/contextual_tasks/internal/account_utils.h"
+#include "components/contextual_tasks/public/account_utils.h"
 
 #include <string>
 #include <vector>
