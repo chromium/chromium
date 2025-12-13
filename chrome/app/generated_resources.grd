@@ -8813,6 +8813,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_DISABLE_TOAST_MESSAGE" desc="Text shown in the toast confirming a module has been disabled.">
         You won't see <ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph> on this page again
       </message>
+      <message name="IDS_NTP_MODULE_INACTIVITY_REMOVAL" desc="Text shown in a toast informing not recently used card has been removed." >
+        Card removed because you haven't used it recently
+      </message>
       <message name="IDS_NTP_MODULES_INACTIVITY_REMOVAL" desc="Text shown in a toast informing not recently used cards have been removed." >
         Cards removed because you haven't used them recently
       </message>
