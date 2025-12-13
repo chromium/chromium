@@ -76,8 +76,15 @@ GnomeRemoteDesktopSession::~GnomeRemoteDesktopSession() {
 // static
 bool GnomeRemoteDesktopSession::IsRunningUnderGnome() {
   const char* xdg_current_desktop = getenv("XDG_CURRENT_DESKTOP");
-  return xdg_current_desktop &&
-         std::string_view{xdg_current_desktop} == "GNOME";
+
+  // Fall back to using GNOME APIs if the variable is not set. This addresses
+  // the upgrade path from an older M143 host - see crbug.com/468353722. The
+  // package upgrade would run the new host against the old Python script which
+  // does not set this environment variable.
+  if (!xdg_current_desktop) {
+    return true;
+  }
+  return std::string_view{xdg_current_desktop} == "GNOME";
 }
 
 // static
