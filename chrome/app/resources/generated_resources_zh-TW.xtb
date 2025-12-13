@@ -1912,7 +1912,7 @@
 <translation id="2290703778620332549">要取代或建立新群組？</translation>
 <translation id="2291452790265535215">試著在側邊面板上使用書籤、瀏覽歷程和其他功能</translation>
 <translation id="229182044471402145">找不到相符的字型。</translation>
-<translation id="2292590498047171967">如要共用分頁及與人協作，請將歷史記錄和分頁同步到 <ph name="EMAIL" /></translation>
+<translation id="2292590498047171967">如要共用分頁、與他人協作，請將歷史記錄和分頁同步到 <ph name="EMAIL" /></translation>
 <translation id="2292848386125228270">請以一般使用者身分啟用 <ph name="PRODUCT_NAME" />。開發時，如要以 root 身分執行，請使用 --no-sandbox 標記重新執行。</translation>
 <translation id="2292862094862078674">請檢查網際網路連線，然後再試一次。你還是可以選取下方其中一個先前生成的主題。</translation>
 <translation id="2294081976975808113">螢幕隱私設定</translation>
@@ -3460,7 +3460,7 @@
 <translation id="3364159059299045452">Alt 鍵 + 游標懸停</translation>
 <translation id="3364986687961713424">來自系統管理員的訊息：<ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">請擇一使用 Ctrl 或 Alt 鍵</translation>
-<translation id="3365651640097487828">如要分享分頁及多人協作，請驗證身分並同步歷史記錄和分頁</translation>
+<translation id="3365651640097487828">如要共用分頁、與他人協作，請驗證身分並同步歷史記錄和分頁</translation>
 <translation id="3368662179834713970">房屋</translation>
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3369067987974711168">顯示這個連接埠的更多動作</translation>
@@ -7945,7 +7945,7 @@
 <translation id="6469557521904094793">開啟行動數據網路</translation>
 <translation id="6469702164109431067">密碼和密碼金鑰</translation>
 <translation id="6470120577693311302">閃光燈通知</translation>
-<translation id="6470499912143282503">如要分享分頁及多人協作，請登入 Chrome 並同步歷史記錄和分頁。你也可以在登入的裝置上使用儲存的密碼等資料。</translation>
+<translation id="6470499912143282503">如要共用分頁、與他人協作，請登入 Chrome 並同步歷史記錄和分頁。你也可以在登入的裝置上使用儲存的密碼等資料。</translation>
 <translation id="6470823736074966819">忽略通知</translation>
 <translation id="6472893788822429178">顯示 [首頁] 按鈕</translation>
 <translation id="6473315466413288899">請選擇</translation>

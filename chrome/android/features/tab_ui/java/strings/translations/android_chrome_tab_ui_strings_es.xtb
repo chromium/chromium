@@ -35,7 +35,7 @@
 <translation id="1982637982196732906">Mover a la sección Inactivas</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Añadir <ph name="TABS_COUNT_ONE" /> pestaña seleccionada a marcadores}other{Añadir <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas a marcadores}}</translation>
 <translation id="2055057176188061528">Selecciona un grupo de pestañas o crea uno nuevo</translation>
-<translation id="2074527029802029717">No fijar pestaña</translation>
+<translation id="2074527029802029717">Desfijar pestaña</translation>
 <translation id="2118649612461486615">Información de la tienda</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Puedes volver a abrir las pestañas y los grupos cerrados desde las secciones Pestañas recientes y Grupo de pestañas. Tu pestaña de Incógnito no estará disponible.}other{Puedes volver a abrir las pestañas y los grupos cerrados desde las secciones Pestañas recientes y Grupo de pestañas. Tus # pestañas de Incógnito no estarán disponibles.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Activar sonido del sitio web}other{Activar sonido de los sitios web}}</translation>

@@ -6389,7 +6389,7 @@
 <translation id="5365858324977454035">अचानक हुई किसी गड़बड़ी की वजह से फ़ाइल अपलोड नहीं की जा सकी.</translation>
 <translation id="5365881113273618889">आपने जो फ़ोल्डर चुना है उसमें संवेदनशील फ़ाइलें हैं. क्या आप वाकई "<ph name="APP_NAME" />" को इस फ़ोल्डर में लिखने का ऐक्सेस हमेशा के लिए देना चाहते हैं?</translation>
 <translation id="536638840841140142">कोई नहीं</translation>
-<translation id="5368246151595623328"><ph name="DEVICE_NAME" /> से मिले '<ph name="NETWORK_NAME" />' को सेव कर लिया गया है</translation>
+<translation id="5368246151595623328"><ph name="DEVICE_NAME" /> से मिले ‘<ph name="NETWORK_NAME" />' को सेव कर लिया गया है</translation>
 <translation id="5368441245151140827">यह एक्सटेंशन, साइट की जानकारी को पढ़ नहीं सकता और न ही उसमें बदलाव कर सकता है. इसके अलावा, यह बैकग्राउंड में चल नहीं सकता</translation>
 <translation id="5368720394188453070">आपका फ़ोन लॉक हो गया है. प्रवेश करने के लिए उसे अनलॉक करें.</translation>
 <translation id="536882527576164740">{0,plural, =1{गुप्त}one{गुप्त (#)}other{गुप्त (#)}}</translation>

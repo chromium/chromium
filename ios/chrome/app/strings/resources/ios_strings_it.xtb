@@ -2046,7 +2046,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8625706492572042370">Modifica la schermata Home</translation>
 <translation id="8631370184731241854">Schede di navigazione in incognito bloccate</translation>
 <translation id="8633025649649592204">Attività recente</translation>
-<translation id="8636825310635137004">Attiva la sincronizzazione per trovare le tue schede degli altri dispositivi.</translation>
+<translation id="8636825310635137004">Attiva la sincronizzazione per recuperare le tue schede dagli altri dispositivi.</translation>
 <translation id="8637431369725868556">Ricevi protezione da siti pericolosi.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nessuna password compromessa}=1{{COUNT} password compromessa}other{{COUNT} password compromesse}}</translation>
 <translation id="8643403533759285912">Elimina gruppo</translation>

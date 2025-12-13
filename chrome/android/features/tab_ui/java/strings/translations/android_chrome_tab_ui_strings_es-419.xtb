@@ -85,7 +85,7 @@
 <translation id="374923079891132274">Hoja de compartir en miniatura.</translation>
 <translation id="3776329373944672717">Título del grupo de pestañas <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Administrar</translation>
-<translation id="3849789634341518784">{TAB_COUNT,plural, =1{No fijar pestaña}other{No fijar pestañas}}</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{Dejar de fijar pestaña}other{Dejar de fijar pestañas}}</translation>
 <translation id="3940195383040445971">Realizar seguimiento de precios en las pestañas</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestaña nueva, <ph name="ANY_CLOSED" /> cerrada(s)}other{<ph name="MANY_ADDED" /> pestañas nuevas, <ph name="ANY_CLOSED" /> cerrada(s)}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Agrupar pestaña}other{Agrupar pestañas}}</translation>
