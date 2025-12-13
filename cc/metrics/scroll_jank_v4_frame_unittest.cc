@@ -138,7 +138,6 @@ TEST_F(ScrollJankV4FrameTest, OneNonDamagingFrame) {
                                       .interval = kVsyncInterval},
           NonDamagingFrame{},
           {ScrollJankV4FrameStage{ScrollUpdates(
-              static_cast<ScrollUpdateEventMetrics*>(events_metrics[0].get()),
               Real{
                   .first_input_generation_ts = MillisecondsTicks(10),
                   .last_input_generation_ts = MillisecondsTicks(13),
@@ -208,8 +207,6 @@ TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFrames) {
               NonDamagingFrame{},
               {ScrollJankV4FrameStage{ScrollStart{}},
                ScrollJankV4FrameStage{ScrollUpdates(
-                   static_cast<ScrollUpdateEventMetrics*>(
-                       events_metrics[0].get()),
                    Real{
                        .first_input_generation_ts = MillisecondsTicks(10),
                        .last_input_generation_ts = MillisecondsTicks(11),
@@ -223,8 +220,6 @@ TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFrames) {
                                           .interval = kVsyncInterval},
               NonDamagingFrame{},
               {ScrollJankV4FrameStage{ScrollUpdates(
-                  static_cast<ScrollUpdateEventMetrics*>(
-                      events_metrics[2].get()),
                   Real{
                       .first_input_generation_ts = MillisecondsTicks(12),
                       .last_input_generation_ts = MillisecondsTicks(13),
@@ -238,8 +233,6 @@ TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFrames) {
                                           .interval = kVsyncInterval},
               NonDamagingFrame{},
               {ScrollJankV4FrameStage{ScrollUpdates(
-                  static_cast<ScrollUpdateEventMetrics*>(
-                      events_metrics[4].get()),
                   Real{
                       .first_input_generation_ts = MillisecondsTicks(14),
                       .last_input_generation_ts = MillisecondsTicks(15),
@@ -311,7 +304,6 @@ TEST_F(ScrollJankV4FrameTest, OneDamagingFrame) {
           DamagingFrame{.presentation_ts = MillisecondsTicks(777)},
           {ScrollJankV4FrameStage{ScrollStart{}},
            ScrollJankV4FrameStage{ScrollUpdates(
-               static_cast<ScrollUpdateEventMetrics*>(events_metrics[0].get()),
                Real{
                    .first_input_generation_ts = MillisecondsTicks(10),
                    .last_input_generation_ts = MillisecondsTicks(15),
@@ -417,8 +409,6 @@ TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFramesAndOneDamagingFrame) {
               NonDamagingFrame{},
               {ScrollJankV4FrameStage{ScrollStart{}},
                ScrollJankV4FrameStage{ScrollUpdates(
-                   static_cast<ScrollUpdateEventMetrics*>(
-                       events_metrics[1].get()),
                    Real{
                        .first_input_generation_ts = MillisecondsTicks(11),
                        .last_input_generation_ts = MillisecondsTicks(12),
@@ -437,8 +427,6 @@ TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFramesAndOneDamagingFrame) {
 
               DamagingFrame{.presentation_ts = MillisecondsTicks(777)},
               {ScrollJankV4FrameStage{ScrollUpdates(
-                  static_cast<ScrollUpdateEventMetrics*>(
-                      events_metrics[4].get()),
                   Real{
                       .first_input_generation_ts = MillisecondsTicks(14),
                       .last_input_generation_ts = MillisecondsTicks(19),

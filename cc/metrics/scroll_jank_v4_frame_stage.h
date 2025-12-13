@@ -10,7 +10,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
@@ -173,26 +172,14 @@ struct CC_EXPORT ScrollJankV4FrameStage {
     };
 
     // At least one of `real` and `synthetic` must be non-empty.
-    ScrollUpdates(ScrollUpdateEventMetrics* earliest_event,
-                  std::optional<Real> real,
-                  std::optional<Synthetic> synthetic);
+    ScrollUpdates(std::optional<Real> real, std::optional<Synthetic> synthetic);
 
     bool operator==(const ScrollUpdates&) const = default;
-
-    const ScrollUpdateEventMetrics* earliest_event() const {
-      return earliest_event_;
-    }
-    ScrollUpdateEventMetrics* earliest_event() { return earliest_event_; }
 
     const std::optional<Real>& real() const { return real_; }
     const std::optional<Synthetic>& synthetic() const { return synthetic_; }
 
    private:
-    // The earliest scroll update included in the frame.
-    // TODO(crbug.com/456180776): Remove this field once scroll jank v4 metrics
-    // are recorded in dedicated trace events.
-    const raw_ptr<ScrollUpdateEventMetrics> earliest_event_;
-
     const std::optional<Real> real_;
     const std::optional<Synthetic> synthetic_;
   };
@@ -221,10 +208,7 @@ struct CC_EXPORT ScrollJankV4FrameStage {
   bool operator==(const ScrollJankV4FrameStage&) const = default;
 
   // Calculates the scroll jank reporting stages based on `events_metrics`
-  // associated with a frame. This function will not modify `events_metrics`
-  // in any way. If there's a `ScrollUpdates` stage in the returned list,
-  // `ScrollUpdates::earliest_event` will be a pointer to an item in
-  // `events_metrics`.
+  // associated with a frame.
   //
   // `skip_non_damaging_events` controls whether the method ignores non-damaging
   // scroll updates. This allows us to experiment with the legacy behavior of
@@ -284,14 +268,7 @@ inline std::ostream& operator<<(
 inline std::ostream& operator<<(
     std::ostream& os,
     const ScrollJankV4FrameStage::ScrollUpdates& updates) {
-  os << "ScrollUpdates{earliest_event: ";
-  if (updates.earliest_event() == nullptr) {
-    os << "nullptr";
-  } else {
-    os << updates.earliest_event()->GetTypeName() << "@"
-       << updates.earliest_event();
-  }
-  return os << ", real: " << updates.real()
+  return os << "ScrollUpdates{real: " << updates.real()
             << ", synthetic: " << updates.synthetic() << "}";
 }
 

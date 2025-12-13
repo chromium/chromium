@@ -95,8 +95,7 @@ TEST_F(ScrollJankV4RecorderTest, IrrelevantTracingCategory) {
   trace_processor_.StartTrace("elephant");
 
   ScrollJankV4TracingRecorder::RecordTraceEvents(
-      ScrollUpdates(/* earliest_event= */ nullptr,
-                    Real{.first_input_generation_ts = MillisSinceEpoch(20),
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(20),
                          .last_input_generation_ts = MillisSinceEpoch(30),
                          .has_inertial_input = true,
                          .abs_total_raw_delta_pixels = 5.0f,
@@ -132,8 +131,7 @@ TEST_F(ScrollJankV4RecorderTest, RealDamagingFrame) {
   trace_processor_.StartTrace("input");
 
   ScrollJankV4TracingRecorder::RecordTraceEvents(
-      ScrollUpdates(/* earliest_event= */ nullptr,
-                    Real{.first_input_generation_ts = MillisSinceEpoch(20),
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(20),
                          .last_input_generation_ts = MillisSinceEpoch(30),
                          .has_inertial_input = true,
                          .abs_total_raw_delta_pixels = 5.0f,
@@ -203,8 +201,7 @@ TEST_F(ScrollJankV4RecorderTest,
   trace_processor_.StartTrace("input");
 
   ScrollJankV4TracingRecorder::RecordTraceEvents(
-      ScrollUpdates(/* earliest_event= */ nullptr,
-                    Real{.first_input_generation_ts = MillisSinceEpoch(20),
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(20),
                          .last_input_generation_ts = MillisSinceEpoch(30),
                          .has_inertial_input = true,
                          .abs_total_raw_delta_pixels = 5.0f,
@@ -276,7 +273,6 @@ TEST_F(ScrollJankV4RecorderTest,
 
   ScrollJankV4TracingRecorder::RecordTraceEvents(
       ScrollUpdates(
-          /* earliest_event= */ nullptr,
           /* real= */ std::nullopt,
           Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(30),
                     .first_input_trace_id = TraceId(99)}),
@@ -346,7 +342,6 @@ TEST_F(ScrollJankV4RecorderTest,
 
   ScrollJankV4TracingRecorder::RecordTraceEvents(
       ScrollUpdates(
-          /* earliest_event= */ nullptr,
           /* real= */ std::nullopt,
           Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(20)}),
       NonDamagingFrame{},

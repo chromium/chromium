@@ -35,7 +35,7 @@ ScrollJankV4DecisionQueue::~ScrollJankV4DecisionQueue() {
 }
 
 bool ScrollJankV4DecisionQueue::ProcessFrameWithScrollUpdates(
-    ScrollUpdates& updates,
+    const ScrollUpdates& updates,
     const ScrollDamage& damage,
     const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args) {
   // TODO(crbug.com/464210135): Enforce the below invariant about
@@ -117,8 +117,7 @@ void ScrollJankV4DecisionQueue::FlushDeferredSyntheticFrames(
   for (const auto& [synthetic_updates, damage, args] :
        deferred_synthetic_frames_) {
     ScrollUpdates updates =
-        ScrollUpdates(/* earliest_event= */ nullptr, /* real= */ std::nullopt,
-                      synthetic_updates);
+        ScrollUpdates(/* real= */ std::nullopt, synthetic_updates);
     auto result = decider_.DecideJankForFrameWithSyntheticScrollUpdatesOnly(
         updates, damage, args,
         future_real_frame_is_fast_scroll_or_sufficiently_fast_fling);

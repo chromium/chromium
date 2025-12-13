@@ -81,8 +81,6 @@ TEST_F(ScrollJankV4FrameStageTest,
       ElementsAre(
           ScrollJankV4FrameStage{ScrollStart{}},
           ScrollJankV4FrameStage{ScrollUpdates(
-              /* earliest_event */ static_cast<ScrollUpdateEventMetrics*>(
-                  events_metrics[0].get()),
               Real{
                   .first_input_generation_ts = MillisecondsTicks(16),
                   .last_input_generation_ts = MillisecondsTicks(16),
@@ -125,7 +123,6 @@ TEST_F(ScrollJankV4FrameStageTest, FirstGestureScrollUpdateWhichDidNotScroll) {
       ElementsAre(
           ScrollJankV4FrameStage{ScrollStart{}},
           ScrollJankV4FrameStage{ScrollUpdates(
-              static_cast<ScrollUpdateEventMetrics*>(events_metrics[0].get()),
               Real{.first_input_generation_ts = MillisecondsTicks(16),
                    .last_input_generation_ts = MillisecondsTicks(16),
                    .has_inertial_input = false,
@@ -153,7 +150,6 @@ TEST_F(ScrollJankV4FrameStageTest,
       ElementsAre(
           ScrollJankV4FrameStage{ScrollStart{}},
           ScrollJankV4FrameStage{ScrollUpdates(
-              static_cast<ScrollUpdateEventMetrics*>(events_metrics[0].get()),
               Real{.first_input_generation_ts = MillisecondsTicks(16),
                    .last_input_generation_ts = MillisecondsTicks(16),
                    .has_inertial_input = false,
@@ -181,8 +177,6 @@ TEST_F(ScrollJankV4FrameStageTest, SyntheticFirstGestureScrollUpdate) {
       ElementsAre(
           ScrollJankV4FrameStage{ScrollStart{}},
           ScrollJankV4FrameStage{ScrollUpdates(
-              /* earliest_event */ static_cast<ScrollUpdateEventMetrics*>(
-                  events_metrics[0].get()),
               /* real= */ std::nullopt,
               Synthetic{
                   .first_input_begin_frame_ts = MillisecondsTicks(24),
@@ -204,7 +198,6 @@ TEST_F(ScrollJankV4FrameStageTest,
   EXPECT_THAT(
       stages,
       ElementsAre(ScrollJankV4FrameStage{ScrollUpdates(
-          static_cast<ScrollUpdateEventMetrics*>(events_metrics[0].get()),
           Real{.first_input_generation_ts = MillisecondsTicks(16),
                .last_input_generation_ts = MillisecondsTicks(16),
                .has_inertial_input = false,
@@ -256,7 +249,6 @@ TEST_F(ScrollJankV4FrameStageTest,
   EXPECT_THAT(
       stages,
       ElementsAre(ScrollJankV4FrameStage{ScrollUpdates(
-          static_cast<ScrollUpdateEventMetrics*>(events_metrics[0].get()),
           Real{
               .first_input_generation_ts = MillisecondsTicks(16),
               .last_input_generation_ts = MillisecondsTicks(16),
@@ -283,7 +275,6 @@ TEST_F(ScrollJankV4FrameStageTest, SyntheticGestureScrollUpdate) {
   EXPECT_THAT(
       stages,
       ElementsAre(ScrollJankV4FrameStage{ScrollUpdates(
-          static_cast<ScrollUpdateEventMetrics*>(events_metrics[0].get()),
           /* real= */ std::nullopt,
           Synthetic{
               .first_input_begin_frame_ts = MillisecondsTicks(24),
@@ -305,7 +296,6 @@ TEST_F(ScrollJankV4FrameStageTest,
   EXPECT_THAT(
       stages,
       ElementsAre(ScrollJankV4FrameStage{ScrollUpdates(
-          static_cast<ScrollUpdateEventMetrics*>(events_metrics[0].get()),
           Real{
               .first_input_generation_ts = MillisecondsTicks(16),
               .last_input_generation_ts = MillisecondsTicks(16),
@@ -360,7 +350,6 @@ TEST_F(ScrollJankV4FrameStageTest,
   EXPECT_THAT(
       stages,
       ElementsAre(ScrollJankV4FrameStage{ScrollUpdates(
-          static_cast<ScrollUpdateEventMetrics*>(events_metrics[0].get()),
           Real{
               .first_input_generation_ts = MillisecondsTicks(16),
               .last_input_generation_ts = MillisecondsTicks(16),
@@ -465,7 +454,6 @@ TEST_F(ScrollJankV4FrameStageTest, MultipleScrollUpdates) {
       ElementsAre(
           ScrollJankV4FrameStage{ScrollStart{}},
           ScrollJankV4FrameStage{ScrollUpdates(
-              static_cast<ScrollUpdateEventMetrics*>(events_metrics[3].get()),
               Real{
                   .first_input_generation_ts = MillisecondsTicks(1),
                   .last_input_generation_ts = MillisecondsTicks(7),
@@ -546,7 +534,6 @@ TEST_F(ScrollJankV4FrameStageTest,
       ElementsAre(
           ScrollJankV4FrameStage{ScrollStart{}},
           ScrollJankV4FrameStage{ScrollUpdates(
-              static_cast<ScrollUpdateEventMetrics*>(events_metrics[3].get()),
               Real{
                   .first_input_generation_ts = MillisecondsTicks(1),
                   .last_input_generation_ts = MillisecondsTicks(8),
@@ -630,7 +617,6 @@ TEST_F(ScrollJankV4FrameStageTest, MultipleScrollUpdatesIncludingSynthetic) {
       ElementsAre(
           ScrollJankV4FrameStage{ScrollStart{}},
           ScrollJankV4FrameStage{ScrollUpdates(
-              static_cast<ScrollUpdateEventMetrics*>(events_metrics[3].get()),
               Real{
                   .first_input_generation_ts = MillisecondsTicks(2),
                   .last_input_generation_ts = MillisecondsTicks(8),
@@ -671,7 +657,6 @@ TEST_F(ScrollJankV4FrameStageTest,
           ScrollJankV4FrameStage{ScrollEnd{}},
           ScrollJankV4FrameStage{ScrollStart{}},
           ScrollJankV4FrameStage{ScrollUpdates(
-              static_cast<ScrollUpdateEventMetrics*>(events_metrics[2].get()),
               Real{
                   .first_input_generation_ts = MillisecondsTicks(2),
                   .last_input_generation_ts = MillisecondsTicks(3),
@@ -706,7 +691,6 @@ TEST_F(ScrollJankV4FrameStageTest, ScrollUpdatesThenScrollEndForCurrentScroll) {
       stages,
       ElementsAre(
           ScrollJankV4FrameStage{ScrollUpdates(
-              static_cast<ScrollUpdateEventMetrics*>(events_metrics[0].get()),
               Real{
                   .first_input_generation_ts = MillisecondsTicks(1),
                   .last_input_generation_ts = MillisecondsTicks(2),
@@ -755,7 +739,6 @@ TEST_F(ScrollJankV4FrameStageTest,
   EXPECT_THAT(
       stages,
       ElementsAre(ScrollJankV4FrameStage{ScrollUpdates(
-          static_cast<ScrollUpdateEventMetrics*>(events_metrics[1].get()),
           Real{
               .first_input_generation_ts = MillisecondsTicks(2),
               .last_input_generation_ts = MillisecondsTicks(3),
@@ -810,45 +793,16 @@ TEST_F(ScrollJankV4FrameStageTest, NonEmptySyntheticScrollUpdatesToOstream) {
   EXPECT_EQ(&result, &out);
 }
 
-TEST_F(ScrollJankV4FrameStageTest,
-       ScrollUpdatesWithNonNullEarliestEventToOstream) {
-  std::unique_ptr<ScrollUpdateEventMetrics> earliest_event =
-      metrics_creator_.CreateGestureScrollUpdate(
-          {.timestamp = MillisecondsTicks(1),
-           .delta = 2,
-           .caused_frame_update = true,
-           .did_scroll = true,
-           .is_synthetic = false,
-           .trace_id = TraceId(42)});
-  auto stage = ScrollJankV4FrameStage{
-      ScrollUpdates(earliest_event.get(),
-                    ScrollUpdates::Real{
-                        .first_input_generation_ts = MillisecondsTicks(1),
-                        .last_input_generation_ts = MillisecondsTicks(3),
-                        .has_inertial_input = false,
-                        .abs_total_raw_delta_pixels = 10,
-                        .max_abs_inertial_raw_delta_pixels = 0,
-                    },
-                    /* synthetic= */ std::nullopt)};
-
-  std::ostringstream out;
-  auto& result = out << stage;
-  EXPECT_THAT(out.str(), ::testing::MatchesRegex(R"(ScrollUpdates\{.+\})"));
-  EXPECT_EQ(&result, &out);
-}
-
-TEST_F(ScrollJankV4FrameStageTest,
-       ScrollUpdatesWithNullEarliestEventToOstream) {
-  auto stage = ScrollJankV4FrameStage{
-      ScrollUpdates(/* earliest_event= */ nullptr,
-                    ScrollUpdates::Real{
-                        .first_input_generation_ts = MillisecondsTicks(1),
-                        .last_input_generation_ts = MillisecondsTicks(3),
-                        .has_inertial_input = false,
-                        .abs_total_raw_delta_pixels = 10,
-                        .max_abs_inertial_raw_delta_pixels = 0,
-                    },
-                    /* synthetic= */ std::nullopt)};
+TEST_F(ScrollJankV4FrameStageTest, ScrollUpdatesToOstream) {
+  auto stage = ScrollJankV4FrameStage{ScrollUpdates(
+      ScrollUpdates::Real{
+          .first_input_generation_ts = MillisecondsTicks(1),
+          .last_input_generation_ts = MillisecondsTicks(3),
+          .has_inertial_input = false,
+          .abs_total_raw_delta_pixels = 10,
+          .max_abs_inertial_raw_delta_pixels = 0,
+      },
+      /* synthetic= */ std::nullopt)};
 
   std::ostringstream out;
   auto& result = out << stage;

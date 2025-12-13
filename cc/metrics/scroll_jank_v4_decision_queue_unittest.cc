@@ -4,17 +4,14 @@
 
 #include "cc/metrics/scroll_jank_v4_decision_queue.h"
 
-#include <concepts>
 #include <memory>
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
 #include "cc/metrics/scroll_jank_v4_frame_stage.h"
 #include "cc/metrics/scroll_jank_v4_result.h"
-#include "cc/test/event_metrics_test_creator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,16 +56,11 @@ const ::testing::Matcher<const ScrollJankV4Result&> kHasNoMissedVsyncs =
       ::testing::ElementsAreArray(expected_missed_vsyncs));
 }
 
-ScrollUpdates WithoutEarliestEvent(const ScrollUpdates& original) {
-  return ScrollUpdates(/* earliest_event= */ nullptr, original.real(),
-                       original.synthetic());
-}
-
 class MockResultConsumer : public ScrollJankV4DecisionQueue::ResultConsumer {
  public:
   MOCK_METHOD(void,
               OnFrameResult,
-              (ScrollUpdates & updates,
+              (const ScrollUpdates& updates,
                const ScrollDamage& damage,
                const BeginFrameArgsForScrollJank& args,
                const ScrollJankV4Result& result),
@@ -77,16 +69,16 @@ class MockResultConsumer : public ScrollJankV4DecisionQueue::ResultConsumer {
   MOCK_METHOD(void, OnScrollEnded, (), (override));
 };
 
-// A result consumer which forwards all method calls to another result consumer
-// (of type `R`). This consumer doesn't own the other consumer.
-template <typename R>
-  requires std::derived_from<R, ScrollJankV4DecisionQueue::ResultConsumer>
+// A result consumer which forwards all method calls to another result consumer.
+// This consumer doesn't own the other consumer.
 class ForwardingResultConsumer
     : public ScrollJankV4DecisionQueue::ResultConsumer {
  public:
-  explicit ForwardingResultConsumer(R* forwardee) : forwardee_(forwardee) {}
+  explicit ForwardingResultConsumer(
+      ScrollJankV4DecisionQueue::ResultConsumer* forwardee)
+      : forwardee_(forwardee) {}
 
-  void OnFrameResult(ScrollUpdates& updates,
+  void OnFrameResult(const ScrollUpdates& updates,
                      const ScrollDamage& damage,
                      const BeginFrameArgsForScrollJank& args,
                      const ScrollJankV4Result& result) override {
@@ -96,7 +88,7 @@ class ForwardingResultConsumer
   void OnScrollEnded() override { forwardee_->OnScrollEnded(); }
 
  private:
-  raw_ptr<R> forwardee_;
+  raw_ptr<ScrollJankV4DecisionQueue::ResultConsumer> forwardee_;
 };
 
 class ScrollJankV4DecisionQueueTest : public testing::Test {
@@ -104,8 +96,7 @@ class ScrollJankV4DecisionQueueTest : public testing::Test {
   ScrollJankV4DecisionQueueTest()
       : result_consumer_(std::make_unique<StrictMock<MockResultConsumer>>()),
         decision_queue_(std::make_unique<ScrollJankV4DecisionQueue>(
-            std::make_unique<
-                ForwardingResultConsumer<StrictMock<MockResultConsumer>>>(
+            std::make_unique<ForwardingResultConsumer>(
                 result_consumer_.get()))) {}
 
   static ScrollJankV4Frame::BeginFrameArgsForScrollJank CreateBeginFrameArgs(
@@ -129,11 +120,8 @@ TEST_F(ScrollJankV4DecisionQueueTest, ImmediatelyReportsResultsForRealFrames) {
   }
 
   // F1: Real frame.
-  std::unique_ptr<ScrollUpdateEventMetrics> earliest_event1 =
-      EventMetricsTestCreator().CreateGestureScrollUpdate({});
   ScrollUpdates updates1 =
-      ScrollUpdates(earliest_event1.get(),
-                    Real{.first_input_generation_ts = MillisSinceEpoch(103),
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(103),
                          .last_input_generation_ts = MillisSinceEpoch(111),
                          .has_inertial_input = false,
                          .abs_total_raw_delta_pixels = 5.0f,
@@ -153,11 +141,8 @@ TEST_F(ScrollJankV4DecisionQueueTest, ImmediatelyReportsResultsForRealFrames) {
   }
 
   // F2: Real frame with no missed VSyncs.
-  std::unique_ptr<ScrollUpdateEventMetrics> earliest_event2 =
-      EventMetricsTestCreator().CreateGestureScrollUpdate({});
   ScrollUpdates updates2 =
-      ScrollUpdates(earliest_event2.get(),
-                    Real{.first_input_generation_ts = MillisSinceEpoch(119),
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(119),
                          .last_input_generation_ts = MillisSinceEpoch(127),
                          .has_inertial_input = false,
                          .abs_total_raw_delta_pixels = 5.0f,
@@ -177,11 +162,8 @@ TEST_F(ScrollJankV4DecisionQueueTest, ImmediatelyReportsResultsForRealFrames) {
   }
 
   // F3: Real frame with 1 VSync missed due to fast scroll continuity rule.
-  std::unique_ptr<ScrollUpdateEventMetrics> earliest_event3 =
-      EventMetricsTestCreator().CreateGestureScrollUpdate({});
   ScrollUpdates updates3 =
-      ScrollUpdates(earliest_event3.get(),
-                    Real{.first_input_generation_ts = MillisSinceEpoch(151),
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(151),
                          .last_input_generation_ts = MillisSinceEpoch(159),
                          .has_inertial_input = false,
                          .abs_total_raw_delta_pixels = 5.0f,
@@ -219,10 +201,7 @@ TEST_F(ScrollJankV4DecisionQueueTest,
   }
 
   // F1: Synthetic frame.
-  std::unique_ptr<ScrollUpdateEventMetrics> earliest_event1 =
-      EventMetricsTestCreator().CreateGestureScrollUpdate({});
   ScrollUpdates updates1 = ScrollUpdates(
-      earliest_event1.get(),
       /* real= */ std::nullopt,
       Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(116)});
   ScrollDamage damage1 =
@@ -240,11 +219,8 @@ TEST_F(ScrollJankV4DecisionQueueTest,
   }
 
   // F2: Real frame with no missed VSyncs.
-  std::unique_ptr<ScrollUpdateEventMetrics> earliest_event2 =
-      EventMetricsTestCreator().CreateGestureScrollUpdate({});
   ScrollUpdates updates2 =
-      ScrollUpdates(earliest_event2.get(),
-                    Real{.first_input_generation_ts = MillisSinceEpoch(135),
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(135),
                          .last_input_generation_ts = MillisSinceEpoch(143),
                          .has_inertial_input = false,
                          .abs_total_raw_delta_pixels = 5.0f,
@@ -258,11 +234,8 @@ TEST_F(ScrollJankV4DecisionQueueTest,
     // The deferred decision for the synthetic frame F1 should be flushed
     // before F2's result.
     InSequence in_sequence;
-    ScrollUpdates updates1_without_earliest_event =
-        WithoutEarliestEvent(updates1);
     EXPECT_CALL(*result_consumer_,
-                OnFrameResult(updates1_without_earliest_event, damage1, args1,
-                              kHasNoMissedVsyncs));
+                OnFrameResult(updates1, damage1, args1, kHasNoMissedVsyncs));
     EXPECT_CALL(*result_consumer_,
                 OnFrameResult(updates2, damage2, args2, kHasNoMissedVsyncs));
     bool success2 = decision_queue_->ProcessFrameWithScrollUpdates(
@@ -272,10 +245,7 @@ TEST_F(ScrollJankV4DecisionQueueTest,
   }
 
   // F3: Synthetic frame with no missed VSyncs.
-  std::unique_ptr<ScrollUpdateEventMetrics> earliest_event3 =
-      EventMetricsTestCreator().CreateGestureScrollUpdate({});
   ScrollUpdates updates3 = ScrollUpdates(
-      earliest_event3.get(),
       /* real= */ std::nullopt,
       Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(164)});
   ScrollDamage damage3 =
@@ -293,10 +263,7 @@ TEST_F(ScrollJankV4DecisionQueueTest,
   }
 
   // F4: Synthetic frame with 1 VSync missed due to fast scroll continuity rule.
-  std::unique_ptr<ScrollUpdateEventMetrics> earliest_event4 =
-      EventMetricsTestCreator().CreateGestureScrollUpdate({});
   ScrollUpdates updates4 = ScrollUpdates(
-      earliest_event4.get(),
       /* real= */ std::nullopt,
       Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(196)});
   ScrollDamage damage4 =
@@ -314,11 +281,8 @@ TEST_F(ScrollJankV4DecisionQueueTest,
   }
 
   // F5: Real frame with 2 VSyncs missed due to the fling continuity rule.
-  std::unique_ptr<ScrollUpdateEventMetrics> earliest_event5 =
-      EventMetricsTestCreator().CreateGestureScrollUpdate({});
   ScrollUpdates updates5 =
-      ScrollUpdates(earliest_event5.get(),
-                    Real{.first_input_generation_ts = MillisSinceEpoch(236),
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(236),
                          .last_input_generation_ts = MillisSinceEpoch(236),
                          .has_inertial_input = true,
                          .abs_total_raw_delta_pixels = 1.0f,
@@ -332,17 +296,12 @@ TEST_F(ScrollJankV4DecisionQueueTest,
     // The deferred decisions for the synthetic frames F3 and F4 should be
     // flushed (in chronological order) before F5's result.
     InSequence in_sequence;
-    ScrollUpdates updates3_without_earliest_event =
-        WithoutEarliestEvent(updates3);
     EXPECT_CALL(*result_consumer_,
-                OnFrameResult(updates3_without_earliest_event, damage3, args3,
-                              kHasNoMissedVsyncs));
-    ScrollUpdates updates4_without_earliest_event =
-        WithoutEarliestEvent(updates4);
+                OnFrameResult(updates3, damage3, args3, kHasNoMissedVsyncs));
     EXPECT_CALL(
         *result_consumer_,
         OnFrameResult(
-            updates4_without_earliest_event, damage4, args4,
+            updates4, damage4, args4,
             HasMissedVsyncs(JankReason::kMissedVsyncDuringFastScroll, 1)));
     EXPECT_CALL(*result_consumer_,
                 OnFrameResult(updates5, damage5, args5,
@@ -370,11 +329,8 @@ TEST_F(ScrollJankV4DecisionQueueTest,
   }
 
   // F1: Real frame.
-  std::unique_ptr<ScrollUpdateEventMetrics> earliest_event1 =
-      EventMetricsTestCreator().CreateGestureScrollUpdate({});
   ScrollUpdates updates1 =
-      ScrollUpdates(earliest_event1.get(),
-                    Real{.first_input_generation_ts = MillisSinceEpoch(135),
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(135),
                          .last_input_generation_ts = MillisSinceEpoch(143),
                          .has_inertial_input = false,
                          .abs_total_raw_delta_pixels = 5.0f,
@@ -395,10 +351,7 @@ TEST_F(ScrollJankV4DecisionQueueTest,
 
   // F2: Synthetic frame with no missed VSyncs (because we're not in a fast
   // scroll).
-  std::unique_ptr<ScrollUpdateEventMetrics> earliest_event2 =
-      EventMetricsTestCreator().CreateGestureScrollUpdate({});
   ScrollUpdates updates2 = ScrollUpdates(
-      earliest_event2.get(),
       /* real= */ std::nullopt,
       Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(196)});
   ScrollDamage damage2 =
@@ -419,11 +372,8 @@ TEST_F(ScrollJankV4DecisionQueueTest,
     // The deferred decision for the synthetic frame F2 should be flushed before
     // the scroll end.
     InSequence in_sequence;
-    ScrollUpdates updates2_without_earliest_event =
-        WithoutEarliestEvent(updates2);
     EXPECT_CALL(*result_consumer_,
-                OnFrameResult(updates2_without_earliest_event, damage2, args2,
-                              kHasNoMissedVsyncs));
+                OnFrameResult(updates2, damage2, args2, kHasNoMissedVsyncs));
     EXPECT_CALL(*result_consumer_, OnScrollEnded());
     decision_queue_->OnScrollEnded();
     Mock::VerifyAndClear(result_consumer_.get());
@@ -439,11 +389,8 @@ TEST_F(ScrollJankV4DecisionQueueTest,
   }
 
   // F1: Real frame.
-  std::unique_ptr<ScrollUpdateEventMetrics> earliest_event1 =
-      EventMetricsTestCreator().CreateGestureScrollUpdate({});
   ScrollUpdates updates1 =
-      ScrollUpdates(earliest_event1.get(),
-                    Real{.first_input_generation_ts = MillisSinceEpoch(135),
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(135),
                          .last_input_generation_ts = MillisSinceEpoch(143),
                          .has_inertial_input = false,
                          .abs_total_raw_delta_pixels = 5.0f,
@@ -464,10 +411,7 @@ TEST_F(ScrollJankV4DecisionQueueTest,
 
   // F2: Synthetic frame with no missed VSyncs (because we're not in a fast
   // scroll).
-  std::unique_ptr<ScrollUpdateEventMetrics> earliest_event2 =
-      EventMetricsTestCreator().CreateGestureScrollUpdate({});
   ScrollUpdates updates2 = ScrollUpdates(
-      earliest_event2.get(),
       /* real= */ std::nullopt,
       Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(196)});
   ScrollDamage damage2 =
@@ -488,11 +432,8 @@ TEST_F(ScrollJankV4DecisionQueueTest,
     // The deferred decision for the synthetic frame F2 should be flushed before
     // the next scroll start.
     InSequence in_sequence;
-    ScrollUpdates updates2_without_earliest_event =
-        WithoutEarliestEvent(updates2);
     EXPECT_CALL(*result_consumer_,
-                OnFrameResult(updates2_without_earliest_event, damage2, args2,
-                              kHasNoMissedVsyncs));
+                OnFrameResult(updates2, damage2, args2, kHasNoMissedVsyncs));
     EXPECT_CALL(*result_consumer_, OnScrollStarted());
     decision_queue_->OnScrollStarted();
     Mock::VerifyAndClear(result_consumer_.get());
@@ -508,11 +449,8 @@ TEST_F(ScrollJankV4DecisionQueueTest,
   }
 
   // F1: Real frame.
-  std::unique_ptr<ScrollUpdateEventMetrics> earliest_event1 =
-      EventMetricsTestCreator().CreateGestureScrollUpdate({});
   ScrollUpdates updates1 =
-      ScrollUpdates(earliest_event1.get(),
-                    Real{.first_input_generation_ts = MillisSinceEpoch(135),
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(135),
                          .last_input_generation_ts = MillisSinceEpoch(143),
                          .has_inertial_input = false,
                          .abs_total_raw_delta_pixels = 5.0f,
@@ -533,10 +471,7 @@ TEST_F(ScrollJankV4DecisionQueueTest,
 
   // F2: Synthetic frame with no missed VSyncs (because we're not in a fast
   // scroll).
-  std::unique_ptr<ScrollUpdateEventMetrics> earliest_event2 =
-      EventMetricsTestCreator().CreateGestureScrollUpdate({});
   ScrollUpdates updates2 = ScrollUpdates(
-      earliest_event2.get(),
       /* real= */ std::nullopt,
       Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(196)});
   ScrollDamage damage2 =
@@ -556,11 +491,8 @@ TEST_F(ScrollJankV4DecisionQueueTest,
   {
     // The deferred decision for the synthetic frame F2 should be flushed before
     // the queue is destroyed.
-    ScrollUpdates updates2_without_earliest_event =
-        WithoutEarliestEvent(updates2);
     EXPECT_CALL(*result_consumer_,
-                OnFrameResult(updates2_without_earliest_event, damage2, args2,
-                              kHasNoMissedVsyncs));
+                OnFrameResult(updates2, damage2, args2, kHasNoMissedVsyncs));
     delete decision_queue_.release();
     Mock::VerifyAndClear(result_consumer_.get());
   }
@@ -574,11 +506,8 @@ TEST_F(ScrollJankV4DecisionQueueTest, HandlesInvalidFramesGracefully) {
   }
 
   // F1: Valid real frame.
-  std::unique_ptr<ScrollUpdateEventMetrics> earliest_event1 =
-      EventMetricsTestCreator().CreateGestureScrollUpdate({});
   ScrollUpdates updates1 =
-      ScrollUpdates(earliest_event1.get(),
-                    Real{.first_input_generation_ts = MillisSinceEpoch(103),
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(103),
                          .last_input_generation_ts = MillisSinceEpoch(111),
                          .has_inertial_input = false,
                          .abs_total_raw_delta_pixels = 5.0f,
@@ -599,10 +528,7 @@ TEST_F(ScrollJankV4DecisionQueueTest, HandlesInvalidFramesGracefully) {
 
   // F2: Invalid real frame (because last_input_generation_ts is after
   // presentation_ts).
-  std::unique_ptr<ScrollUpdateEventMetrics> earliest_event2 =
-      EventMetricsTestCreator().CreateGestureScrollUpdate({});
   ScrollUpdates updates2 = ScrollUpdates(
-      earliest_event2.get(),
       Real{.first_input_generation_ts = MillisSinceEpoch(119),
            .last_input_generation_ts = MillisSinceEpoch(165) /* wrong */,
            .has_inertial_input = false,
@@ -623,11 +549,8 @@ TEST_F(ScrollJankV4DecisionQueueTest, HandlesInvalidFramesGracefully) {
 
   // F3: Invalid real frame (because its args.frame_time is before F1's, i.e.
   // it's not chronologically ordered).
-  std::unique_ptr<ScrollUpdateEventMetrics> earliest_event3 =
-      EventMetricsTestCreator().CreateGestureScrollUpdate({});
   ScrollUpdates updates3 =
-      ScrollUpdates(earliest_event3.get(),
-                    Real{.first_input_generation_ts = MillisSinceEpoch(119),
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(119),
                          .last_input_generation_ts = MillisSinceEpoch(127),
                          .has_inertial_input = false,
                          .abs_total_raw_delta_pixels = 5.0f,
@@ -647,11 +570,8 @@ TEST_F(ScrollJankV4DecisionQueueTest, HandlesInvalidFramesGracefully) {
 
   // F4: Invalid real frame (because its presentation_ts is before F1's, i.e.
   // it's not chronologically ordered).
-  std::unique_ptr<ScrollUpdateEventMetrics> earliest_event4 =
-      EventMetricsTestCreator().CreateGestureScrollUpdate({});
   ScrollUpdates updates4 =
-      ScrollUpdates(earliest_event4.get(),
-                    Real{.first_input_generation_ts = MillisSinceEpoch(119),
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(119),
                          .last_input_generation_ts = MillisSinceEpoch(127),
                          .has_inertial_input = false,
                          .abs_total_raw_delta_pixels = 5.0f,
@@ -670,11 +590,8 @@ TEST_F(ScrollJankV4DecisionQueueTest, HandlesInvalidFramesGracefully) {
   }
 
   // F5: Valid real frame.
-  std::unique_ptr<ScrollUpdateEventMetrics> earliest_event5 =
-      EventMetricsTestCreator().CreateGestureScrollUpdate({});
   ScrollUpdates updates5 =
-      ScrollUpdates(earliest_event5.get(),
-                    Real{.first_input_generation_ts = MillisSinceEpoch(119),
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(119),
                          .last_input_generation_ts = MillisSinceEpoch(127),
                          .has_inertial_input = false,
                          .abs_total_raw_delta_pixels = 5.0f,

@@ -26,7 +26,7 @@ namespace {
 class ProcessorResultConsumer
     : public ScrollJankV4DecisionQueue::ResultConsumer {
  public:
-  void OnFrameResult(ScrollJankV4FrameStage::ScrollUpdates& updates,
+  void OnFrameResult(const ScrollJankV4FrameStage::ScrollUpdates& updates,
                      const ScrollJankV4Frame::ScrollDamage& damage,
                      const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
                      const ScrollJankV4Result& result) override {
@@ -53,7 +53,7 @@ ScrollJankV4Processor::ScrollJankV4Processor()
     : decision_queue_(std::make_unique<ProcessorResultConsumer>()) {}
 
 void ScrollJankV4Processor::ProcessEventsMetricsForPresentedFrame(
-    EventMetrics::List& events_metrics,
+    const EventMetrics::List& events_metrics,
     base::TimeTicks presentation_ts,
     const viz::BeginFrameArgs& args) {
   static const bool scroll_jank_v4_metric_enabled =
@@ -81,15 +81,15 @@ void ScrollJankV4Processor::ProcessEventsMetricsForPresentedFrame(
 }
 
 void ScrollJankV4Processor::HandleFrame(
-    ScrollJankV4FrameStage::List& stages,
+    const ScrollJankV4FrameStage::List& stages,
     const ScrollJankV4Frame::ScrollDamage& damage,
     const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args) {
-  for (ScrollJankV4FrameStage& stage : stages) {
+  for (const ScrollJankV4FrameStage& stage : stages) {
     std::visit(absl::Overload{
-                   [&](ScrollJankV4FrameStage::ScrollStart& end) {
+                   [&](const ScrollJankV4FrameStage::ScrollStart& end) {
                      decision_queue_.OnScrollStarted();
                    },
-                   [&](ScrollJankV4FrameStage::ScrollUpdates& updates) {
+                   [&](const ScrollJankV4FrameStage::ScrollUpdates& updates) {
                      if (!decision_queue_.ProcessFrameWithScrollUpdates(
                              updates, damage, args)) {
                        TRACE_EVENT(
@@ -97,7 +97,7 @@ void ScrollJankV4Processor::HandleFrame(
                            "ScrollJankV4Processor::HandleFrame: Invalid frame");
                      }
                    },
-                   [&](ScrollJankV4FrameStage::ScrollEnd& end) {
+                   [&](const ScrollJankV4FrameStage::ScrollEnd& end) {
                      decision_queue_.OnScrollEnded();
                    },
                },
