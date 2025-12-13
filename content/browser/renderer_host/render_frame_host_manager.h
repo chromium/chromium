@@ -276,11 +276,17 @@ class CONTENT_EXPORT RenderFrameHostManager {
   };
 
   // Information about the ViewTransition state for the navigation commit.
-  //
-  // TODO(crbug.com/420648512): This struct will be extended to include an
-  // additional delay_layer_tree_view_deletion variable in a follow up CL, which
-  // is why it's a struct not just a bool.
   struct ViewTransitionCommitInfo {
+    // No default constructor to ensure all arguments are explicitly passed,
+    // avoiding bugs where fields are missed.
+    ViewTransitionCommitInfo() = delete;
+
+    ViewTransitionCommitInfo(
+        ScopedViewTransitionResources* view_transition_resources,
+        bool delay_layer_tree_view_deletion)
+        : view_transition_resources(view_transition_resources),
+          delay_layer_tree_view_deletion(delay_layer_tree_view_deletion) {}
+
     bool HasViewTransitionResources() const {
       return !!view_transition_resources;
     }
@@ -290,7 +296,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
     // navigation commit flow in Navigator::DidNavigate, ensuring the pointer
     // remains valid for the duration of its use.
     raw_ptr<ScopedViewTransitionResources> view_transition_resources;
-    bool delay_layer_tree_view_deletion = false;
+    bool delay_layer_tree_view_deletion;
   };
 
   // The delegate pointer must be non-null and is not owned by this class. It

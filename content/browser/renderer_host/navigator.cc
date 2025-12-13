@@ -592,9 +592,9 @@ void Navigator::DidNavigate(
                                        ? allow_main_frame_paint_holding
                                        : allow_subframe_paint_holding;
   const RenderFrameHostManager::ViewTransitionCommitInfo
-      view_transition_commit_info{
-          .view_transition_resources =
-              navigation_request->GetViewTransitionResources()};
+      view_transition_commit_info(
+          navigation_request->GetViewTransitionResources(),
+          navigation_request->HasViewTransitionDelayLayerTreeViewDeletion());
   frame_tree_node->render_manager()->DidNavigateFrame(
       render_frame_host, navigation_request->common_params().has_user_gesture,
       was_within_same_document,
