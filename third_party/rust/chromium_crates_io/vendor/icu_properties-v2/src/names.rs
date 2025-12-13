@@ -896,6 +896,14 @@ impl_value_getter! {
 }
 
 impl_value_getter! {
+    impl IndicConjunctBreak {
+        PropertyNameParseIndicConjunctBreakV1 / SINGLETON_PROPERTY_NAME_PARSE_INDIC_CONJUNCT_BREAK_V1;
+        PropertyEnumToValueNameLinearMap / PropertyNameShortIndicConjunctBreakV1 / SINGLETON_PROPERTY_NAME_SHORT_INDIC_CONJUNCT_BREAK_V1;
+        PropertyEnumToValueNameLinearMap / PropertyNameLongIndicConjunctBreakV1 / SINGLETON_PROPERTY_NAME_LONG_INDIC_CONJUNCT_BREAK_V1;
+    }
+}
+
+impl_value_getter! {
     impl JoiningType {
         PropertyNameParseJoiningTypeV1 / SINGLETON_PROPERTY_NAME_PARSE_JOINING_TYPE_V1;
         PropertyEnumToValueNameLinearMap / PropertyNameShortJoiningTypeV1 / SINGLETON_PROPERTY_NAME_SHORT_JOINING_TYPE_V1;

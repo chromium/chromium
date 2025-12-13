@@ -68,6 +68,12 @@ icu_provider::data_marker!(
     is_singleton = true
 );
 icu_provider::data_marker!(
+    /// `PropertyNameParseIndicConjunctBreakV1`
+    PropertyNameParseIndicConjunctBreakV1,
+    PropertyValueNameToEnumMap<'static>,
+    is_singleton = true
+);
+icu_provider::data_marker!(
     /// `PropertyNameParseJoiningTypeV1`
     PropertyNameParseJoiningTypeV1,
     PropertyValueNameToEnumMap<'static>,
@@ -172,6 +178,18 @@ icu_provider::data_marker!(
 icu_provider::data_marker!(
     /// `PropertyNameShortIndicSyllabicCategoryV1`
     PropertyNameShortIndicSyllabicCategoryV1,
+    PropertyEnumToValueNameLinearMap<'static>,
+    is_singleton = true
+);
+icu_provider::data_marker!(
+    /// `PropertyNameLongIndicConjunctBreakV1`
+    PropertyNameLongIndicConjunctBreakV1,
+    PropertyEnumToValueNameLinearMap<'static>,
+    is_singleton = true
+);
+icu_provider::data_marker!(
+    /// `PropertyNameShortIndicConjunctBreakV1`
+    PropertyNameShortIndicConjunctBreakV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );

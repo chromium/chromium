@@ -5,7 +5,7 @@
 [package]
 name = "icu_properties"
 description = "Definitions for Unicode properties"
-version.workspace = true
+version = "2.1.2"
 
 authors.workspace = true
 categories.workspace = true
@@ -42,3 +42,6 @@ datagen = ["serde", "dep:databake", "zerovec/databake", "icu_collections/databak
 unicode_bidi = [ "dep:unicode-bidi" ]
 compiled_data = ["dep:icu_properties_data", "icu_provider/baked"]
 alloc = ["zerovec/alloc", "icu_collections/alloc", "serde?/alloc"]
+
+[package.metadata.cargo-semver-checks.lints]
+workspace = true

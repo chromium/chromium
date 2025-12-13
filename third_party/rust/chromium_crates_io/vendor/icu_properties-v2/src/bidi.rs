@@ -28,7 +28,7 @@ impl EnumeratedProperty for BidiMirroringGlyph {
     const SINGLETON: &'static crate::provider::PropertyCodePointMap<'static, Self> =
         crate::provider::Baked::SINGLETON_PROPERTY_ENUM_BIDI_MIRRORING_GLYPH_V1;
     const NAME: &'static [u8] = b"Bidi_Mirroring_Glyph";
-    const SHORT_NAME: &'static [u8] = b"Bidi_Mirroring_Glyph";
+    const SHORT_NAME: &'static [u8] = b"bmg";
 }
 
 impl crate::private::Sealed for BidiMirroringGlyph {}
@@ -68,8 +68,9 @@ pub enum BidiPairedBracketType {
     None,
 }
 
-/// Implements [`unicode_bidi::BidiDataSource`] on [`CodePointMapDataBorrowed<BidiClass>`](crate::CodePointMapDataBorrowed).
-///
+#[cfg(feature = "unicode_bidi")]
+use crate::props::BidiClass;
+
 /// ✨ *Enabled with the `unicode_bidi` Cargo feature.*
 ///
 /// # Examples
@@ -117,12 +118,16 @@ pub enum BidiPairedBracketType {
 ///                             ]);
 /// ```
 #[cfg(feature = "unicode_bidi")]
-impl unicode_bidi::data_source::BidiDataSource
-    for crate::CodePointMapDataBorrowed<'_, crate::props::BidiClass>
-{
+impl unicode_bidi::data_source::BidiDataSource for crate::CodePointMapDataBorrowed<'_, BidiClass> {
     fn bidi_class(&self, c: char) -> unicode_bidi::BidiClass {
-        use crate::props::BidiClass;
-        match self.get(c) {
+        self.get(c).into()
+    }
+}
+
+#[cfg(feature = "unicode_bidi")]
+impl From<BidiClass> for unicode_bidi::BidiClass {
+    fn from(value: BidiClass) -> Self {
+        match value {
             BidiClass::LeftToRight => unicode_bidi::BidiClass::L,
             BidiClass::RightToLeft => unicode_bidi::BidiClass::R,
             BidiClass::EuropeanNumber => unicode_bidi::BidiClass::EN,
@@ -148,6 +153,37 @@ impl unicode_bidi::data_source::BidiDataSource
             BidiClass::PopDirectionalIsolate => unicode_bidi::BidiClass::PDI,
             // This must not happen.
             _ => unicode_bidi::BidiClass::ON,
+        }
+    }
+}
+
+#[cfg(feature = "unicode_bidi")]
+impl From<unicode_bidi::BidiClass> for BidiClass {
+    fn from(value: unicode_bidi::BidiClass) -> Self {
+        match value {
+            unicode_bidi::BidiClass::L => BidiClass::LeftToRight,
+            unicode_bidi::BidiClass::R => BidiClass::RightToLeft,
+            unicode_bidi::BidiClass::EN => BidiClass::EuropeanNumber,
+            unicode_bidi::BidiClass::ES => BidiClass::EuropeanSeparator,
+            unicode_bidi::BidiClass::ET => BidiClass::EuropeanTerminator,
+            unicode_bidi::BidiClass::AN => BidiClass::ArabicNumber,
+            unicode_bidi::BidiClass::CS => BidiClass::CommonSeparator,
+            unicode_bidi::BidiClass::B => BidiClass::ParagraphSeparator,
+            unicode_bidi::BidiClass::S => BidiClass::SegmentSeparator,
+            unicode_bidi::BidiClass::WS => BidiClass::WhiteSpace,
+            unicode_bidi::BidiClass::ON => BidiClass::OtherNeutral,
+            unicode_bidi::BidiClass::LRE => BidiClass::LeftToRightEmbedding,
+            unicode_bidi::BidiClass::LRO => BidiClass::LeftToRightOverride,
+            unicode_bidi::BidiClass::AL => BidiClass::ArabicLetter,
+            unicode_bidi::BidiClass::RLE => BidiClass::RightToLeftEmbedding,
+            unicode_bidi::BidiClass::RLO => BidiClass::RightToLeftOverride,
+            unicode_bidi::BidiClass::PDF => BidiClass::PopDirectionalFormat,
+            unicode_bidi::BidiClass::NSM => BidiClass::NonspacingMark,
+            unicode_bidi::BidiClass::BN => BidiClass::BoundaryNeutral,
+            unicode_bidi::BidiClass::FSI => BidiClass::FirstStrongIsolate,
+            unicode_bidi::BidiClass::LRI => BidiClass::LeftToRightIsolate,
+            unicode_bidi::BidiClass::RLI => BidiClass::RightToLeftIsolate,
+            unicode_bidi::BidiClass::PDI => BidiClass::PopDirectionalIsolate,
         }
     }
 }

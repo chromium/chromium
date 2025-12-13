@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.83"
 name = "icu_properties"
-version = "2.1.1"
+version = "2.1.2"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -41,6 +41,9 @@ repository = "https://github.com/unicode-org/icu4x"
 
 [package.metadata.docs.rs]
 all-features = true
+
+[package.metadata.cargo-semver-checks.lints]
+workspace = true
 
 [features]
 alloc = [
@@ -92,7 +95,7 @@ features = ["zerovec"]
 default-features = false
 
 [dependencies.icu_properties_data]
-version = "~2.1.1"
+version = "~2.1.2"
 optional = true
 default-features = false
 
