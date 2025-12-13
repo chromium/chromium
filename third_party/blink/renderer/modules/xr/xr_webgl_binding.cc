@@ -366,7 +366,7 @@ gfx::Rect XRWebGLBinding::GetViewportForLayer(const XRCompositionLayer& layer,
   uint32_t width =
       layer.textureWidth() / GetHorizontalViewCount(layer.layout());
   uint32_t height =
-      layer.textureHeight() / GetHorizontalViewCount(layer.layout());
+      layer.textureHeight() / GetVerticalViewCount(layer.layout());
 
   if (eye == V8XREye::Enum::kRight &&
       (layer.layout() == V8XRLayerLayout::Enum::kStereoTopBottom ||
