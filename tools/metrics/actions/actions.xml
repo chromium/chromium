@@ -10284,6 +10284,20 @@ should be able to be added at any place in this file.
   </token>
 </action>
 
+<action name="ContextualTasks.TabChange.UserAction{ActionType}">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>The user changed the active tab. {ActionType}</description>
+  <token key="ActionType">
+    <variant name=".ChangedThreads"
+        summary="The user changed the active thread."/>
+    <variant name=".CloseSidePanel" summary="The user closed the side panel."/>
+    <variant name=".OpenSidePanel" summary="The user opened the side panel."/>
+    <variant name=".StayedOnThread"
+        summary="The user stayed on the same thread."/>
+  </token>
+</action>
+
 <action name="ContextualTasks.ToolbarButton.UserAction{ActionType}">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>

@@ -169,6 +169,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.TabChange.UserAction{ActionType}"
+    enum="Boolean" expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time a tab change occurs and affects the contextual tasks
+    panel state. {ActionType} Always recorded as true.
+  </summary>
+  <token key="ActionType">
+    <variant name=".ChangedThreads"
+        summary="The user changed tabs which resulted in the side panel
+                 changing threads."/>
+    <variant name=".CloseSidePanel"
+        summary="The user changed tabs which resulted in the side panel
+                 closing."/>
+    <variant name=".OpenSidePanel"
+        summary="The user changed tabs which resulted in the side panel
+                 opening."/>
+    <variant name=".StayedOnThread"
+        summary="The user changed tabs which resulted in staying on the
+                 existing thread."/>
+  </token>
+</histogram>
+
 <histogram name="ContextualTasks.ToolbarButton.UserAction{ActionType}"
     enum="Boolean" expires_after="2026-03-22">
   <owner>sophiechang@chromium.org</owner>

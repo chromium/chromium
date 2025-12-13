@@ -5,6 +5,9 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
@@ -79,6 +82,11 @@ std::set<SessionID> GetAllTabIdsInTabStrip(TabStripModel* tab_strip_model) {
     tab_ids.insert(sessions::SessionTabHelper::IdForTab(tab->GetContents()));
   }
   return tab_ids;
+}
+
+void RecordUserActionAndHistogram(const std::string& metric_name) {
+  base::RecordAction(base::UserMetricsAction(metric_name.c_str()));
+  base::UmaHistogramBoolean(metric_name, true);
 }
 
 }  // namespace
@@ -392,30 +400,51 @@ int ContextualTasksSidePanelCoordinator::GetPreferredDefaultSidePanelWidth() {
   return kSidePanelPreferredDefaultWidth;
 }
 
-void ContextualTasksSidePanelCoordinator::UpdateWebContentsForActiveTab() {
+bool ContextualTasksSidePanelCoordinator::UpdateWebContentsForActiveTab() {
   if (!web_view_) {
-    return;
+    return false;
   }
 
+  content::WebContents* prev_web_contents = web_view_->GetWebContents();
   content::WebContents* web_contents =
       MaybeGetOrCreateSidePanelWebContentsForActiveTab();
   if (web_contents) {
     web_view_->SetWebContents(web_contents);
   }
+
+  return prev_web_contents != web_contents;
 }
 
 void ContextualTasksSidePanelCoordinator::OnActiveTabChanged(
     BrowserWindowInterface* browser_interface) {
-  bool is_side_panel_open = IsSidePanelOpenForContextualTask();
-  UpdateWebContentsForActiveTab();
+  bool was_side_panel_open = IsSidePanelOpenForContextualTask();
+  bool web_contents_changed = UpdateWebContentsForActiveTab();
   UpdateSidePanelVisibility();
   // If side panel was previously not open, it could have been opened
   // by the UpdateSidePanelVisibility() call above. Since
   // UpdateSidePanelVisibility() will call UpdateContextualTaskUI(),
   // there is no need to call it here again.
-  if (is_side_panel_open) {
+  if (was_side_panel_open) {
     UpdateContextualTaskUI();
   }
+
+  bool is_side_panel_currently_open = IsSidePanelOpenForContextualTask();
+  if (!was_side_panel_open && is_side_panel_currently_open) {
+    // Side panel was previously closed but it is now open due to switching to
+    // a tab with an affiliated task.
+    RecordUserActionAndHistogram(
+        "ContextualTasks.TabChange.UserAction.OpenSidePanel");
+  } else if (was_side_panel_open && !is_side_panel_currently_open) {
+    // Side panel was previously open but it is now closed due to switching to
+    // a tab without an affiliated task.
+    RecordUserActionAndHistogram(
+        "ContextualTasks.TabChange.UserAction.CloseSidePanel");
+  } else if (was_side_panel_open && is_side_panel_currently_open) {
+    RecordUserActionAndHistogram(base::StrCat(
+        {"ContextualTasks.TabChange.UserAction.",
+         web_contents_changed ? "ChangedThreads" : "StayedOnThread"}));
+  }
+
   ObserveWebContentsOnActiveTab();
 
   browser_window_->GetFeatures()
