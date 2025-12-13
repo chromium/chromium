@@ -65,9 +65,6 @@ constexpr base::TimeDelta kTypingCoolDownPeriod = base::Milliseconds(50);
 // Email value used by the tests.
 constexpr std::string_view kEmail = "foo1@gmail.com";
 
-// Histogram bucket representing renderer errors.
-constexpr int kRendererErrorHistogramBucket = 8;
-
 struct FullAddressFormPageParams {
   // True if the submission should be default prevented.
   bool default_prevented = false;
@@ -234,14 +231,6 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
     config.features_enabled.push_back(
         autofill::features::kAutofillAcrossIframesIos);
     config.features_enabled.push_back(kAutofillFixXhrForXframe);
-  }
-
-  if ([self isRunningTest:@selector(testSubmissionErrorReporting_Enabled)]) {
-    config.features_enabled.push_back(kAutofillReportFormSubmissionErrors);
-  }
-
-  if ([self isRunningTest:@selector(testSubmissionErrorReporting_Disabled)]) {
-    config.features_disabled.push_back(kAutofillReportFormSubmissionErrors);
   }
 
   if ([self isRunningTest:@selector(testUserData_LocalUpdate)]) {
@@ -918,92 +907,6 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   // multiple submissions on the same form.
   chrome_test_util::GREYAssertErrorNil([MetricsAppInterface
       expectTotalCount:1
-          forHistogram:@"Autofill.iOS.FormSubmission.OutcomeV2"]);
-}
-
-// Tests that the submission errors that occur in the renderer are reported to
-// the browser.
-- (void)testSubmissionErrorReporting_Enabled {
-  // Inject a bug that will trigger error when handling the form submission in
-  // the renderer.
-  constexpr char kInjectedBug[] = R"(
-    // Swizzle autofillSubmissionData() with an erroring function.
-    gcrweb.gCrWeb.fill.autofillSubmissionData = function() {
-      throw new Error("Oh no, something bad happened!");
-    };
-    // This is to give a return value to make the thing handling the JS
-    // execution happy.
-    true
-  )";
-
-  // Load page without submitting the form.
-  [self loadFullAddressFormWithParams:{}];
-
-  // Inject the bug in the submission handler so it triggers an error that will
-  // be reported to the browser.
-  [ChromeEarlGrey
-      evaluateJavaScriptInIsolatedWorldForSideEffect:base::SysUTF8ToNSString(
-                                                         kInjectedBug)];
-
-  // Now that the submission handler is buggy, submit the form to trigger the
-  // error.
-  [ChromeEarlGrey tapWebStateElementWithID:@"submit-button"];
-
-  // Verify that no infobar is displayed when there is a submission error.
-  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
-
-  // Verify that the submission error was reported and recorded.
-  GREYAssertTrue(
-      base::test::ios::WaitUntilConditionOrTimeout(
-          base::Milliseconds(200),
-          ^{
-            NSError* error = [MetricsAppInterface
-                expectUniqueSampleWithCount:1
-                                  forBucket:kRendererErrorHistogramBucket
-                               forHistogram:
-                                   @"Autofill.iOS.FormSubmission.OutcomeV2"];
-            return error == nil;
-          }),
-      @"Timed out waiting for the submission error uma record.");
-}
-
-// Tests that the submission errors that occur in the renderer are not reported
-// to the browser when the feature is disabled.
-- (void)testSubmissionErrorReporting_Disabled {
-  // Inject a bug that will trigger error when handling the form submission in
-  // the renderer.
-  constexpr char kInjectedBug[] = R"(
-    // Swizzle autofillSubmissionData() with an erroring function.
-    gcrweb.gCrWeb.fill.autofillSubmissionData = function() {
-      throw new Error("Oh no, something bad happened!");
-    };
-    // This is to give a return value to make the thing handling the JS
-    // execution happy.
-    true
-  )";
-
-  // Load page without submitting the form.
-  [self loadFullAddressFormWithParams:{}];
-
-  // Inject the bug in the submission handler so it triggers an error that will
-  // be reported to the browser.
-  [ChromeEarlGrey
-      evaluateJavaScriptInIsolatedWorldForSideEffect:base::SysUTF8ToNSString(
-                                                         kInjectedBug)];
-
-  // Now that the submission handler is buggy, submit the form to trigger the
-  // error.
-  [ChromeEarlGrey tapWebStateElementWithID:@"submit-button"];
-
-  // Verify for some time that no infobar is displayed when there is a
-  // submission error.
-  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
-
-  // Verify that no submission error was not reported and recorded. At this
-  // point there should have been enough time to hypothetically handle the
-  // submit event if there was no error.
-  chrome_test_util::GREYAssertErrorNil([MetricsAppInterface
-      expectTotalCount:0
           forHistogram:@"Autofill.iOS.FormSubmission.OutcomeV2"]);
 }
 

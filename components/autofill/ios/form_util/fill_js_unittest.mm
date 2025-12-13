@@ -88,7 +88,7 @@ class FillJsTest : public web::WebTestWithWebState {
 
  protected:
   // Returns the chrome-set renderer ID for the element with ID `element_id`.
-  // Runs gCrWeb.fill.getUniqueID in the given content world.
+  // Runs getUniqueID from fill_test_api API in the given content world.
   NSString* GetUniqueID(NSString* element_id, web::ContentWorld content_world) {
     NSString* script = [NSString
         stringWithFormat:
@@ -313,8 +313,8 @@ TEST_F(FillJsTest, GetAriaDescriptionInvalid) {
   EXPECT_NSEQ(result, expected_result);
 }
 
-// Tests that gCrWeb.fill.getUniqueID returns the ID of an element from all
-// JavaScript content worlds.
+// Tests that getUniqueID from fill_test_api API returns the ID of an element
+// from all JavaScript content worlds.
 TEST_F(FillJsTest, DISABLED_GetUniqueIDInAllJavaScriptContentWorlds) {
   LoadHtml(@"<html><body>"
             "<form id='form'>"
@@ -347,8 +347,8 @@ TEST_F(FillJsTest, DISABLED_GetUniqueIDInAllJavaScriptContentWorlds) {
   }
 }
 
-// Tests that gCrWeb.fill.getUniqueID returns the null ID when an invalid value
-// is stored in the DOM.
+// Tests that getUniqueID from fill_test_api API returns the null ID when an
+// invalid value is stored in the DOM.
 TEST_F(FillJsTest, DISABLED_GetUniqueIDReturnsNotSetWhenInvalidIDInDOM) {
   LoadHtml(@"<html><body>"
             "<form id='form'/>"

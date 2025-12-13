@@ -8,7 +8,6 @@ import type {FormControlElement} from '//components/autofill/ios/form_util/resou
 import {inferLabelForElement, inferLabelFromNext} from '//components/autofill/ios/form_util/resources/fill_element_inference.js';
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {getCanonicalActionForForm, getUniqueID} from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {getFieldIdentifier, getFormControlElements, getFormIdentifier, getIframeElements} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, removeQueryAndReferenceFromURL, trim} from '//ios/web/public/js_messaging/resources/utils.js';
@@ -83,14 +82,15 @@ export function webFormElementToFormData(
 
   form.name = getFormIdentifier(formElement);
   form.origin = getFrameUrlOrOrigin(frame);
-  form.action =
-      formElement !== null ? getCanonicalActionForForm(formElement) : '';
+  form.action = formElement !== null ?
+      fillUtil.getCanonicalActionForForm(formElement) :
+      '';
 
   // The raw name and id attributes, which may be empty.
   form.name_attribute = formElement?.getAttribute('name') || '';
   form.id_attribute = formElement?.getAttribute('id') || '';
 
-  form.renderer_id = getUniqueID(formElement);
+  form.renderer_id = fillUtil.getUniqueID(formElement);
 
   form.host_frame = frame.__gCrWeb.getFrameId();
 
@@ -152,7 +152,7 @@ export function webFormControlElementToFormField(
   field.name_attribute = element.getAttribute('name') || '';
   field.id_attribute = element.getAttribute('id') || '';
 
-  field.renderer_id = getUniqueID(element);
+  field.renderer_id = fillUtil.getUniqueID(element);
 
   field.form_control_type = element.type;
   const autocompleteAttribute = element.getAttribute('autocomplete');
@@ -697,4 +697,18 @@ export function getFieldName(element: Element|null): string {
   }
 
   return '';
+}
+
+/**
+ * Returns a serialized version of |form| to send to the host on form
+ * submission.
+ *
+ * @param form The form to serialize.
+ * @return a JSON encoded version of |form|
+ */
+export function autofillSubmissionData(form: HTMLFormElement):
+    fillUtil.AutofillFormData {
+  const formData = new gCrWebLegacy['common'].JSONSafeObject();
+  webFormElementToFormData(window, form, null, formData);
+  return formData;
 }

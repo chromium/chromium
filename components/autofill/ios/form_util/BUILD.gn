@@ -37,7 +37,6 @@ source_set("form_util_feature") {
   ]
   deps = [
     ":autofill_form_features",
-    ":fill_js",
     ":form_lib_js",
     "//base",
     "//components/autofill/ios/common",
@@ -176,16 +175,6 @@ compile_ts("fill_js_namespace") {
   deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }
 
-optimize_ts("fill_js") {
-  sources = [ "resources/fill.ts" ]
-
-  deps = [
-    ":fill_js_dependencies",
-    ":fill_js_namespace",
-    "//ios/web/public/js_messaging:gcrweb",
-  ]
-}
-
 optimize_ts("fill_util_test_js") {
   sources = [ "resources/fill_util_test.ts" ]
 
@@ -216,13 +205,7 @@ compile_ts("form_js") {
 }
 
 optimize_js("form_lib_js") {
-  deps = [
-    ":fill_js_dependencies",
-    ":fill_js_namespace",
-    ":form_js",
-    "//ios/web/public/js_messaging:gcrweb",
-    "//ios/web/public/js_messaging:util_scripts",
-  ]
+  deps = [ ":form_js" ]
   _script = filter_include(get_target_outputs(":form_js"), [ "*form.js" ])
   primary_script = _script[0]
   sources = _script
@@ -373,7 +356,6 @@ source_set("unit_tests") {
     ":autofill_form_features",
     ":autofill_form_features_injector",
     ":child_frame_registrar",
-    ":fill_js",
     ":fill_util_test_js",
     ":form_handler_feature",
     ":form_lib_js",

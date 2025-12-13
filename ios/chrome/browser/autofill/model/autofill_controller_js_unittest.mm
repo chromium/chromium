@@ -822,7 +822,6 @@ class AutofillControllerJsTest : public web::JavascriptTest {
 
     AddGCrWebScript();
     AddCommonScript();
-    AddUserScript(@"fill");
     AddUserScript(@"form");
     AddUserScript(@"autofill_form_features");
     AddUserScript(@"fill_util_test");
@@ -851,9 +850,10 @@ class AutofillControllerJsTest : public web::JavascriptTest {
       base::span<const ElementByName> elements_with_true_expected);
 
   // Helper method that EXPECTs
-  // `__gCrWeb.fill.webFormControlElementToFormField`. This method applies
-  // `__gCrWeb.fill.webFormControlElementToFormField` on each element in
-  // `test_data` with all possible extract masks and verify the results.
+  // `webFormControlElementToFormField` method from fill_test_api API. This
+  // method applies `webFormControlElementToFormField` method from fill_test_api
+  // API on each element in `test_data` with all possible extract masks and
+  // verify the results.
   void TestWebFormControlElementToFormField(NSArray* test_data,
                                             NSString* tag_name);
 
@@ -874,7 +874,8 @@ class AutofillControllerJsTest : public web::JavascriptTest {
       NSString* expected_result,
       NSString* verifying_javascripts);
 
-  // EXPECTs `__gCrWeb.fill.webFormElementToFormData` on all the test data.
+  // EXPECTs `webFormElementToFormData` method from fill_test_api API on all the
+  // test data.
   void TestWebFormElementToFormData(NSArray* test_items);
 
   // EXPECTs `extractNewForms` function from autofill API on `html`.

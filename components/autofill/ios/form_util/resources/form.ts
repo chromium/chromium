@@ -7,6 +7,7 @@
  */
 
 import {getRemoteFrameToken} from '//components/autofill/ios/form_util/resources/fill_util.js';
+import {autofillSubmissionData} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
 import {getFormIdentifier} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
@@ -212,7 +213,7 @@ function formSubmittedInternal(
     frameID: gCrWeb.getFrameId(),
     formName: getFormIdentifier(form),
     href: getFullyQualifiedUrl(action),
-    formData: gCrWebLegacy.fill.autofillSubmissionData(form),
+    formData: autofillSubmissionData(form),
     remoteFrameToken: includeRemoteFrameToken ? getRemoteFrameToken() :
                                                 undefined,
     programmaticSubmission: programmaticSubmission,

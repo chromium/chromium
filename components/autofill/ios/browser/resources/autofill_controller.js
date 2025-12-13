@@ -11,7 +11,6 @@ import {getElementByUniqueID} from '//components/autofill/ios/form_util/resource
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
-
 /**
  * @fileoverview Installs Autofill management functions on the __gCrWeb object.
  *
