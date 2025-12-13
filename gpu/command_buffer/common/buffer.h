@@ -96,6 +96,10 @@ class GPU_COMMAND_BUFFER_COMMON_EXPORT Buffer
   }
   uint32_t size() const { return backing_->GetSize(); }
 
+  // Returns empty span if the address overflows the memory.
+  base::span<uint8_t> GetSpanData(uint32_t data_offset,
+                                  uint32_t data_size) const;
+
   // Returns nullptr if the address overflows the memory.
   void* GetDataAddress(uint32_t data_offset, uint32_t data_size) const;
 

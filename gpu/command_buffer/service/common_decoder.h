@@ -156,6 +156,10 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT CommonDecoder {
     return static_cast<T>(GetAddressAndCheckSize(shm_id, offset, size));
   }
 
+  base::span<uint8_t> GetSharedMemoryAsSpan(uint32_t shm_id,
+                                            uint32_t offset,
+                                            uint32_t size);
+
   void* GetAddressAndSize(unsigned int shm_id,
                           unsigned int offset,
                           unsigned int minimum_size,

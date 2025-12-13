@@ -2979,18 +2979,16 @@ error::Error RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
   } else {
     if (font_shm_size > 0) {
       // Deserialize fonts before raster.
-      volatile uint8_t* font_buffer_memory = GetSharedMemoryAs<uint8_t*>(
-          font_shm_id, font_shm_offset, font_shm_size);
-      if (!font_buffer_memory) {
+      base::span<volatile uint8_t> font_buffer =
+          GetSharedMemoryAsSpan(font_shm_id, font_shm_offset, font_shm_size);
+      if (font_buffer.empty()) {
         LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
                            "Can not read font buffer.");
         return error::kNoError;
       }
 
       std::vector<SkDiscardableHandleId> new_locked_handles;
-      if (!font_manager_->Deserialize(
-              UNSAFE_TODO(base::span(font_buffer_memory, font_shm_size)),
-              &new_locked_handles)) {
+      if (!font_manager_->Deserialize(font_buffer, &new_locked_handles)) {
         LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
                            "Invalid font buffer.");
         return error::kNoError;

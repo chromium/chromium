@@ -163,6 +163,17 @@ CommonDecoder::CommonDecoder(DecoderClient* client,
 
 CommonDecoder::~CommonDecoder() = default;
 
+base::span<uint8_t> CommonDecoder::GetSharedMemoryAsSpan(uint32_t shm_id,
+                                                         uint32_t offset,
+                                                         uint32_t size) {
+  scoped_refptr<gpu::Buffer> buffer =
+      command_buffer_service_->GetTransferBuffer(shm_id);
+  if (!buffer) {
+    return {};
+  }
+  return buffer->GetSpanData(offset, size);
+}
+
 void* CommonDecoder::GetAddressAndCheckSize(unsigned int shm_id,
                                             unsigned int data_offset,
                                             unsigned int data_size) {

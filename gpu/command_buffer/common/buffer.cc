@@ -94,13 +94,18 @@ Buffer::Buffer(std::unique_ptr<BufferBacking> backing)
 
 Buffer::~Buffer() = default;
 
-void* Buffer::GetDataAddress(uint32_t data_offset, uint32_t data_size) const {
+base::span<uint8_t> Buffer::GetSpanData(uint32_t data_offset,
+                                        uint32_t data_size) const {
   base::CheckedNumeric<uint32_t> end = data_offset;
   end += data_size;
   if (!end.IsValid() || end.ValueOrDie() > size()) {
-    return nullptr;
+    return {};
   }
-  return backing_->as_byte_span().subspan(data_offset, data_size).data();
+  return backing_->as_byte_span().subspan(data_offset, data_size);
+}
+
+void* Buffer::GetDataAddress(uint32_t data_offset, uint32_t data_size) const {
+  return GetSpanData(data_offset, data_size).data();
 }
 
 void* Buffer::GetDataAddressAndSize(uint32_t data_offset,
