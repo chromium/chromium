@@ -85,7 +85,11 @@
 #include "ui/views/widget/widget_interactive_uitest_utils.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/base_switches.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "components/feed/feed_feature_list.h"  // nogncheck
+#else
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
@@ -1582,9 +1586,59 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, OnBoundsChanged) {
   ASSERT_TRUE(catcher.GetNextResult());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, WindowsCreate) {
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+// A special test suite that adds magical incantations that are necessary for
+// multi-window support on desktop android.
+// TODO(devlin): Hoist these into ExtensionBrowserTest so that individual tests
+// don't need to add them.
+class ExtensionWindowsCreateTest : public ExtensionTabsTest {
+ public:
+  ExtensionWindowsCreateTest() {
+#if BUILDFLAG(IS_ANDROID)
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {// Disable ChromeTabbedActivity instance limit so that the total number
+         // of windows created by the entire test suite won't be limited.
+         //
+         // See MultiWindowUtils#getMaxInstances() for the reason:
+         // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java;l=209;drc=0bcba72c5246a910240b311def40233f7d3f15af
+         chrome::android::kDisableInstanceLimit,
+
+         // Enable incognito windows on Android.
+         feed::kAndroidOpenIncognitoAsWindow},
+        /*disabled_features=*/{});
+#endif
+  }
+
+ private:
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    ExtensionTabsTest::SetUpDefaultCommandLine(command_line);
+
+#if BUILDFLAG(IS_ANDROID)
+    // Disable the first-run experience (FRE) so that when a function under
+    // test launches an Intent for ChromeTabbedActivity, ChromeTabbedActivity
+    // will be shown instead of FirstRunActivity.
+    command_line->AppendSwitch("disable-fre");
+
+    // Force DeviceInfo#isDesktop() to be true so that the kDisableInstanceLimit
+    // flag in the constructor can be effective when running tests on an
+    // emulator without "--force-desktop-android".
+    //
+    // See MultiWindowUtils#getMaxInstances() for the reason:
+    // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java;l=213;drc=0bcba72c5246a910240b311def40233f7d3f15af
+    command_line->AppendSwitch(switches::kForceDesktopAndroid);
+#endif
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionWindowsCreateTest, WindowsCreate) {
   ASSERT_TRUE(RunExtensionTest("windows/create")) << message_;
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, ExecuteScriptOnDevTools) {
   scoped_refptr<const Extension> extension =

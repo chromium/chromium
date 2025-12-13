@@ -221,7 +221,10 @@ class WindowsCreateFunction : public ExtensionFunction {
       const api::windows::Create::Params::CreateData& create_data,
       gfx::Rect& window_bounds);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  void OnBrowserWindowCreatedAsynchronously(BrowserWindowInterface* new_window);
+#endif
+
   // Handles post-creation window initialization. `new_window` is the newly-
   // created browser window. `source_window` and `tab_index` indicate an
   // existing tab to move to the new window, if any.
@@ -231,7 +234,6 @@ class WindowsCreateFunction : public ExtensionFunction {
   ResponseValue OnBrowserWindowCreated(BrowserWindowInterface* new_window,
                                        WindowController* source_window,
                                        int tab_index);
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   void OnBocaWindowCreatedAsynchronously(const SessionID& session_id);

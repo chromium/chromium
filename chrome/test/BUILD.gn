@@ -1703,7 +1703,9 @@ source_set("platform_browser_tests") {
       "//extensions/test/data/",
     ]
 
-    if (!is_android) {
+    if (is_android) {
+      deps += [ "//components/feed:feature_list" ]
+    } else {
       deps += [
         "//chrome/browser/ui/search:test_support_ui",
         "//chrome/browser/ui/tabs/saved_tab_groups",

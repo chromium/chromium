@@ -77,10 +77,8 @@ class ExtensionTabUtil {
   static constexpr char kJavaScriptUrlsNotAllowedInExtensionNavigations[] =
       "JavaScript URLs are not allowed in API based extension navigations. Use "
       "chrome.scripting.executeScript instead.";
-#if !BUILDFLAG(IS_ANDROID)
   static constexpr char kBrowserWindowNotAllowed[] =
       "Browser windows not allowed.";
-#endif  // !BUILDFLAG(IS_ANDROID)
   static constexpr char kCannotNavigateToDevtools[] =
       "Cannot navigate to a devtools:// page.";
 #if !BUILDFLAG(IS_ANDROID)

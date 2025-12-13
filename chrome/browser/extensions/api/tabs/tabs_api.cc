@@ -4,11 +4,13 @@
 
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected_macros.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
@@ -22,10 +24,14 @@
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -54,14 +60,9 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
-#include "base/types/expected_macros.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -104,9 +105,9 @@ constexpr char kWindowCreateLockedFullscreenUrlCountMismatchError[] =
     "should be supplied.";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_ANDROID)
-
 constexpr char kInvalidWindowTypeError[] = "Invalid value for type";
+
+#if !BUILDFLAG(IS_ANDROID)
 constexpr char kWindowCreateSupportsOnlySingleIwaUrlError[] =
     "When creating a window for a URL with the 'isolated-app:' scheme, only "
     "one tab can be added to the window.";
@@ -117,6 +118,7 @@ constexpr char kWindowCreateCannotUseTabIdWithIwaError[] =
     "tab by its ID.";
 constexpr char kWindowCreateCannotMoveIwaTabError[] =
     "The tab of an Isolated Web App cannot be moved to a new window.";
+#endif
 
 bool IsValidStateForWindowsCreateFunction(
     const windows::Create::Params::CreateData* create_data) {
@@ -142,6 +144,8 @@ bool IsValidStateForWindowsCreateFunction(
   }
   NOTREACHED();
 }
+
+#if !BUILDFLAG(IS_ANDROID)
 
 // Returns the IsolatedWebAppUrlInfo for the given call to windows.create() if
 // the call is to create a new IWA window.
@@ -656,10 +660,6 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   std::optional<windows::Create::Params> params =
       windows::Create::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-// TODO(https://crbug.com/431004500): Port this to desktop android.
-#if BUILDFLAG(IS_ANDROID)
-  return RespondNow(Error("chrome.windows not implemented"));
-#else
   int tab_index = -1;
 
   DCHECK(extension() || source_context_type() == mojom::ContextType::kWebUi ||
@@ -688,11 +688,14 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   }
 
   std::string error;
+
+#if !BUILDFLAG(IS_ANDROID)
   isolated_web_app_url_info_ =
       GetIsolatedWebAppInfo(create_data_, urls_, &error);
   if (!error.empty()) {
     return RespondNow(Error(std::move(error)));
   }
+#endif
 
   // Decide whether we are opening a normal window or an incognito window.
   Profile* calling_profile = Profile::FromBrowserContext(browser_context());
@@ -767,7 +770,8 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
-  Browser::Type window_type = Browser::TYPE_NORMAL;
+  BrowserWindowInterface::Type window_type =
+      BrowserWindowInterface::TYPE_NORMAL;
 
   gfx::Rect window_bounds;
   std::string extension_id;
@@ -779,7 +783,7 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
       // TODO(stevenjb): Remove 'panel' from windows.json.
       case windows::CreateType::kPanel:
       case windows::CreateType::kPopup:
-        window_type = Browser::TYPE_POPUP;
+        window_type = BrowserWindowInterface::TYPE_POPUP;
         if (extension()) {
           extension_id = extension()->id();
         }
@@ -791,11 +795,14 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
         return RespondNow(Error(kInvalidWindowTypeError));
     }
 
-    // Initialize default window bounds according to window type.
+      // Initialize default window bounds according to window type.
+      // TODO(https://crbug.com/431004500): Properly initialize window bounds.
+#if !BUILDFLAG(IS_ANDROID)
     ui::mojom::WindowShowState ignored_show_state =
         ui::mojom::WindowShowState::kDefault;
     WindowSizer::GetBrowserWindowBoundsAndShowState(
         gfx::Rect(), nullptr, &window_bounds, &ignored_show_state);
+#endif
 
     // Update the window bounds based on the create parameters.
     std::string bounds_error = SetWindowBounds(*create_data_, window_bounds);
@@ -819,6 +826,8 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   BrowserWindowCreateParams create_params(window_type, *window_profile,
                                           user_gesture());
 
+  bool initialized_type = false;
+#if !BUILDFLAG(IS_ANDROID)
   if (isolated_web_app_url_info_.has_value()) {
     create_params.type = BrowserWindowInterface::TYPE_APP;
     create_params.app_name = web_app::GenerateApplicationNameFromAppId(
@@ -828,12 +837,22 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     // accessible via window.launchQueue; for this reason the browser is marked
     // trusted.
     create_params.is_trusted_source = true;
-  } else if (!extension_id.empty()) {
+    initialized_type = true;
+  }
+#endif
+
+  if (!initialized_type && !extension_id.empty()) {
     // extension_id is only set for CREATE_TYPE_POPUP.
     create_params.type = BrowserWindowInterface::TYPE_APP_POPUP;
+
+    // TODO(https://crbug.com/431004500): Initialize app name on android, or
+    // verify this is unnecessary.
+#if !BUILDFLAG(IS_ANDROID)
     create_params.app_name =
         web_app::GenerateApplicationNameFromAppId(extension_id);
+#endif
     create_params.is_trusted_source = false;
+    initialized_type = true;
   }
   create_params.initial_bounds = window_bounds;
   create_params.initial_show_state = ui::mojom::WindowShowState::kNormal;
@@ -843,15 +862,36 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
         tabs_internal::ConvertToWindowShowState(create_data_->state);
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   BrowserWindowInterface* new_window =
       CreateBrowserWindow(std::move(create_params));
   ExtensionFunction::ResponseValue response =
       OnBrowserWindowCreated(new_window, source_window, tab_index);
   return RespondNow(std::move(response));
+#else
+  // TODO(https://crbug.com/431004500): Support other window types besides
+  // TYPE_NORMAL.
+  if (create_params.type != BrowserWindowInterface::TYPE_NORMAL) {
+    return RespondNow(Error("Only 'normal' windows are supported (for now)."));
+  }
+
+  CreateBrowserWindow(
+      std::move(create_params),
+      base::BindOnce(
+          &WindowsCreateFunction::OnBrowserWindowCreatedAsynchronously, this));
+  return RespondLater();
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+void WindowsCreateFunction::OnBrowserWindowCreatedAsynchronously(
+    BrowserWindowInterface* new_window) {
+  ExtensionFunction::ResponseValue response = OnBrowserWindowCreated(
+      new_window, /*source_window=*/nullptr, /*tab_index=*/-1);
+  Respond(std::move(response));
+}
+#endif
+
 ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
     BrowserWindowInterface* new_window,
     WindowController* source_window,
@@ -900,13 +940,9 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
     return navigate_params;
   };
 
-  if (!isolated_web_app_url_info_) {
-    for (const GURL& url : urls_) {
-      ASSIGN_OR_RETURN(NavigateParams navigate_params, create_nav_params(url),
-                       [&](const std::string& error) { return Error(error); });
-      Navigate(&navigate_params);
-    }
-  } else {
+  bool navigated = false;
+#if !BUILDFLAG(IS_ANDROID)
+  if (isolated_web_app_url_info_) {
     CHECK_EQ(urls_.size(), 1U);
     const GURL& original_url = urls_[0];
 
@@ -930,8 +966,25 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
           handle->GetWebContents(), iwa_id, original_url,
           /*wait_for_navigation_to_complete=*/true, handle->NavigationStart());
     }
+    navigated = true;
+  }
+#endif
+
+  if (!navigated) {
+    for (const GURL& url : urls_) {
+      base::expected<NavigateParams, std::string> nav_params =
+          create_nav_params(url);
+      if (!nav_params.has_value()) {
+        return Error(std::move(nav_params.error()));
+      }
+
+      Navigate(&nav_params.value());
+    }
   }
 
+  // TODO(https://crbug.com/431004500): Handle moving the tab to the new window
+  // on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
   const ::tabs::TabModel* tab = nullptr;
   // Move the tab into the created window only if it's an empty popup or it's
   // a tabbed window.
@@ -953,8 +1006,12 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
           urls_.size(), std::move(detached_tab), AddTabTypes::ADD_NONE);
     }
   }
+#endif
+
   // Create a new tab if the created window is still empty. Don't create a new
   // tab when it is intended to create an empty popup.
+  // TODO(https://crbug.com/431004500): Port to desktop android.
+#if !BUILDFLAG(IS_ANDROID)
   if (!tab && urls_.empty() && new_window->GetType() == Browser::TYPE_NORMAL) {
     // TODO(crbug.com/452431839) Make a new NewTabTypes value for
     // when new tabs are made because of an empty window.
@@ -965,6 +1022,7 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
       new_window->GetBrowserForMigrationOnly(), 0,
       TabStripUserGestureDetails(
           TabStripUserGestureDetails::GestureType::kNone));
+#endif
 
   bool focused = true;
   if (create_data_ && create_data_->focused) {
@@ -974,6 +1032,8 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
   if (focused) {
     new_window->GetWindow()->Show();
   } else {
+    // TODO(https://crbug.com/431004500): Port to desktop android.
+#if !BUILDFLAG(IS_ANDROID)
     // Show an unfocused new window.
     BrowserWindowInterface* const last_active_bwi =
         GetLastActiveBrowserWindowInterfaceWithAnyProfile();
@@ -987,6 +1047,7 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
     } else {
       new_window->GetWindow()->ShowInactive();
     }
+#endif
   }
 
 // Despite creating the window with initial_show_state() ==
@@ -1027,10 +1088,8 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
       *new_window, extension(), WindowController::kPopulateTabs,
       source_context_type()));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // static
-#if !BUILDFLAG(IS_ANDROID)
 std::string WindowsCreateFunction::ValidateTab(
     WindowController* source_window,
     Profile* window_profile,
@@ -1041,16 +1100,18 @@ std::string WindowsCreateFunction::ValidateTab(
     return tabs_constants::kInvalidWindowStateError;
   }
 
-  Browser* source_browser = source_window->GetBrowser();
-  if (!source_browser) {
+  if (!source_window->GetBrowserWindowInterface()) {
     return ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  Browser* source_browser = source_window->GetBrowser();
   if (web_app::AppBrowserController* controller =
           source_browser->app_controller();
       controller && controller->IsIsolatedWebApp()) {
     return kWindowCreateCannotMoveIwaTabError;
   }
+#endif
 
   if (!ExtensionTabUtil::IsTabStripEditable()) {
     return ExtensionTabUtil::kTabStripNotEditableError;
@@ -1130,8 +1191,6 @@ void WindowsCreateFunction::OnBocaWindowCreatedAsynchronously(
       source_context_type())));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
   std::optional<windows::Update::Params> params =
