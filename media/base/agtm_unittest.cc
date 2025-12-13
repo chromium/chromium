@@ -15,8 +15,8 @@ TEST(GetSerializedAgtmItutT35, HasMetadata) {
                                      0x00, 0x01, 0x02, 0x03};
   const auto agtm = GetSerializedAgtmItutT35(t35_country_code, data);
   ASSERT_TRUE(agtm);
-  EXPECT_EQ(agtm->size(), 3u);
-  const std::vector<uint8_t> expected = {0x01, 0x02, 0x03};
+  EXPECT_EQ(agtm->size(), 5u);
+  const std::vector<uint8_t> expected = {0x01, 0x00, 0x01, 0x02, 0x03};
   EXPECT_TRUE(SkData::Equals(
       agtm.get(),
       SkData::MakeWithCopy(expected.data(), expected.size()).get()));

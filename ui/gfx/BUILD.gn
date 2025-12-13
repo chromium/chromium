@@ -429,8 +429,6 @@ component("color_space") {
     "display_color_spaces.h",
     "hdr_metadata.cc",
     "hdr_metadata.h",
-    "hdr_metadata_agtm.cc",
-    "hdr_metadata_agtm.h",
     "hdr_static_metadata.cc",
     "hdr_static_metadata.h",
     "icc_profile.cc",

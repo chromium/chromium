@@ -11,6 +11,7 @@
 #include "skia/ext/skcolorspace_primaries.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkData.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/skia_span_util.h"
 #include "ui/gfx/switches.h"
 
@@ -33,7 +34,7 @@ std::weak_ordering SkDataCompare(const sk_sp<const SkData>& a,
       size_cmp != std::weak_ordering::equivalent) {
     return size_cmp;
   }
-  return gfx::SkDataToSpan(a) <=> SkDataToSpan(b);
+  return SkDataToSpan(a) <=> SkDataToSpan(b);
 }
 
 }  // namespace
@@ -121,7 +122,7 @@ HDRMetadata& HDRMetadata::operator=(const HDRMetadata& rhs) = default;
 HDRMetadata::~HDRMetadata() = default;
 
 // static
-float HDRMetadata::GetContentMaxLuminance(const gfx::HDRMetadata& metadata) {
+float HDRMetadata::GetContentMaxLuminance(const HDRMetadata& metadata) {
   if (metadata.cta_861_3.has_value() &&
       metadata.cta_861_3->max_content_light_level > 0.f) {
     return metadata.cta_861_3->max_content_light_level;
@@ -134,8 +135,34 @@ float HDRMetadata::GetContentMaxLuminance(const gfx::HDRMetadata& metadata) {
 }
 
 // static
+float HDRMetadata::GetWaylandReferenceLuminance(
+    const ColorSpace& color_space,
+    const HDRMetadata& hdr_metadata) {
+  if (HdrMetadataAgtm::IsEnabled()) {
+    if (auto agtm_parsed =
+            skhdr::Agtm::Make(hdr_metadata.getSerializedAgtm())) {
+      return agtm_parsed->getHdrReferenceWhite();
+    }
+  }
+
+  if (hdr_metadata.ndwl.has_value() && hdr_metadata.ndwl->nits > 0.f) {
+    return hdr_metadata.ndwl->nits;
+  }
+
+  if (color_space.GetTransferID() == ColorSpace::TransferID::PQ ||
+      color_space.GetTransferID() == ColorSpace::TransferID::HLG) {
+    auto sk_color_space = color_space.ToSkColorSpace();
+    skcms_TransferFunction transfer_fn;
+    sk_color_space->transferFn(&transfer_fn);
+    return transfer_fn.a;
+  }
+
+  return ColorSpace::kDefaultSDRWhiteLevel;
+}
+
+// static
 HDRMetadata HDRMetadata::PopulateUnspecifiedWithDefaults(
-    const gfx::HDRMetadata& hdr_metadata) {
+    const HDRMetadata& hdr_metadata) {
   constexpr HdrMetadataSmpteSt2086 kDefaults2086(SkNamedPrimaries::kRec2020,
                                                  1000.f, 0.f);
 

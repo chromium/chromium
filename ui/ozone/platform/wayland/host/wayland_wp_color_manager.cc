@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "ui/gfx/hdr_metadata_agtm.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 
@@ -99,28 +98,6 @@ TransferIdToTransferFunction(gfx::ColorSpace::TransferID transfer_id) {
       // These do not have a direct mapping in the Wayland protocol.
       return std::nullopt;
   }
-}
-
-float GetReferenceLuminance(const gfx::ColorSpace& color_space,
-                            const gfx::HDRMetadata& hdr_metadata) {
-  gfx::HdrMetadataAgtmParsed agtm;
-  if (agtm.Parse(hdr_metadata.getSerializedAgtm())) {
-    return agtm.hdr_reference_white;
-  }
-
-  if (hdr_metadata.ndwl.has_value() && hdr_metadata.ndwl->nits > 0.f) {
-    return hdr_metadata.ndwl->nits;
-  }
-
-  if (color_space.GetTransferID() == gfx::ColorSpace::TransferID::PQ ||
-      color_space.GetTransferID() == gfx::ColorSpace::TransferID::HLG) {
-    auto sk_color_space = color_space.ToSkColorSpace();
-    skcms_TransferFunction transfer_fn;
-    sk_color_space->transferFn(&transfer_fn);
-    return transfer_fn.a;
-  }
-
-  return gfx::ColorSpace::kDefaultSDRWhiteLevel;
 }
 
 }  // namespace
@@ -323,7 +300,8 @@ bool WaylandWpColorManager::PopulateDescriptionCreator(
       }
     }
 
-    const float ref_luma = GetReferenceLuminance(color_space, hdr_metadata);
+    const float ref_luma = gfx::HDRMetadata::GetWaylandReferenceLuminance(
+        color_space, hdr_metadata);
     if (IsSupportedFeature(WP_COLOR_MANAGER_V1_FEATURE_SET_LUMINANCES)) {
       wp_image_description_creator_params_v1_set_luminances(
           creator, 0, gfx::HDRMetadata::GetContentMaxLuminance(hdr_metadata),

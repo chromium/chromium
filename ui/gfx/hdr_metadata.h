@@ -19,6 +19,8 @@ struct SkColorSpacePrimaries;
 
 namespace gfx {
 
+class ColorSpace;
+
 // Content light level info (CLLI) metadata from CTA 861.3.
 struct COLOR_SPACE_EXPORT HdrMetadataCta861_3 {
   constexpr HdrMetadataCta861_3() = default;
@@ -161,7 +163,11 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
   // - return the CTA 861.3 max content light level metadata, if present
   // - return the SMPTE ST 2086 luminance max metadata, if present
   // - otherwise return 1,000 nits
-  static float GetContentMaxLuminance(const gfx::HDRMetadata& metadata);
+  static float GetContentMaxLuminance(const HDRMetadata& metadata);
+
+  // Compute the reference luminance for use with Wayland color management.
+  static float GetWaylandReferenceLuminance(const ColorSpace& color_space,
+                                            const HDRMetadata& hdr_metadata);
 
   // Return a copy of `hdr_metadata` with its `smpte_st_2086` fully
   // populated. Any unspecified values are set to default values (in particular,
@@ -170,7 +176,7 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
   // `max_frame_average_light_level` values are not changed (they may stay
   // zero).
   static HDRMetadata PopulateUnspecifiedWithDefaults(
-      const gfx::HDRMetadata& hdr_metadata);
+      const HDRMetadata& hdr_metadata);
 
   std::string ToString() const;
 

@@ -5,6 +5,7 @@
 #include "cc/paint/tone_map_util.h"
 
 #include <cmath>
+#include <memory>
 #include <string_view>
 #include <utility>
 
@@ -15,7 +16,8 @@
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/effects/SkColorMatrix.h"
 #include "third_party/skia/include/effects/SkRuntimeEffect.h"
-#include "ui/gfx/hdr_metadata_agtm.h"
+#include "third_party/skia/include/private/SkHdrMetadata.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace cc {
 
@@ -81,107 +83,6 @@ sk_sp<SkColorFilter> GetReinhardToneMapFilter(
       SkNamedTransferFn::kLinear, SkNamedGamut::kRec2020));
 }
 
-// AGTM tone mapping shader.
-static constexpr char kAgtmToneMapSKSL[] =
-    "uniform half altr_i_weight;\n"
-    "uniform half altr_j_weight;\n"
-    "uniform half4 altr_i_mix_rgbx;\n"
-    "uniform half4 altr_j_mix_rgbx;\n"
-    "uniform half4 altr_i_mix_Mmcx;\n"
-    "uniform half4 altr_j_mix_Mmcx;\n"
-    "uniform shader altr_i_curve;\n"
-    "uniform shader altr_j_curve;\n"
-    "uniform half gain_min;\n"
-    "uniform half gain_span;\n"
-    "uniform half gain_application_offset;\n"
-    "uniform half curve_scale;\n"
-    "\n"
-    "half3 EvalComponentMixing(half3 color, bool j) {\n"
-    "  half4 rgbx = j ? altr_j_mix_rgbx : altr_i_mix_rgbx;\n"
-    "  half4 Mmcx = j ? altr_j_mix_Mmcx : altr_i_mix_Mmcx;\n"
-    "  half M = max(max(color.r, color.g), color.b);\n"
-    "  half m = min(min(color.r, color.g), color.b);\n"
-    "  half common = dot(rgbx.rgb, color) +\n"
-    "                Mmcx[0] * M +\n"
-    "                Mmcx[1] * m;\n"
-    "  return Mmcx[2] * color + half3(common);\n"
-    "}\n"
-    "half EvalGain(half color, bool j) {\n"
-    "  half2 tc = half2(curve_scale * color + 0.5, 0.5);\n"
-    "  half y = j ? altr_j_curve.eval(tc).a : altr_i_curve.eval(tc).a;\n"
-    "  return gain_min + gain_span * y;\n"
-    "}\n"
-    "half4 main(half4 color) {\n"
-    "  half3 G = half3(0.0);\n"
-    "  if (altr_i_weight > 0.0) {\n"
-    "    half3 mixed = EvalComponentMixing(color.rgb, false);\n"
-    "    G += altr_i_weight * half3(EvalGain(mixed.r, false),\n"
-    "                               EvalGain(mixed.g, false),\n"
-    "                               EvalGain(mixed.b, false));\n"
-    "  }\n"
-    "  if (altr_j_weight > 0.0) {\n"
-    "    half3 mixed = EvalComponentMixing(color.rgb, true);\n"
-    "    G += altr_j_weight * half3(EvalGain(mixed.r, true),\n"
-    "                               EvalGain(mixed.g, true),\n"
-    "                               EvalGain(mixed.b, true));\n"
-    "  }\n"
-    "  color.rgb *= exp2(G);\n"
-    "  return color;\n"
-    "}\n";
-
-sk_sp<SkColorFilter> GetAgtmFilter(const gfx::HdrMetadataAgtmParsed& params,
-                                   float H_target) {
-  auto result = SkRuntimeEffect::MakeForColorFilter(
-      SkString(kAgtmToneMapSKSL, sizeof(kAgtmToneMapSKSL) - 1),
-      /*options=*/{});
-  CHECK(result.effect) << result.errorText.c_str();
-
-  SkRuntimeShaderBuilder builder(result.effect);
-  builder.uniform("gain_min") = params.gain_min;
-  builder.uniform("gain_span") = params.gain_span;
-  builder.uniform("gain_application_offset") = params.gain_application_offset;
-
-  // Set the alternate representation weightings and parameters.
-  size_t altr_i = gfx::HdrMetadataAgtmParsed::kBaselineIndex;
-  size_t altr_j = gfx::HdrMetadataAgtmParsed::kBaselineIndex;
-  float altr_i_weight = 0.f;
-  float altr_j_weight = 0.f;
-  params.ComputeAlternateWeights(H_target, altr_i, altr_i_weight, altr_j,
-                                 altr_j_weight);
-  builder.uniform("altr_i_weight") = altr_i_weight;
-  if (altr_i == gfx::HdrMetadataAgtmParsed::kBaselineIndex) {
-    DCHECK_EQ(altr_i_weight, 0.f);
-    DCHECK_EQ(altr_j, gfx::HdrMetadataAgtmParsed::kBaselineIndex);
-    builder.child("altr_i_curve") = nullptr;
-    builder.uniform("altr_i_mix_rgbx") = SkColor4f();
-    builder.uniform("altr_i_mix_Mmcx") = SkColor4f();
-  } else {
-    const auto& altr = params.alternates[altr_i];
-    builder.child("altr_i_curve") =
-        altr.curve->makeRawShader(SkSamplingOptions(SkFilterMode::kLinear));
-    builder.uniform("altr_i_mix_rgbx") = altr.mix_rgbx;
-    builder.uniform("altr_i_mix_Mmcx") = altr.mix_Mmcx;
-    builder.uniform("curve_scale") =
-        params.baseline_max_component / (altr.curve->width() - 1.f);
-  }
-  builder.uniform("altr_j_weight") = altr_j_weight;
-  if (altr_j == gfx::HdrMetadataAgtmParsed::kBaselineIndex) {
-    DCHECK_EQ(altr_j_weight, 0.f);
-    builder.child("altr_j_curve") = nullptr;
-    builder.uniform("altr_j_mix_rgbx") = SkColor4f();
-    builder.uniform("altr_j_mix_Mmcx") = SkColor4f();
-  } else {
-    const auto& altr = params.alternates[altr_j];
-    builder.child("altr_j_curve") =
-        altr.curve->makeRawShader(SkSamplingOptions(SkFilterMode::kLinear));
-    builder.uniform("altr_j_mix_rgbx") = altr.mix_rgbx;
-    builder.uniform("altr_j_mix_Mmcx") = altr.mix_Mmcx;
-  }
-  auto filter = builder.makeColorFilter();
-  CHECK(filter);
-  return filter->makeWithWorkingColorSpace(params.gain_application_color_space);
-}
-
 }  // namespace
 
 bool ToneMapUtil::UseGlobalToneMapFilter(const SkImage* image,
@@ -220,8 +121,11 @@ void ToneMapUtil::AddGlobalToneMapFilterToPaint(
   skcms_TransferFunction trfn;
   image->colorSpace()->transferFn(&trfn);
 
-  gfx::HdrMetadataAgtmParsed agtm;
-  const bool agtm_parsed = agtm.Parse(metadata.getSerializedAgtm());
+  // Parse AGTM, only if the feature is enabled.
+  std::unique_ptr<skhdr::Agtm> agtm_parsed;
+  if (gfx::HdrMetadataAgtm::IsEnabled()) {
+    agtm_parsed = skhdr::Agtm::Make(metadata.getSerializedAgtm());
+  }
 
   // The remainder of the function will construct `filter` to perform all
   // transformations (scaling, OOTF, and tone mapping).
@@ -232,7 +136,7 @@ void ToneMapUtil::AddGlobalToneMapFilterToPaint(
   auto compute_reference_white_luminance = [&]() {
     // AGTM metadata gets priority.
     if (agtm_parsed) {
-      return agtm.hdr_reference_white;
+      return agtm_parsed->getHdrReferenceWhite();
     }
     // Then NDWL.
     if (metadata.ndwl.has_value() && metadata.ndwl->nits > 0.f) {
@@ -257,7 +161,7 @@ void ToneMapUtil::AddGlobalToneMapFilterToPaint(
 
   // Apply tone mapping.
   if (agtm_parsed) {
-    auto tone_map_filter = GetAgtmFilter(agtm, target_hdr_headroom);
+    auto tone_map_filter = agtm_parsed->makeColorFilter(target_hdr_headroom);
     filter = SkColorFilters::Compose(tone_map_filter, std::move(filter));
   } else {
     const float content_max_luminance =
