@@ -169,4 +169,11 @@ std::string LoudEntrypointTypeStringForMetrics(
                           visibleTime);
 }
 
++ (void)logContextualPanelEntrypointDismissMetrics:
+    (std::optional<ContextualPanelTabHelper::EntrypointMetricsData>&)
+        metricsData {
+  base::UmaHistogramEnumeration("IOS.ContextualPanel.DismissedReason",
+                                ContextualPanelDismissedReason::UserDismissed);
+}
+
 @end

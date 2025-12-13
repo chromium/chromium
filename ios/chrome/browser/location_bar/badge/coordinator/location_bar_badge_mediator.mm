@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -323,6 +324,11 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
           startGeminiFlowWithEntryPoint:bwg::EntryPoint::OmniboxChip];
       _tracker->NotifyEvent(
           feature_engagement::events::kIOSGeminiContextualCueChipUsed);
+      break;
+    case LocationBarBadgeType::kContextualPanelEntryPointSample:
+    case LocationBarBadgeType::kPriceInsights:
+    case LocationBarBadgeType::kReaderMode:
+      [self contextualPanelEntrypointBadgeTapped];
       break;
     default:
       break;
@@ -784,6 +790,45 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
     (ContextualPanelItemConfiguration*)config {
   return [self canShowLoudEntrypointMoment] && config &&
          config->CanShowLargeEntrypoint();
+}
+
+- (void)contextualPanelEntrypointBadgeTapped {
+  // Cancel any pending transition timers since user interacted with entrypoint.
+  [self resetTimersAndUIStateAnimated:YES];
+
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(
+          _webStateList->GetActiveWebState());
+  ContextualPanelItemConfiguration* config =
+      contextualPanelTabHelper->GetFirstCachedConfig().get();
+  std::optional<ContextualPanelTabHelper::EntrypointMetricsData>& metricsData =
+      contextualPanelTabHelper->GetMetricsData();
+
+  if (contextualPanelTabHelper->IsContextualPanelCurrentlyOpened()) {
+    [LocationBarBadgeMetrics
+        logContextualPanelEntrypointDismissMetrics:metricsData];
+    [_contextualSheetHandler closeContextualSheet];
+  } else {
+    [LocationBarBadgeMetrics
+        logFirstTapMetricsContextualPanelEntrypointMetrics:metricsData];
+    if (!config || !config->entrypoint_custom_action) {
+      // The contextual panel should not be opened if there is a primary item
+      // with a custom action.
+      [_contextualSheetHandler openContextualSheet];
+    }
+  }
+
+  if (config && config->entrypoint_custom_action) {
+    // Regardless of whether the contextual panel is opened or closed, if the
+    // primary item has a custom action, then it should be triggered when upon
+    // being tapped.
+    config->entrypoint_custom_action.Run();
+  }
+
+  if (!config || config->iph_entrypoint_used_event_name.empty()) {
+    return;
+  }
+  _tracker->NotifyEvent(config->iph_entrypoint_used_event_name);
 }
 
 @end
