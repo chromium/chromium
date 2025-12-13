@@ -282,28 +282,83 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
   // windowId defaults to "current" window.
   int window_id = params.window_id.value_or(extension_misc::kCurrentWindowId);
 
+  // Try to find a suitable browser.
+  // TODO(https://crbug.com/468223125): This is a wild set of tangled
+  // conditions, most of which are inconsistent.
+
   BrowserWindowInterface* browser = nullptr;
   std::string error;
   if (WindowController* controller =
           GetControllerFromWindowID(chrome_details, window_id, &error)) {
     browser = controller->GetBrowserWindowInterface();
-  } else {
-    // No matching window.
-    if (!params.create_browser_if_needed)
-      return base::unexpected(error);
-
-    browser = CreateAndShowBrowser(profile, user_gesture, &error);
   }
-  if (!browser) {
+
+  // We didn't find a browser and shouldn't create a new one, according to the
+  // params. Bail.
+  //
+  // TODO(https://crbug.com/468223125): This isn't consistent, since sometimes
+  // we *will* create a new browser below.
+  if (!browser && !params.create_browser_if_needed) {
     return base::unexpected(error);
   }
 
-  // Ensure the selected browser is normal.
-  if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL &&
-      browser->GetBrowserForMigrationOnly()->IsAttemptingToCloseBrowser()) {
-    browser = chrome::FindTabbedBrowser(
-        profile, function->include_incognito_information());
+  auto* const extension = function->extension();
+  GURL url(chrome::kChromeUINewTabURL);
+  if (params.url) {
+    ASSIGN_OR_RETURN(url, PrepareURLForNavigation(*params.url, extension,
+                                                  function->browser_context()));
   }
+
+  // We can't load extension URLs into incognito windows unless the extension
+  // uses split mode. Special case to fall back to a tabbed window or, if
+  // needed, create one.
+  bool needs_original_profile =
+      url.SchemeIs(kExtensionScheme) &&
+      (!extension || !IncognitoInfo::IsSplitMode(extension));
+
+  bool fallback_to_tabbed_browser = false;
+  bool create_new_if_none_found = false;
+
+  if (params.create_browser_if_needed) {
+    create_new_if_none_found = true;
+  }
+
+  // Check if the browser is valid. If it isn't, reset `browser` and possibly
+  // find a replacement.
+
+  // TODO(https://crbug.com/468223125): Why do we check if it's not a normal
+  // browser *and* it's attempting to close? Should that be *or*? This goes
+  // back to the dawn of time, AKA the initial implementation in 2014:
+  // https://codereview.chromium.org/245933002.
+  if (browser && browser->GetType() != BrowserWindowInterface::TYPE_NORMAL &&
+      browser->GetBrowserForMigrationOnly()->IsAttemptingToCloseBrowser()) {
+    browser = nullptr;
+    fallback_to_tabbed_browser = true;
+  }
+
+  if (browser && needs_original_profile &&
+      browser->GetProfile()->IsOffTheRecord()) {
+    browser = nullptr;
+    fallback_to_tabbed_browser = true;
+    create_new_if_none_found = true;
+  }
+
+  Profile* profile_to_use =
+      needs_original_profile ? profile->GetOriginalProfile() : profile;
+
+  if (!browser && fallback_to_tabbed_browser) {
+    // Don't include incognito information if we need the original profile,
+    // since the goal is to find a non-incognito browser.
+    bool include_incognito_information =
+        function->include_incognito_information() && !needs_original_profile;
+    browser = chrome::FindTabbedBrowser(profile_to_use,
+                                        include_incognito_information);
+  }
+
+  if (!browser && create_new_if_none_found) {
+    browser = CreateAndShowBrowser(profile_to_use, user_gesture, &error);
+  }
+
   if (!browser || !browser->GetWindow()) {
     return base::unexpected(kNoCurrentWindowError);
   }
@@ -326,13 +381,6 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
   // -title
   // -favIconUrl
 
-  auto* const extension = function->extension();
-  GURL url(chrome::kChromeUINewTabURL);
-  if (params.url) {
-    ASSIGN_OR_RETURN(url, PrepareURLForNavigation(*params.url, extension,
-                                                  function->browser_context()));
-  }
-
   // Default to foreground for the new tab. The presence of 'active' property
   // will override this default.
   bool active = params.active.value_or(true);
@@ -344,22 +392,6 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
   // Default to not pinning the tab. Setting the 'pinned' property to true
   // will override this default.
   bool pinned = params.pinned.value_or(false);
-
-  // We can't load extension URLs into incognito windows unless the extension
-  // uses split mode. Special case to fall back to a tabbed window.
-  if (url.SchemeIs(kExtensionScheme) &&
-      (!extension || !IncognitoInfo::IsSplitMode(extension)) &&
-      browser->GetProfile()->IsOffTheRecord()) {
-    Profile* original_profile = browser->GetProfile()->GetOriginalProfile();
-
-    browser = chrome::FindTabbedBrowser(original_profile, false);
-    if (!browser) {
-      browser = CreateAndShowBrowser(original_profile, user_gesture, &error);
-      if (!browser) {
-        return base::unexpected(error);
-      }
-    }
-  }
 
   BrowserWindowInterface* opener_browser =
       opener_window ? opener_window->GetBrowserWindowInterface() : nullptr;
