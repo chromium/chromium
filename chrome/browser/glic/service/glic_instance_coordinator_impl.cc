@@ -229,8 +229,8 @@ void GlicInstanceCoordinatorImpl::Close() {
 void GlicInstanceCoordinatorImpl::CloseAndShutdownInstanceWithFrame(
     content::RenderFrameHost* render_frame_host) {
   for (auto* instance : GetInstances()) {
-    if (instance) {
-      // These calls only have effect if render_frame_host matches.
+    if (instance &&
+        instance->host().IsWebContentPresentAndMatches(render_frame_host)) {
       instance->host().Close();
       instance->host().Shutdown();
     }
