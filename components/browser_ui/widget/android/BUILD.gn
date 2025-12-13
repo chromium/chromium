@@ -475,7 +475,6 @@ android_resources("java_test_resources") {
     "test/java/res/drawable/test_ic_arrow_forward_black_24dp.xml",
     "test/java/res/drawable/test_ic_info_outline_black_24dp.xml",
     "test/java/res/drawable/test_ic_more_vert_black_24dp.xml",
-    "test/java/res/drawable/test_ic_refresh_black_24dp.xml",
     "test/java/res/drawable/test_ic_star_border_black_24dp.xml",
     "test/java/res/drawable/test_ic_vintage_filter.xml",
     "test/java/res/drawable/test_illustration.xml",

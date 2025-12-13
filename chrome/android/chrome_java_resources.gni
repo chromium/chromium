@@ -360,6 +360,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_play_circle.xml",
   "java/res/drawable/ic_reading_list_folder_24dp.xml",
   "java/res/drawable/ic_recent_tabs_bulk_20dp.xml",
+  "java/res/drawable/ic_refresh_24dp_rtl.xml",
   "java/res/drawable/ic_select_check_box_24dp.xml",
   "java/res/drawable/ic_select_window.xml",
   "java/res/drawable/ic_shoppingmode_24dp.xml",

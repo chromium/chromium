@@ -8,4 +8,5 @@ found in the LICENSE file.
 <resources>
     <drawable name="btn_forward">@drawable/arrow_back_24px</drawable>
     <drawable name="btn_back">@drawable/arrow_forward_24px</drawable>
+    <drawable name="btn_toolbar_reload">@drawable/ic_refresh_24dp_rtl</drawable>
 </resources>

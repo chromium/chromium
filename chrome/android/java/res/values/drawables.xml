@@ -11,6 +11,7 @@ found in the LICENSE file.
     <drawable name="btn_forward">@drawable/arrow_forward_24px</drawable>
     <drawable name="btn_back">@drawable/arrow_back_24px</drawable>
     <drawable name="ic_new_tab_button">@drawable/ic_add_round_24dp</drawable>
+    <drawable name="btn_toolbar_reload">@drawable/ic_refresh_24dp</drawable>
 
     <!-- TODO(crbug.com/466238435): Rename call site and remove the reference. -->
     <drawable name="ic_incognito">@drawable/ic_incognito_24dp</drawable>

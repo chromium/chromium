@@ -496,10 +496,7 @@ public class AppMenuItemViewBinderRenderTest {
                                     org.chromium.chrome.browser.ui.appmenu.test.R.drawable
                                             .test_ic_info_outline_black_24dp);
                     Drawable icon5 =
-                            AppCompatResources.getDrawable(
-                                    sActivity,
-                                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                                            .test_ic_refresh_black_24dp);
+                            AppCompatResources.getDrawable(sActivity, R.drawable.ic_refresh_24dp);
                     createIconRowMenuItem(
                             1,
                             MENU_ID1,
