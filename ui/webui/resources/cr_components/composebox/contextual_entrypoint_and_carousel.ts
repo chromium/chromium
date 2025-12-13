@@ -372,6 +372,15 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   updateAutoActiveTabContext(tab: TabInfo|null) {
     // If there is already a suggested tab context, remove it.
     if (this.automaticActiveTabChipToken_) {
+      // In rare cases chrome.metricsPrivate is not available. See
+      // crbug.com/40162029.
+      if (chrome.metricsPrivate) {
+        const metricName =
+            'ContextualSearch.UserAction.DeleteAutoSuggestedTab.' +
+            this.composeboxSource_;
+        chrome.metricsPrivate.recordUserAction(metricName);
+        chrome.metricsPrivate.recordBoolean(metricName, true);
+      }
       this.onDeleteFile_(new CustomEvent('deleteTabContext', {
         detail: {
           uuid: this.automaticActiveTabChipToken_,

@@ -32,7 +32,7 @@ enum class ContextualSearchSource {
   kLens,
 };
 
-// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/histograms.xml:ContextualSearchSource)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/histograms.xml:ContextualSearchSource,//tools/metrics/actions/actions.xml)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

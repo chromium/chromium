@@ -109,6 +109,14 @@ should be able to be added at any place in this file.
   <variant name=".UnpinItem" summary="Remove a custom item."/>
 </variants>
 
+<variants name="ContextualSearchSource">
+  <variant name="ContextualTasks" summary="Contextual tasks"/>
+  <variant name="Lens" summary="Lens"/>
+  <variant name="NewTabPage" summary="New tab page"/>
+  <variant name="Omnibox" summary="Omnibox"/>
+  <variant name="Unknown" summary="Unknown"/>
+</variants>
+
 <variants name="Crow_Type">
   <variant name="" summary="aggregated"/>
   <variant name=".AppMenu" summary="via App Menu entry point"/>
@@ -10193,6 +10201,16 @@ should be able to be added at any place in this file.
   <description>
     Contextual Search closed due to a user action that is relatively uncommon.
   </description>
+</action>
+
+<action
+    name="ContextualSearch.UserAction.DeleteAutoSuggestedTab.{ContextualSearchSource}">
+  <owner>sophiechang@chromium.org</owner>
+  <description>
+    A user deleted the auto-suggested tab context when using the composebox on
+    {ContextualSearchSource}.
+  </description>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </action>
 
 <action name="ContextualSearch.ViewLessThanOneSecond">
