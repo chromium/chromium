@@ -109,8 +109,8 @@ optimize_ts("password_controller_js") {
   sources = [ "resources/password_controller.ts" ]
 
   deps = [
+    "//components/autofill/ios/form_util:fill_js_constants",
     "//components/autofill/ios/form_util:fill_js_dependencies",
-    "//components/autofill/ios/form_util:fill_js_namespace",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]

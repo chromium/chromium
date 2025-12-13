@@ -2,7 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//components/autofill/ios/form_util/resources/create_fill_namespace.js';
+// Add type extensions needed for other scripts defining the fill namespace.
+declare global {
+  // Defines an additional property, `angular`, on the Window object.
+  // The code below assumes that this property exists within the object.
+  interface Window {
+    angular: any;
+  }
+
+  // Extends the Document object to add the ability to access its
+  // properties via the [] notation and defines a property that is
+  // assumed to exist within the object.
+  interface Document {
+    [key: symbol]: number;
+    __gCrElementMap: Map<any, any>;
+    __gCrWebURLNormalizer: HTMLAnchorElement;
+  }
+}
 
 export declare type FormControlElement =
     HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;

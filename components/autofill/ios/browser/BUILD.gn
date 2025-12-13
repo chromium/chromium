@@ -98,8 +98,8 @@ optimize_js("autofill_js") {
   sources = [ "resources/autofill_controller.js" ]
 
   deps = [
+    "//components/autofill/ios/form_util:fill_js_constants",
     "//components/autofill/ios/form_util:fill_js_dependencies",
-    "//components/autofill/ios/form_util:fill_js_namespace",
     "//components/autofill/ios/form_util:form_js",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",

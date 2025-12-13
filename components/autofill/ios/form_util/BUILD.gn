@@ -120,7 +120,7 @@ compile_ts("child_frame_registration_ts") {
   sources = [ "resources/child_frame_registration_lib.ts" ]
   deps = [
     ":autofill_form_features_ts",
-    ":fill_js_namespace",
+    ":fill_js_constants",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
@@ -130,7 +130,7 @@ optimize_js("child_frame_registration_lib_js") {
   deps = [
     ":autofill_form_features_ts",
     ":child_frame_registration_ts",
-    ":fill_js_namespace",
+    ":fill_js_constants",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
@@ -160,17 +160,14 @@ compile_ts("fill_js_dependencies") {
     ":autofill_form_features_ts",
     ":autofill_renderer_id_js",
     ":child_frame_registration_ts",
-    ":fill_js_namespace",
+    ":fill_js_constants",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
 }
 
-compile_ts("fill_js_namespace") {
-  sources = [
-    "resources/create_fill_namespace.ts",
-    "resources/fill_constants.ts",
-  ]
+compile_ts("fill_js_constants") {
+  sources = [ "resources/fill_constants.ts" ]
 
   deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }
@@ -198,7 +195,6 @@ compile_ts("form_js") {
   sources = [ "resources/form.ts" ]
   deps = [
     ":fill_js_dependencies",
-    ":fill_js_namespace",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
@@ -236,7 +232,7 @@ optimize_ts("register_remote_frame_token_js") {
 compile_ts("autofill_renderer_id_js") {
   sources = [ "resources/renderer_id.ts" ]
 
-  deps = [ ":fill_js_namespace" ]
+  deps = [ ":fill_js_constants" ]
 }
 
 optimize_ts("renderer_id_test") {
