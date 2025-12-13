@@ -55,7 +55,7 @@ class ObservationDelayControllerTest : public ObservationDelayTest {
 };
 
 class ObservationDelayControllerNavigateTest
-    : public ObservationDelayTest,
+    : public ObservationDelayControllerTest,
       public base::test::WithFeatureOverride {
  public:
   ObservationDelayControllerNavigateTest()
@@ -63,19 +63,8 @@ class ObservationDelayControllerNavigateTest
             kActorRestartObservationDelayControllerOnNavigate) {}
 };
 
-// Ensure that a navigation while the page stability monitor is in-progress
-// moves the controller to wait on the load.
-// TODO(crbug.com/465757983): Flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS) &&                                   \
-    (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-     defined(LEAK_SANITIZER))
-#define MAYBE_NavigateDuringPageStabilization \
-  DISABLED_NavigateDuringPageStabilization
-#else
-#define MAYBE_NavigateDuringPageStabilization NavigateDuringPageStabilization
-#endif
 IN_PROC_BROWSER_TEST_P(ObservationDelayControllerNavigateTest,
-                       MAYBE_NavigateDuringPageStabilization) {
+                       NavigateDuringPageStabilization) {
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
@@ -114,18 +103,8 @@ IN_PROC_BROWSER_TEST_P(ObservationDelayControllerNavigateTest,
   }
 }
 
-// Ensure that a navigation while the page stability monitor is in-progress
-// moves the controller to wait on the load.
-// TODO(crbug.com/465757983): Flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS) &&                                   \
-    (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-     defined(LEAK_SANITIZER))
-#define MAYBE_NavigateWithTooManyRestarts DISABLED_NavigateWithTooManyRestarts
-#else
-#define MAYBE_NavigateWithTooManyRestarts NavigateWithTooManyRestarts
-#endif
 IN_PROC_BROWSER_TEST_P(ObservationDelayControllerNavigateTest,
-                       MAYBE_NavigateWithTooManyRestarts) {
+                       NavigateWithTooManyRestarts) {
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
