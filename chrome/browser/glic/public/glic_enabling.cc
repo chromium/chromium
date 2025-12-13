@@ -32,6 +32,7 @@
 #include "components/variations/service/variations_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/system/sys_info.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"  // nogncheck
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"  // nogncheck
 #include "chromeos/constants/chromeos_features.h"
@@ -147,8 +148,17 @@ bool GlicEnabling::IsEnabledByFlags() {
   bool is_enabled = base::FeatureList::IsEnabled(features::kGlic) &&
                     features::HasTabSearchToolbarButton();
 #if BUILDFLAG(IS_CHROMEOS)
-  is_enabled = is_enabled && base::FeatureList::IsEnabled(
-                                 chromeos::features::kFeatureManagementGlic);
+  constexpr base::ByteCount kMinimumMemoryThreshold = base::GiB(8);
+
+  // TODO(b:468055370): Remove the bypassing once the glic is fully launched.
+  const bool bypass_cbx_requirement =
+      base::FeatureList::IsEnabled(
+          chromeos::features::kGlicEnableFor8GbDevices) &&
+      base::SysInfo::AmountOfPhysicalMemory() >= kMinimumMemoryThreshold;
+
+  is_enabled = is_enabled && (bypass_cbx_requirement ||
+                              base::FeatureList::IsEnabled(
+                                  chromeos::features::kFeatureManagementGlic));
 #endif  // BUILDFLAG(IS_CHROMEOS)
   return is_enabled;
 }
