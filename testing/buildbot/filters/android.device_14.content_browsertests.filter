@@ -17,3 +17,6 @@
 # Real result on Android looks a bit "smoother" than the reference but
 # is fundamentally correct.
 -FormControlsBrowserTest.Checkbox
+
+# crbug.com/468408601
+-CaptureScreenshotTest.SetDefaultBackgroundColorOverride
