@@ -44,6 +44,16 @@ std::unique_ptr<EventMetrics> EventMetricsTestCreator::CreateEventMetrics(
     EventParams params) {
   CHECK_EQ(GetEventMetricsTypeFor(params.type),
            EventMetricsType::kEventMetrics);
+
+  // `EventMetrics::CreateForTesting()` sets the dispatch timestamp of the
+  // `EventMetrics::DispatchStage::kArrivedInRendererCompositor` stage to
+  // `test_tick_clock->NowTicks()`. The statement below ensures that the
+  // dispatch timestamp is valid and chronological
+  // (`EventMetrics::DispatchStage::kGenerated` <
+  // `EventMetrics::DispatchStage::kArrivedInBrowserMain` <
+  // `EventMetrics::DispatchStage::kArrivedInRendererCompositor`).
+  test_tick_clock_.SetNowTicks(params.timestamp + base::Nanoseconds(2));
+
   auto event = EventMetrics::CreateForTesting(
       params.type, params.timestamp,
       /* arrived_in_browser_main_timestamp= */ params.timestamp +
@@ -106,6 +116,8 @@ EventMetricsTestCreator::CreateScrollEventMetrics(ui::EventType type,
                                                   bool is_inertial,
                                                   ScrollEventParams params) {
   CHECK_EQ(GetEventMetricsTypeFor(type), EventMetricsType::kScrollEventMetrics);
+  // See `EventMetricsTestCreator::CreateEventMetrics()` for why we do this.
+  test_tick_clock_.SetNowTicks(params.timestamp + base::Nanoseconds(2));
   auto event = ScrollEventMetrics::CreateForTesting(
       type, ui::ScrollInputType::kTouchscreen, is_inertial, params.timestamp,
       /* arrived_in_browser_main_timestamp= */ params.timestamp +
@@ -125,6 +137,8 @@ EventMetricsTestCreator::CreateScrollUpdateEventMetrics(
     bool is_inertial,
     ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type,
     ScrollUpdateEventParams params) {
+  // See `EventMetricsTestCreator::CreateEventMetrics()` for why we do this.
+  test_tick_clock_.SetNowTicks(params.timestamp + base::Nanoseconds(2));
   auto event = ScrollUpdateEventMetrics::CreateForTesting(
       ui::EventType::kGestureScrollUpdate, ui::ScrollInputType::kTouchscreen,
       is_inertial, scroll_update_type, params.delta, params.timestamp,

@@ -7,6 +7,7 @@
 
 #include <array>
 #include <optional>
+#include <variant>
 
 #include "base/time/time.h"
 
@@ -51,37 +52,13 @@ struct ScrollJankV4Result {
   // Number of VSyncs that that Chrome missed before presenting the scroll
   // update for each reason. If at least one value is greater than zero, this
   // frame was delayed and thus the scroll update is considered janky.
-  JankReasonArray<int> missed_vsyncs_per_reason;
-
-  // Whether this frame is damaging. This frame is non-damaging if the
-  // following conditions are BOTH true:
-  //
-  //   1. All scroll updates in this frame are non-damaging. A scroll update
-  //      is non-damaging if it didn't cause a frame update (i.e.
-  //      `EventMetrics::caused_frame_update()` is false) and/or didn't change
-  //      the scroll offset (i.e. `ScrollEventMetrics::did_scroll()` is
-  //      false).
-  //
-  //   2. All frames between (both ends exclusive):
-  //        a. the last frame presented by Chrome before this frame and
-  //        b. this frame
-  //      are non-damaging.
-  bool is_damaging_frame;
-
-  // The absolute total raw (unpredicted) delta of all scroll updates
-  // included in this frame (in pixels).
-  float abs_total_raw_delta_pixels;
-
-  // The maximum absolute raw (unpredicted) delta out of all inertial (fling)
-  // scroll updates included in this frame (in pixels). Zero if there were no
-  // inertial scroll updates in this frame.
-  float max_abs_inertial_raw_delta_pixels;
+  JankReasonArray<int> missed_vsyncs_per_reason = {};
 
   // How many VSyncs were between (A) this frame and (B) the previous frame.
   // If this value is greater than one, then Chrome potentially missed one or
   // more VSyncs (i.e. might have been able to present this scroll update
   // earlier). Empty if this frame is the first frame in a scroll.
-  std::optional<int> vsyncs_since_previous_frame;
+  std::optional<int> vsyncs_since_previous_frame = std::nullopt;
 
   // The running delivery cut-off based on frames preceding this frame. See
   // `ScrollJankDroppedFrameTracker::running_delivery_cutoff_` for more
@@ -89,28 +66,84 @@ struct ScrollJankV4Result {
   //
   //   * This frame is the first frame in a scroll.
   //   * All frames since the beginning of the scroll up to and including the
-  //     previous frame have been non-damaging.
-  //   * The most recent janky frame was non-damaging and all frames since
-  //     then up to and including the previous frame have been non-damaging.
-  std::optional<base::TimeDelta> running_delivery_cutoff;
+  //     previous frame have been non-damaging or synthetic.
+  //   * The most recent janky frame was non-damaging or synthetic and all
+  //     frames since then up to and including the previous frame have been
+  //     non-damaging or synthetic.
+  std::optional<base::TimeDelta> running_delivery_cutoff = std::nullopt;
 
   // The running delivery cut-off adjusted for this frame. See
   // `ScrollJankDroppedFrameTracker::CalculateMissedVsyncsPerReasonV4()` for
   // more information. Empty if ANY of the following holds:
   //
   //   * This frame is the first frame in a scroll.
-  //   * This frame is non-damaging.
+  //   * This frame is non-damaging or synthetic.
   //   * All frames since the beginning of the scroll up to and including the
-  //     previous frame have been non-damaging.
-  //   * The most recent janky frame was non-damaging and all frames since
-  //     then up to and including the previous frame have been non-damaging.
+  //     previous frame have been non-damaging or synthetic.
+  //   * The most recent janky frame was non-damaging or synthetic and all
+  //     frames since then up to and including the previous frame have been
+  //     non-damaging or synthetic.
   //   * `vsyncs_since_previous_frame` is equal to one.
-  std::optional<base::TimeDelta> adjusted_delivery_cutoff;
+  std::optional<base::TimeDelta> adjusted_delivery_cutoff = std::nullopt;
 
   // The delivery cut-off of this frame. See
   // `ScrollJankDroppedFrameTracker::ReportLatestPresentationDataV4()` for
-  // more information. Empty if this frame is non-damaging.
-  std::optional<base::TimeDelta> current_delivery_cutoff;
+  // more information. Empty if this frame is non-damaging or synthetic.
+  std::optional<base::TimeDelta> current_delivery_cutoff = std::nullopt;
+
+  // The input generation timestamp of the first scroll update in the frame.
+  //
+  //   * If this frame contains ONLY REAL scroll updates, it's the actual input
+  //     generation timestamp of the earliest scroll update.
+  //   * If this frame contains ONLY SYNTHETIC scroll updates, it's an
+  //     extrapolated input generation timestamp based on the input generation
+  //     → begin frame duration of the most recent real scroll update.
+  //   * If this frame contains BOTH real and synthetic scroll updates, it's
+  //     the earlier input generation timestamp of the two.
+  //
+  // The extrapolated timestamp for a frame which contains only synthetic scroll
+  // updates is empty if ANY of the following holds:
+  //
+  //   * This frame is janky and synthetic.
+  //   * All frames since the beginning of the scroll up to and including this
+  //     frame have been synthetic.
+  //   * The most recent janky frame was synthetic and all frames since then up
+  //     to and including the this frame have been synthetic.
+  struct RealFirstScrollUpdate {
+    base::TimeTicks actual_input_generation_ts;
+  };
+  struct SyntheticFirstScrollUpdate {
+    std::optional<base::TimeTicks> extrapolated_input_generation_ts;
+  };
+  using FirstScrollUpdate =
+      std::variant<RealFirstScrollUpdate, SyntheticFirstScrollUpdate>;
+  FirstScrollUpdate first_scroll_update =
+      SyntheticFirstScrollUpdate(std::nullopt);
+
+  // The presentation timestamp of the frame.
+  //
+  //   * If this frame is DAMAGING, it's the actual presentation timestamp.
+  //   * If this frame is NON-DAMAGING, it's an extrapolated timestamp based on
+  //     the begin frame → presentation duration of the most recent damaging
+  //     frame.
+  //
+  // The extrapolated timestamp for a non-damaging frame is empty if ANY of the
+  // following holds:
+  //
+  //   * This frame is janky and non-damaging.
+  //   * All frames since the beginning of the scroll up to and including this
+  //     frame have been non-damaging.
+  //   * The most recent janky frame was non-damaging and all frames since then
+  //     up to and including the this frame have been non-damaging.
+  struct DamagingPresentation {
+    base::TimeTicks actual_presentation_ts;
+  };
+  struct NonDamagingPresentation {
+    std::optional<base::TimeTicks> extrapolated_presentation_ts;
+  };
+  using Presentation =
+      std::variant<DamagingPresentation, NonDamagingPresentation>;
+  Presentation presentation = NonDamagingPresentation(std::nullopt);
 };
 
 }  // namespace cc

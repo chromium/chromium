@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <utility>
 #include <variant>
 
 #include "base/check.h"
@@ -60,18 +61,10 @@ ScrollJankV4Result ScrollJankV4Decider::DecideJankForFrameWithScrollUpdates(
   base::TimeDelta vsync_interval = args.interval;
   const DamagingFrame* damaging_frame = std::get_if<DamagingFrame>(&damage);
 
+  auto first_scroll_update = GetFirstScrollUpdate(updates);
   ScrollJankV4Result result = {
-      .is_damaging_frame = !!damaging_frame,
+      .first_scroll_update = first_scroll_update,
   };
-  if (updates.real().has_value()) {
-    result.abs_total_raw_delta_pixels =
-        updates.real()->abs_total_raw_delta_pixels;
-    result.max_abs_inertial_raw_delta_pixels =
-        updates.real()->max_abs_inertial_raw_delta_pixels;
-  }
-
-  std::optional<base::TimeTicks> earliest_input_generation_ts =
-      GetEarliestScrollUpdateGenerationTs(updates);
 
   bool is_janky = false;
   int vsyncs_since_previous_frame = 0;
@@ -99,6 +92,17 @@ ScrollJankV4Result ScrollJankV4Decider::DecideJankForFrameWithScrollUpdates(
       // Chrome should have presented its first inputs (`earliest_event`) in an
       // earlier VSync based on the rules described in
       // https://docs.google.com/document/d/1AaBvTIf8i-c-WTKkjaL4vyhQMkSdynxo3XEiwpofdeA.
+      std::optional<base::TimeTicks> earliest_input_generation_ts = std::visit(
+          absl::Overload{
+              [](const ScrollJankV4Result::RealFirstScrollUpdate& real)
+                  -> std::optional<base::TimeTicks> {
+                return real.actual_input_generation_ts;
+              },
+              [](const ScrollJankV4Result::SyntheticFirstScrollUpdate&
+                     synthetic) {
+                return synthetic.extrapolated_input_generation_ts;
+              }},
+          first_scroll_update);
       JankReasonArray<int> missed_vsyncs_per_reason =
           CalculateMissedVsyncsPerReason(
               vsyncs_since_previous_frame, earliest_input_generation_ts,
@@ -113,6 +117,26 @@ ScrollJankV4Result ScrollJankV4Decider::DecideJankForFrameWithScrollUpdates(
       result.missed_vsyncs_per_reason = std::move(missed_vsyncs_per_reason);
     }
   }
+
+  auto presentation = [&]() -> ScrollJankV4Result::Presentation {
+    if (damaging_frame) {
+      return ScrollJankV4Result::DamagingPresentation{
+          .actual_presentation_ts = damaging_frame->presentation_ts};
+    }
+    if (!prev_frame_data_.has_value() ||
+        !prev_frame_data_->presentation_ts.has_value() || is_janky) {
+      return ScrollJankV4Result::NonDamagingPresentation{
+          .extrapolated_presentation_ts = std::nullopt};
+    }
+    // If this is a non-damaging frame, we assume that it had the same
+    // duration between its begin frame and presentation timestamps as the
+    // most recent damaging frame.
+    return ScrollJankV4Result::NonDamagingPresentation{
+        .extrapolated_presentation_ts =
+            *prev_frame_data_->presentation_ts +
+            (args.frame_time - prev_frame_data_->begin_frame_ts)};
+  }();
+  result.presentation = presentation;
 
   // Finally, update internal state for the next iteration.
   prev_frame_data_ = {
@@ -143,20 +167,17 @@ ScrollJankV4Result ScrollJankV4Decider::DecideJankForFrameWithScrollUpdates(
                 prev_frame_data_->begin_frame_ts);
       }(),
       .begin_frame_ts = args.frame_time,
-      .presentation_ts = [&]() -> std::optional<base::TimeTicks> {
-        if (damaging_frame) {
-          return damaging_frame->presentation_ts;
-        }
-        if (!prev_frame_data_.has_value() ||
-            !prev_frame_data_->presentation_ts.has_value() || is_janky) {
-          return std::nullopt;
-        }
-        // If this is a non-damaging frame, we assume that it had the same
-        // duration between its begin frame and presentation timestamps as the
-        // most recent damaging frame.
-        return *prev_frame_data_->presentation_ts +
-               (args.frame_time - prev_frame_data_->begin_frame_ts);
-      }(),
+      .presentation_ts = std::visit(
+          absl::Overload{
+              [](const ScrollJankV4Result::DamagingPresentation& damaging)
+                  -> std::optional<base::TimeTicks> {
+                return damaging.actual_presentation_ts;
+              },
+              [](const ScrollJankV4Result::NonDamagingPresentation&
+                     non_damaging) {
+                return non_damaging.extrapolated_presentation_ts;
+              }},
+          presentation),
       .running_delivery_cutoff = CalculateRunningDeliveryCutoff(
           vsyncs_since_previous_frame, is_janky, updates, damage, args, result),
   };
@@ -378,8 +399,7 @@ ScrollJankV4Decider::CalculateRunningDeliveryCutoff(
   return discounted_prev_delivery_cutoff;
 }
 
-std::optional<base::TimeTicks>
-ScrollJankV4Decider::GetEarliestScrollUpdateGenerationTs(
+ScrollJankV4Result::FirstScrollUpdate ScrollJankV4Decider::GetFirstScrollUpdate(
     const ScrollUpdates& updates) const {
   std::optional<base::TimeTicks>
       extrapolated_first_synthetic_input_generation_ts =
@@ -396,9 +416,13 @@ ScrollJankV4Decider::GetEarliestScrollUpdateGenerationTs(
       (!extrapolated_first_synthetic_input_generation_ts.has_value() ||
        updates.real()->first_input_generation_ts <=
            *extrapolated_first_synthetic_input_generation_ts)) {
-    return updates.real()->first_input_generation_ts;
+    return ScrollJankV4Result::RealFirstScrollUpdate{
+        .actual_input_generation_ts =
+            updates.real()->first_input_generation_ts};
   }
-  return extrapolated_first_synthetic_input_generation_ts;
+  return ScrollJankV4Result::SyntheticFirstScrollUpdate{
+      .extrapolated_input_generation_ts =
+          extrapolated_first_synthetic_input_generation_ts};
 }
 
 void ScrollJankV4Decider::Reset() {

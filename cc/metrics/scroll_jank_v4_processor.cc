@@ -15,6 +15,7 @@
 #include "cc/metrics/scroll_jank_v4_frame_stage.h"
 #include "cc/metrics/scroll_jank_v4_histogram_emitter.h"
 #include "cc/metrics/scroll_jank_v4_result.h"
+#include "cc/metrics/scroll_jank_v4_tracing_recorder.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
@@ -34,10 +35,8 @@ class ProcessorResultConsumer
         features::kCountNonDamagingFramesTowardsHistogramFrameCount.Get();
     histogram_emitter_.OnFrameWithScrollUpdates(
         result.missed_vsyncs_per_reason, counts_towards_histogram_frame_count);
-    if (ScrollUpdateEventMetrics* earliest_event = updates.earliest_event()) {
-      CHECK(!earliest_event->scroll_jank_v4().has_value());
-      earliest_event->set_scroll_jank_v4(result);
-    }
+    ScrollJankV4TracingRecorder::RecordTraceEvents(updates, damage, args,
+                                                   result);
   }
 
   void OnScrollStarted() override { histogram_emitter_.OnScrollStarted(); }

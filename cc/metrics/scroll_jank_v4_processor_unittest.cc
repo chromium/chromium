@@ -4,8 +4,6 @@
 
 #include "cc/metrics/scroll_jank_v4_processor.h"
 
-#include <memory>
-#include <optional>
 #include <string>
 #include <utility>
 #include <variant>
@@ -13,10 +11,10 @@
 #include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_trace_processor.h"
 #include "base/time/time.h"
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
-#include "cc/metrics/scroll_jank_v4_result.h"
 #include "cc/test/event_metrics_test_creator.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,68 +23,15 @@ namespace cc {
 
 namespace {
 
+using TraceId = EventMetrics::TraceId;
+using QueryResult = base::test::TestTraceProcessor::QueryResult;
 using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
 
 constexpr base::TimeDelta kVsyncInterval = base::Milliseconds(16);
 
 constexpr base::TimeTicks MillisSinceEpoch(int64_t millis) {
   return base::TimeTicks() + base::Milliseconds(millis);
-}
-
-constexpr JankReasonArray<int> MakeMissedVsyncCounts(
-    std::initializer_list<std::pair<JankReason, int>> values) {
-  JankReasonArray<int> result = {};  // Default initialize to 0
-  for (const auto& [reason, missed_vsyncs] : values) {
-    result[static_cast<int>(reason)] += missed_vsyncs;
-  }
-  return result;
-}
-
-// Matches a pointer to event metrics iff
-// `result_matcher` matches `event_metrics->AsScrollUpdate()->scroll_jank_v4()`.
-::testing::Matcher<const std::unique_ptr<EventMetrics>&>
-ScrollJankV4DataMatches(
-    ::testing::Matcher<const std::optional<ScrollJankV4Result>&>
-        result_matcher) {
-  // We need to wrap `->AsScrollUpdate()` in a `::testing::Pointee()` because
-  // `event_metrics` is a `std::unique_ptr`.
-  return ::testing::Pointee(::testing::Property(
-      &EventMetrics::AsScrollUpdate,
-      // We don't need to wrap `->scroll_jank_v4` in a `::testing::Pointee()`
-      // because `event_metrics->AsScrollUpdate()` is a raw pointer.
-      Property(&ScrollUpdateEventMetrics::scroll_jank_v4, result_matcher)));
-}
-
-// Matches a pointer to event metrics iff
-// `event_metrics->AsScrollUpdate()->scroll_jank_v4()` is empty.
-const ::testing::Matcher<const std::unique_ptr<EventMetrics>&> kNullJankV4Data =
-    ScrollJankV4DataMatches(::testing::Eq(std::nullopt));
-
-// Matches a pointer to event metrics iff
-// `missed_vsyncs_per_reason_matcher` matches
-// `event_metrics->AsScrollUpdate()->scroll_jank_v4().missed_vsyncs_per_reason`.
-::testing::Matcher<const std::unique_ptr<EventMetrics>&>
-HasMissedVsyncsPerReasonV4(::testing::Matcher<const JankReasonArray<int>&>
-                               missed_vsyncs_per_reason_matcher) {
-  return ScrollJankV4DataMatches(::testing::Optional(
-      ::testing::Field(&ScrollJankV4Result::missed_vsyncs_per_reason,
-                       missed_vsyncs_per_reason_matcher)));
-}
-
-// Matches a pointer to event metrics iff
-// `event_metrics->AsScrollUpdate()->scroll_jank_v4().missed_vsyncs_per_reason`
-// contains only zeros.
-const ::testing::Matcher<const std::unique_ptr<EventMetrics>&> kIsNotJankyV4 =
-    HasMissedVsyncsPerReasonV4(JankReasonArray<int>{});
-
-// Matches a pointer to event metrics iff, for each jank reason,
-// `event_metrics->AsScrollUpdate()->scroll_jank_v4().missed_vsyncs_per_reason`
-// matches the `reason_to_missed_vsync_count` mapping (and is otherwise zero).
-::testing::Matcher<const std::unique_ptr<EventMetrics>&>
-IsJankyV4WithMissedVsyncCounts(std::initializer_list<std::pair<JankReason, int>>
-                                   reason_to_missed_vsync_count) {
-  return HasMissedVsyncsPerReasonV4(
-      MakeMissedVsyncCounts(reason_to_missed_vsync_count));
 }
 
 // Variants of the `features::kHandleNonDamagingInputsInScrollJankV4Metric`
@@ -120,6 +65,95 @@ enum class TestVariant {
 struct ScrollJankV4ProcessorTestCase {
   TestVariant variant;
   std::string test_name;
+};
+
+constexpr const char kTraceQuery[] =
+    R"(
+    SELECT
+      EXTRACT_ARG(
+          arg_set_id,
+          'scroll_jank_v4.updates.real.first_event_latency_id'
+        ) AS event_latency_id,
+      EXTRACT_ARG(arg_set_id, 'scroll_jank_v4.is_janky')
+        AS is_janky,
+      (
+        -- Concatenate the `missed_vsyncs_per_jank_reason` repeated field into a
+        -- single string. For example, the following value:
+        --
+        --   { jank_reason: REASON_A, missed_vsyncs: 1 }
+        --   { jank_reason: REASON_B, missed_vsyncs: 2 }
+        --   { jank_reason: REASON_C, missed_vsyncs: 3 }
+        --
+        -- is converted to 'REASON_A(1),REASON_B(2),REASON_C(3)'.
+        SELECT
+          GROUP_CONCAT(
+            FORMAT('%s(%d)', jank_reason, missed_vsyncs),
+            ','
+            ORDER BY jank_reason ASC
+          )
+        FROM
+          (
+            SELECT
+              args.string_value AS jank_reason,
+              SUBSTRING(args.key, 1, LENGTH(args.key) - LENGTH('.jank_reason'))
+                AS key_prefix
+            FROM args
+            WHERE
+              args.arg_set_id = slice.arg_set_id
+              AND args.flat_key =
+                'scroll_jank_v4.missed_vsyncs_per_jank_reason.jank_reason'
+          )
+        JOIN
+          (
+            SELECT
+              args.int_value AS missed_vsyncs,
+              SUBSTRING(
+                args.key,
+                1,
+                LENGTH(args.key) - LENGTH('.missed_vsyncs')
+              ) AS key_prefix
+            FROM args
+            WHERE
+              args.arg_set_id = slice.arg_set_id
+              AND args.flat_key =
+                'scroll_jank_v4.missed_vsyncs_per_jank_reason.missed_vsyncs'
+          )
+          -- Join the corresponding `jank_reason` and `missed_vsyncs` via
+          -- their shared 'scroll_jank_v4.missed_vsyncs_per_jank_reason[INDEX]'
+          -- key prefix.
+          USING(key_prefix)
+      ) AS jank_reasons
+    FROM slice
+    WHERE name = 'ScrollJankV4'
+    ORDER BY event_latency_id ASC;
+    )";
+
+class ExpectedTraceResults {
+ public:
+  ~ExpectedTraceResults() {
+    if (!expected_results_.empty()) {
+      ADD_FAILURE()
+          << "Non-empty expected_results_. Did you forget to call Take()?";
+    }
+  }
+
+  void ExpectIsNotJanky(int trace_id) {
+    expected_results_.push_back({base::ToString(trace_id), "0", "[NULL]"});
+  }
+
+  void ExpectIsJanky(int trace_id, const char* jank_reasons) {
+    expected_results_.push_back({base::ToString(trace_id), "1", jank_reasons});
+  }
+
+  QueryResult Take() && {
+    QueryResult results;
+    std::swap(results, expected_results_);
+    return results;
+  }
+
+ private:
+  QueryResult expected_results_ = {
+      {"event_latency_id", "is_janky", "jank_reasons"}};
 };
 
 }  // namespace
@@ -177,6 +211,17 @@ class ScrollJankV4ProcessorTest
   int next_begin_frame_sequence_id_ = 1;
   EventMetricsTestCreator metrics_creator_;
   ScrollJankV4Processor processor_;
+  base::test::TracingEnvironment tracing_environment_;
+  base::test::TestTraceProcessor trace_processor_;
+
+  QueryResult QueryTraceProcessor(const char* query) {
+    auto result = trace_processor_.RunQuery(query);
+    if (!result.has_value()) {
+      ADD_FAILURE() << result.error();
+      return {};
+    }
+    return result.value();
+  }
 };
 
 /*
@@ -185,6 +230,9 @@ frame production with consistent input delivery where each frame contains a
 damaging scroll update as janky.
 */
 TEST_P(ScrollJankV4ProcessorTest, ConsistentDamagingFrameProduction) {
+  trace_processor_.StartTrace("input");
+  ExpectedTraceResults expected_results;
+
   // Start a scroll and present frames 1-64.
   {
     base::HistogramTester histogram_tester;
@@ -198,16 +246,18 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentDamagingFrameProduction) {
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(10),
            .begin_frame_args = args}));
       first_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(11),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           first_metrics, next_presentation_ts_, args);
-      EXPECT_THAT(first_metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
+      expected_results.ExpectIsNotJanky(10);
     }
 
     for (int i = 2; i <= 50; i++) {
@@ -219,16 +269,18 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentDamagingFrameProduction) {
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(i * 10),
            .begin_frame_args = args}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(i * 10 + 1),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
-      EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
+      expected_results.ExpectIsNotJanky(i * 10);
     }
 
     // Switch to a fling with one input per frame.
@@ -241,10 +293,11 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentDamagingFrameProduction) {
            .delta = 2.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(i * 10),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
-      EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4));
+      expected_results.ExpectIsNotJanky(i * 10);
     }
 
     histogram_tester.ExpectTotalCount(
@@ -266,10 +319,11 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentDamagingFrameProduction) {
              .delta = 2.0f,
              .caused_frame_update = true,
              .did_scroll = true,
+             .trace_id = TraceId(650),
              .begin_frame_args = args}));
     processor_.ProcessEventsMetricsForPresentedFrame(
         last_metrics_in_fixed_window, next_presentation_ts_, args);
-    EXPECT_THAT(last_metrics_in_fixed_window, ElementsAre(kIsNotJankyV4));
+    expected_results.ExpectIsNotJanky(650);
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow", 0, 1);
@@ -290,10 +344,11 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentDamagingFrameProduction) {
            .delta = 2.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(i * 10),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
-      EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4));
+      expected_results.ExpectIsNotJanky(i * 10);
     }
 
     histogram_tester.ExpectTotalCount(
@@ -321,6 +376,11 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentDamagingFrameProduction) {
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.PerScroll", 0, 1);
   }
+
+  absl::Status status = trace_processor_.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+  EXPECT_THAT(QueryTraceProcessor(kTraceQuery),
+              ElementsAreArray(std::move(expected_results).Take()));
 }
 
 /*
@@ -329,6 +389,9 @@ Tests that, regardless of `TestVariant`, the scroll jank v4 metric marks
 each frame contains a damaging scroll update as janky.
 */
 TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
+  trace_processor_.StartTrace("input");
+  ExpectedTraceResults expected_results;
+
   // Start a scroll and present frames 1-64.
   {
     base::HistogramTester histogram_tester;
@@ -342,16 +405,18 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(10),
            .begin_frame_args = args}));
       first_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(11),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           first_metrics, next_presentation_ts_, args);
-      EXPECT_THAT(first_metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
+      expected_results.ExpectIsNotJanky(10);
     }
 
     for (int i = 2; i <= 10; i++) {
@@ -363,16 +428,18 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(i * 10),
            .begin_frame_args = args}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(i * 10 + 1),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
-      EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
+      expected_results.ExpectIsNotJanky(i * 10);
     }
 
     {
@@ -391,29 +458,28 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(110),
            .begin_frame_args = args}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(111),
            .begin_frame_args = args}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(112),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
-      EXPECT_THAT(
-          metrics,
-          ElementsAre(
-              IsJankyV4WithMissedVsyncCounts(
-                  {{JankReason::kMissedVsyncDueToDeceleratingInputFrameDelivery,
-                    1},
-                   {JankReason::kMissedVsyncDuringFastScroll, 2}}),
-              kNullJankV4Data, kNullJankV4Data));
+      expected_results.ExpectIsJanky(
+          110,
+          "MISSED_VSYNC_DUE_TO_DECELERATING_INPUT_FRAME_DELIVERY(1),"
+          "MISSED_VSYNC_DURING_FAST_SCROLL(2)");
     }
 
     for (int i = 12; i <= 50; i++) {
@@ -425,16 +491,18 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(i * 10),
            .begin_frame_args = args}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(i * 10 + 1),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
-      EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
+      expected_results.ExpectIsNotJanky(i * 10);
     }
 
     // Switch to a fling with one input per frame.
@@ -450,11 +518,11 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
            .delta = 2.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(510),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
-      EXPECT_THAT(metrics, ElementsAre(IsJankyV4WithMissedVsyncCounts(
-                               {{JankReason::kMissedVsyncAtStartOfFling, 5}})));
+      expected_results.ExpectIsJanky(510, "MISSED_VSYNC_AT_START_OF_FLING(5)");
     }
 
     for (int i = 52; i <= 64; i++) {
@@ -466,10 +534,11 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
            .delta = 2.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(i * 10),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
-      EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4));
+      expected_results.ExpectIsNotJanky(i * 10);
     }
 
     histogram_tester.ExpectTotalCount(
@@ -491,10 +560,11 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
              .delta = 2.0f,
              .caused_frame_update = true,
              .did_scroll = true,
+             .trace_id = TraceId(650),
              .begin_frame_args = args}));
     processor_.ProcessEventsMetricsForPresentedFrame(
         last_metrics_in_fixed_window, next_presentation_ts_, args);
-    EXPECT_THAT(last_metrics_in_fixed_window, ElementsAre(kIsNotJankyV4));
+    expected_results.ExpectIsNotJanky(650);
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow", 2 * 100 / 64,
@@ -516,10 +586,11 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
            .delta = 2.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(i * 10),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
-      EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4));
+      expected_results.ExpectIsNotJanky(i * 10);
     }
 
     // The processor should mark frame 81 as janky. It violates the fling
@@ -534,11 +605,11 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
            .delta = 2.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(810),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
-      EXPECT_THAT(metrics, ElementsAre(IsJankyV4WithMissedVsyncCounts(
-                               {{JankReason::kMissedVsyncDuringFling, 9}})));
+      expected_results.ExpectIsJanky(810, "MISSED_VSYNC_DURING_FLING(9)");
     }
 
     for (int i = 82; i <= 100; i++) {
@@ -550,10 +621,11 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
            .delta = 2.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(10 * i),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
-      EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4));
+      expected_results.ExpectIsNotJanky(10 * i);
     }
 
     histogram_tester.ExpectTotalCount(
@@ -582,6 +654,11 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
         "Event.ScrollJank.DelayedFramesPercentage4.PerScroll", 3 * 100 / 100,
         1);
   }
+
+  absl::Status status = trace_processor_.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+  EXPECT_THAT(QueryTraceProcessor(kTraceQuery),
+              ElementsAreArray(std::move(expected_results).Take()));
 }
 
 /*
@@ -596,6 +673,9 @@ non-janky.
 non-damaging inputs.
 */
 TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
+  trace_processor_.StartTrace("input");
+  ExpectedTraceResults expected_results;
+
   // Start with a regular scroll with two inputs per frame.
   {
     base::HistogramTester histogram_tester;
@@ -608,16 +688,18 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(10),
            .begin_frame_args = args}));
       first_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(11),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           first_metrics, next_presentation_ts_, args);
-      EXPECT_THAT(first_metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
+      expected_results.ExpectIsNotJanky(10);
     }
     // Frames presented: 1 damaging, 1 total.
 
@@ -634,12 +716,14 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
            .delta = 5.0f,
            .caused_frame_update = false,
            .did_scroll = false,
+           .trace_id = TraceId(damaging_frame * 10),
            .begin_frame_args = non_damaging_args}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ - kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = false,
            .did_scroll = false,
+           .trace_id = TraceId(damaging_frame * 10 + 1),
            .begin_frame_args = non_damaging_args}));
       // Two inputs for a presented damaging frame.
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
@@ -647,12 +731,14 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(damaging_frame * 10 + 2),
            .begin_frame_args = damaging_args}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(damaging_frame * 10 + 3),
            .begin_frame_args = damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, damaging_args);
@@ -662,12 +748,8 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
           // non-damaging) and marks `metrics[2]` as janky due to the fast
           // scroll rule (because the metric sees a missed VSync between two
           // consecutive damaging frames).
-          EXPECT_THAT(
-              metrics,
-              ElementsAre(kNullJankV4Data, kNullJankV4Data,
-                          IsJankyV4WithMissedVsyncCounts(
-                              {{JankReason::kMissedVsyncDuringFastScroll, 1}}),
-                          kNullJankV4Data));
+          expected_results.ExpectIsJanky(damaging_frame * 10 + 2,
+                                         "MISSED_VSYNC_DURING_FAST_SCROLL(1)");
           break;
         case TestVariant::kNewBehaviorCountDamagingFramesOnly:
         case TestVariant::kNewBehaviorCountAllFrames:
@@ -675,13 +757,13 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
           // `metrics[0]`) and one damaging frame (starting with `metrics[2]`).
           // It doesn't observe any missed VSyncs, so it doesn't mark any frame
           // as janky.
-          EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data,
-                                           kIsNotJankyV4, kNullJankV4Data));
+          expected_results.ExpectIsNotJanky(damaging_frame * 10);
+          expected_results.ExpectIsNotJanky(damaging_frame * 10 + 2);
       }
     }
     // Frames presented: 31 damaging, 61 total.
 
-    for (int damaging_frame = 62; damaging_frame <= 64; damaging_frame++) {
+    for (int damaging_frame = 32; damaging_frame <= 34; damaging_frame++) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
@@ -690,17 +772,18 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(damaging_frame * 10),
            .begin_frame_args = args}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(damaging_frame * 10 + 1),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
-
-      EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
+      expected_results.ExpectIsNotJanky(damaging_frame * 10);
     }
     // Frames presented: 34 damaging, 64 total.
 
@@ -722,16 +805,18 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(350),
            .begin_frame_args = args}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(351),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
-      EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
+      expected_results.ExpectIsNotJanky(350);
     }
     // Frames presented: 35 damaging, 65 total.
 
@@ -773,16 +858,16 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
                .delta = 2.0f,
                .caused_frame_update = false,
                .did_scroll = false,
+               .trace_id = TraceId(damaging_frame * 10),
                .begin_frame_args = non_damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           non_damaging_metrics, next_presentation_ts_, non_damaging_args);
       switch (GetParam().variant) {
         case TestVariant::kLegacyBehavior:
-          EXPECT_THAT(non_damaging_metrics, ElementsAre(kNullJankV4Data));
           break;
         case TestVariant::kNewBehaviorCountDamagingFramesOnly:
         case TestVariant::kNewBehaviorCountAllFrames:
-          EXPECT_THAT(non_damaging_metrics, ElementsAre(kIsNotJankyV4));
+          expected_results.ExpectIsNotJanky(damaging_frame * 10);
       }
 
       AdvanceByVsyncs(1);
@@ -794,21 +879,20 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
                .delta = 2.0f,
                .caused_frame_update = true,
                .did_scroll = true,
+               .trace_id = TraceId(damaging_frame * 10 + 1),
                .begin_frame_args = damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           damaging_metrics, next_presentation_ts_, damaging_args);
       switch (GetParam().variant) {
         case TestVariant::kLegacyBehavior:
-          EXPECT_THAT(damaging_metrics,
-                      ElementsAre(IsJankyV4WithMissedVsyncCounts(
-                          {{damaging_frame == 36
-                                ? JankReason::kMissedVsyncAtStartOfFling
-                                : JankReason::kMissedVsyncDuringFling,
-                            1}})));
+          expected_results.ExpectIsJanky(
+              damaging_frame * 10 + 1, damaging_frame == 36
+                                           ? "MISSED_VSYNC_AT_START_OF_FLING(1)"
+                                           : "MISSED_VSYNC_DURING_FLING(1)");
           break;
         case TestVariant::kNewBehaviorCountDamagingFramesOnly:
         case TestVariant::kNewBehaviorCountAllFrames:
-          EXPECT_THAT(damaging_metrics, ElementsAre(kIsNotJankyV4));
+          expected_results.ExpectIsNotJanky(damaging_frame * 10 + 1);
       }
     }
     // Frames presented: 64 damaging, 123 total.
@@ -830,10 +914,11 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
          .delta = 2.0f,
          .caused_frame_update = true,
          .did_scroll = true,
+         .trace_id = TraceId(650),
          .begin_frame_args = args}));
     processor_.ProcessEventsMetricsForPresentedFrame(
         metrics, next_presentation_ts_, args);
-    EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4));
+    expected_results.ExpectIsNotJanky(650);
     // Frames presented: 65 damaging, 124 total.
 
     switch (GetParam().variant) {
@@ -877,10 +962,11 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
            .delta = 2.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(damaging_frame * 10),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
-      EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4));
+      expected_results.ExpectIsNotJanky(damaging_frame * 10);
     }
     // Frames presented: 69 damaging, 128 total.
 
@@ -920,6 +1006,11 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
             "Event.ScrollJank.DelayedFramesPercentage4.PerScroll", 0, 1);
     }
   }
+
+  absl::Status status = trace_processor_.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+  EXPECT_THAT(QueryTraceProcessor(kTraceQuery),
+              ElementsAreArray(std::move(expected_results).Take()));
 }
 
 /*
@@ -934,6 +1025,9 @@ missed one or more VSyncs as janky.
 non-damaging inputs.
 */
 TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
+  trace_processor_.StartTrace("input");
+  ExpectedTraceResults expected_results;
+
   // Start with a regular scroll with two inputs per frame.
   {
     base::HistogramTester histogram_tester;
@@ -946,16 +1040,18 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(10),
            .begin_frame_args = args}));
       first_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(11),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           first_metrics, next_presentation_ts_, args);
-      EXPECT_THAT(first_metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
+      expected_results.ExpectIsNotJanky(10);
     }
     // Frames presented: 1 damaging, 1 total.
 
@@ -972,12 +1068,14 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
            .delta = 5.0f,
            .caused_frame_update = false,
            .did_scroll = false,
+           .trace_id = TraceId(damaging_frame * 10),
            .begin_frame_args = non_damaging_args}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ - kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = false,
            .did_scroll = false,
+           .trace_id = TraceId(damaging_frame * 10 + 1),
            .begin_frame_args = non_damaging_args}));
       // Two inputs for a presented damaging frame.
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
@@ -985,12 +1083,14 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(damaging_frame * 10 + 2),
            .begin_frame_args = damaging_args}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(damaging_frame * 10 + 3),
            .begin_frame_args = damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, damaging_args);
@@ -1000,12 +1100,8 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
           // non-damaging) and marks `metrics[2]` as janky due to the fast
           // scroll rule (because the metric sees a missed VSync between two
           // consecutive damaging frames).
-          EXPECT_THAT(
-              metrics,
-              ElementsAre(kNullJankV4Data, kNullJankV4Data,
-                          IsJankyV4WithMissedVsyncCounts(
-                              {{JankReason::kMissedVsyncDuringFastScroll, 1}}),
-                          kNullJankV4Data));
+          expected_results.ExpectIsJanky(damaging_frame * 10 + 2,
+                                         "MISSED_VSYNC_DURING_FAST_SCROLL(1)");
           break;
         case TestVariant::kNewBehaviorCountDamagingFramesOnly:
         case TestVariant::kNewBehaviorCountAllFrames:
@@ -1013,8 +1109,8 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
           // `metrics[0]`) and one damaging frame (starting with `metrics[2]`).
           // It doesn't observe any missed VSyncs, so it doesn't mark any frame
           // as janky.
-          EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data,
-                                           kIsNotJankyV4, kNullJankV4Data));
+          expected_results.ExpectIsNotJanky(damaging_frame * 10);
+          expected_results.ExpectIsNotJanky(damaging_frame * 10 + 2);
       }
     }
     // Frames presented: 10 damaging, 19 total.
@@ -1038,18 +1134,21 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
            .delta = 5.0f,
            .caused_frame_update = false,
            .did_scroll = false,
+           .trace_id = TraceId(110),
            .begin_frame_args = non_damaging_args}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ - kVsyncInterval,
            .delta = 5.0f,
            .caused_frame_update = false,
            .did_scroll = false,
+           .trace_id = TraceId(111),
            .begin_frame_args = non_damaging_args}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ - kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = false,
            .did_scroll = false,
+           .trace_id = TraceId(112),
            .begin_frame_args = non_damaging_args}));
       // Two inputs for a presented damaging frame.
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
@@ -1057,12 +1156,14 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(113),
            .begin_frame_args = damaging_args}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(114),
            .begin_frame_args = damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, damaging_args);
@@ -1075,12 +1176,8 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
           // completely misses that there was also a violation of the running
           // consistency rule (see the `TestVariant::kNewBehavior.*` case
           // below).
-          EXPECT_THAT(
-              metrics,
-              ElementsAre(kNullJankV4Data, kNullJankV4Data, kNullJankV4Data,
-                          IsJankyV4WithMissedVsyncCounts(
-                              {{JankReason::kMissedVsyncDuringFastScroll, 3}}),
-                          kNullJankV4Data));
+          expected_results.ExpectIsJanky(113,
+                                         "MISSED_VSYNC_DURING_FAST_SCROLL(3)");
           break;
         case TestVariant::kNewBehaviorCountDamagingFramesOnly:
         case TestVariant::kNewBehaviorCountAllFrames:
@@ -1090,16 +1187,11 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
           //    VSync earlier.
           // 2. There were 2 VSyncs missed (with no inputs) before the
           //    non-damaging frame during a fast scroll.
-          EXPECT_THAT(
-              metrics,
-              ElementsAre(
-                  IsJankyV4WithMissedVsyncCounts(
-                      {{JankReason::
-                            kMissedVsyncDueToDeceleratingInputFrameDelivery,
-                        1},
-                       {JankReason::kMissedVsyncDuringFastScroll, 2}}),
-                  kNullJankV4Data, kNullJankV4Data, kIsNotJankyV4,
-                  kNullJankV4Data));
+          expected_results.ExpectIsJanky(
+              110,
+              "MISSED_VSYNC_DUE_TO_DECELERATING_INPUT_FRAME_DELIVERY(1),"
+              "MISSED_VSYNC_DURING_FAST_SCROLL(2)");
+          expected_results.ExpectIsNotJanky(113);
       }
     }
     // Frames presented: 11 damaging, 21 total.
@@ -1116,12 +1208,14 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
            .delta = 5.0f,
            .caused_frame_update = false,
            .did_scroll = false,
+           .trace_id = TraceId(damaging_frame * 10),
            .begin_frame_args = non_damaging_args}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ - kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = false,
            .did_scroll = false,
+           .trace_id = TraceId(damaging_frame * 10 + 1),
            .begin_frame_args = non_damaging_args}));
       // Two inputs for a presented damaging frame.
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
@@ -1129,12 +1223,14 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(damaging_frame * 10 + 2),
            .begin_frame_args = damaging_args}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(damaging_frame * 10 + 3),
            .begin_frame_args = damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, damaging_args);
@@ -1144,12 +1240,8 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
           // non-damaging) and marks `metrics[2]` as janky due to the fast
           // scroll rule (because the metric sees a missed VSync between two
           // consecutive damaging frames).
-          EXPECT_THAT(
-              metrics,
-              ElementsAre(kNullJankV4Data, kNullJankV4Data,
-                          IsJankyV4WithMissedVsyncCounts(
-                              {{JankReason::kMissedVsyncDuringFastScroll, 1}}),
-                          kNullJankV4Data));
+          expected_results.ExpectIsJanky(damaging_frame * 10 + 2,
+                                         "MISSED_VSYNC_DURING_FAST_SCROLL(1)");
           break;
         case TestVariant::kNewBehaviorCountDamagingFramesOnly:
         case TestVariant::kNewBehaviorCountAllFrames:
@@ -1157,8 +1249,8 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
           // `metrics[0]`) and one damaging frame (starting with `metrics[2]`).
           // It doesn't observe any missed VSyncs, so it doesn't mark any frame
           // as janky.
-          EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data,
-                                           kIsNotJankyV4, kNullJankV4Data));
+          expected_results.ExpectIsNotJanky(damaging_frame * 10);
+          expected_results.ExpectIsNotJanky(damaging_frame * 10 + 2);
       }
     }
     // Frames presented: 31 damaging, 61 total.
@@ -1172,16 +1264,18 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(damaging_frame * 10),
            .begin_frame_args = args}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(damaging_frame * 10 + 1),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
-      EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
+      expected_results.ExpectIsNotJanky(damaging_frame * 10);
     }
     // Frames presented: 34 damaging, 64 total.
 
@@ -1203,16 +1297,18 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(350),
            .begin_frame_args = args}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(351),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
-      EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
+      expected_results.ExpectIsNotJanky(350);
     }
     // Frames presented: 35 damaging, 65 total.
 
@@ -1258,19 +1354,18 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
                .delta = 2.0f,
                .caused_frame_update = false,
                .did_scroll = false,
+               .trace_id = TraceId(360),
                .begin_frame_args = non_damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           non_damaging_metrics, next_presentation_ts_, non_damaging_args);
       switch (GetParam().variant) {
         case TestVariant::kLegacyBehavior:
-          EXPECT_THAT(non_damaging_metrics, ElementsAre(kNullJankV4Data));
           break;
         case TestVariant::kNewBehaviorCountDamagingFramesOnly:
         case TestVariant::kNewBehaviorCountAllFrames:
           // The new behavior marks the non-damaging frame as janky.
-          EXPECT_THAT(non_damaging_metrics,
-                      ElementsAre(IsJankyV4WithMissedVsyncCounts(
-                          {{JankReason::kMissedVsyncAtStartOfFling, 5}})));
+          expected_results.ExpectIsJanky(360,
+                                         "MISSED_VSYNC_AT_START_OF_FLING(5)");
       }
 
       AdvanceByVsyncs(1);
@@ -1282,6 +1377,7 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
                .delta = 2.0f,
                .caused_frame_update = true,
                .did_scroll = true,
+               .trace_id = TraceId(361),
                .begin_frame_args = damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           damaging_metrics, next_presentation_ts_, damaging_args);
@@ -1289,13 +1385,12 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
         case TestVariant::kLegacyBehavior:
           // Whereas the legacy behavior marks the subsequent damaging frame as
           // janky (with one more VSync than it should).
-          EXPECT_THAT(damaging_metrics,
-                      ElementsAre(IsJankyV4WithMissedVsyncCounts(
-                          {{JankReason::kMissedVsyncAtStartOfFling, 6}})));
+          expected_results.ExpectIsJanky(361,
+                                         "MISSED_VSYNC_AT_START_OF_FLING(6)");
           break;
         case TestVariant::kNewBehaviorCountDamagingFramesOnly:
         case TestVariant::kNewBehaviorCountAllFrames:
-          EXPECT_THAT(damaging_metrics, ElementsAre(kIsNotJankyV4));
+          expected_results.ExpectIsNotJanky(361);
       }
     }
     // Frames presented: 36 damaging, 67 total.
@@ -1311,16 +1406,16 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
                .delta = 2.0f,
                .caused_frame_update = false,
                .did_scroll = false,
+               .trace_id = TraceId(damaging_frame * 10),
                .begin_frame_args = non_damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           non_damaging_metrics, next_presentation_ts_, non_damaging_args);
       switch (GetParam().variant) {
         case TestVariant::kLegacyBehavior:
-          EXPECT_THAT(non_damaging_metrics, ElementsAre(kNullJankV4Data));
           break;
         case TestVariant::kNewBehaviorCountDamagingFramesOnly:
         case TestVariant::kNewBehaviorCountAllFrames:
-          EXPECT_THAT(non_damaging_metrics, ElementsAre(kIsNotJankyV4));
+          expected_results.ExpectIsNotJanky(damaging_frame * 10);
       }
 
       AdvanceByVsyncs(1);
@@ -1332,18 +1427,18 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
                .delta = 2.0f,
                .caused_frame_update = true,
                .did_scroll = true,
+               .trace_id = TraceId(damaging_frame * 10 + 1),
                .begin_frame_args = damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           damaging_metrics, next_presentation_ts_, damaging_args);
       switch (GetParam().variant) {
         case TestVariant::kLegacyBehavior:
-          EXPECT_THAT(damaging_metrics,
-                      ElementsAre(IsJankyV4WithMissedVsyncCounts(
-                          {{JankReason::kMissedVsyncDuringFling, 1}})));
+          expected_results.ExpectIsJanky(damaging_frame * 10 + 1,
+                                         "MISSED_VSYNC_DURING_FLING(1)");
           break;
         case TestVariant::kNewBehaviorCountDamagingFramesOnly:
         case TestVariant::kNewBehaviorCountAllFrames:
-          EXPECT_THAT(damaging_metrics, ElementsAre(kIsNotJankyV4));
+          expected_results.ExpectIsNotJanky(damaging_frame * 10 + 1);
       }
     }
     // Frames presented: 64 damaging, 123 total.
@@ -1366,10 +1461,11 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
              .delta = 2.0f,
              .caused_frame_update = true,
              .did_scroll = true,
+             .trace_id = TraceId(650),
              .begin_frame_args = args}));
     processor_.ProcessEventsMetricsForPresentedFrame(
         last_metrics_in_fixed_window, next_presentation_ts_, args);
-    EXPECT_THAT(last_metrics_in_fixed_window, ElementsAre(kIsNotJankyV4));
+    expected_results.ExpectIsNotJanky(650);
     // Frames presented: 65 damaging, 124 total.
 
     switch (GetParam().variant) {
@@ -1417,19 +1513,17 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
                .delta = 2.0f,
                .caused_frame_update = false,
                .did_scroll = false,
+               .trace_id = TraceId(660),
                .begin_frame_args = non_damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           non_damaging_metrics, next_presentation_ts_, non_damaging_args);
       switch (GetParam().variant) {
         case TestVariant::kLegacyBehavior:
-          EXPECT_THAT(non_damaging_metrics, ElementsAre(kNullJankV4Data));
           break;
         case TestVariant::kNewBehaviorCountDamagingFramesOnly:
         case TestVariant::kNewBehaviorCountAllFrames:
           // The new behavior marks the non-damaging frame as janky.
-          EXPECT_THAT(non_damaging_metrics,
-                      ElementsAre(IsJankyV4WithMissedVsyncCounts(
-                          {{JankReason::kMissedVsyncDuringFling, 9}})));
+          expected_results.ExpectIsJanky(660, "MISSED_VSYNC_DURING_FLING(9)");
       }
 
       AdvanceByVsyncs(1);
@@ -1441,6 +1535,7 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
                .delta = 2.0f,
                .caused_frame_update = true,
                .did_scroll = true,
+               .trace_id = TraceId(661),
                .begin_frame_args = damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           damaging_metrics, next_presentation_ts_, damaging_args);
@@ -1448,13 +1543,11 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
         case TestVariant::kLegacyBehavior:
           // Whereas the legacy behavior marks the subsequent damaging frame as
           // janky (with one more VSync than it should).
-          EXPECT_THAT(damaging_metrics,
-                      ElementsAre(IsJankyV4WithMissedVsyncCounts(
-                          {{JankReason::kMissedVsyncDuringFling, 10}})));
+          expected_results.ExpectIsJanky(661, "MISSED_VSYNC_DURING_FLING(10)");
           break;
         case TestVariant::kNewBehaviorCountDamagingFramesOnly:
         case TestVariant::kNewBehaviorCountAllFrames:
-          EXPECT_THAT(damaging_metrics, ElementsAre(kIsNotJankyV4));
+          expected_results.ExpectIsNotJanky(661);
       }
     }
     // Frames presented: 66 damaging, 126 total.
@@ -1469,10 +1562,11 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
            .delta = 2.0f,
            .caused_frame_update = true,
            .did_scroll = true,
+           .trace_id = TraceId(damaging_frame * 10),
            .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
-      EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4));
+      expected_results.ExpectIsNotJanky(damaging_frame * 10);
     }
     // Frames presented: 68 damaging, 128 total.
 
@@ -1519,6 +1613,11 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
             3 * 100 / 128 /* Frames 11, 36 & 66 */, 1);
     }
   }
+
+  absl::Status status = trace_processor_.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+  EXPECT_THAT(QueryTraceProcessor(kTraceQuery),
+              ElementsAreArray(std::move(expected_results).Take()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
