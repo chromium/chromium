@@ -872,8 +872,7 @@ IN_PROC_BROWSER_TEST_F(WebstorePrivateEnterprisePromotionApiTest,
   PrefService* prefs = profile()->GetPrefs();
   prefs->SetInteger(
       enterprise_promotion::kEnterprisePromotionEligibility,
-      static_cast<int>(
-          api::webstore_private::PromotionType::kChromeEnterprisePremium));
+      static_cast<int>(enterprise::PromotionType::kChromeEnterprisePremium));
   base::Time future_expiration = base::Time::Now() + base::Hours(1);
   prefs->SetTime(pref_names::kEnterprisePromotionExpirationTime,
                  future_expiration);
@@ -890,8 +889,7 @@ IN_PROC_BROWSER_TEST_F(WebstorePrivateEnterprisePromotionApiTest,
   EXPECT_TRUE(result->is_string());
   EXPECT_EQ("CHROME_ENTERPRISE_PREMIUM", result->GetString());
   EXPECT_EQ(
-      static_cast<int>(
-          api::webstore_private::PromotionType::kChromeEnterprisePremium),
+      static_cast<int>(enterprise::PromotionType::kChromeEnterprisePremium),
       prefs->GetInteger(enterprise_promotion::kEnterprisePromotionEligibility));
   EXPECT_EQ(future_expiration,
             prefs->GetTime(pref_names::kEnterprisePromotionExpirationTime));

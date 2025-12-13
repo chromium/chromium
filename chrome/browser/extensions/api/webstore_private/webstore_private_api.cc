@@ -399,6 +399,21 @@ bool IsAppLauncherEnabled() {
 #endif
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+api::webstore_private::PromotionType WebstorePromotionBannerPrefToApiResult(
+    enterprise::PromotionType pref) {
+  switch (pref) {
+    case enterprise::PromotionType::kUnspecified:
+      return api::webstore_private::PromotionType::kPromotionTypeUnspecified;
+    case enterprise::PromotionType::kChromeEnterpriseCore:
+      return api::webstore_private::PromotionType::kChromeEnterpriseCore;
+    case enterprise::PromotionType::kChromeEnterprisePremium:
+      return api::webstore_private::PromotionType::kChromeEnterprisePremium;
+  }
+  NOTREACHED();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 // static
@@ -1419,18 +1434,19 @@ WebstorePrivateShouldShowEnterprisePromotionBannerFunction::Run() {
   const base::Time expiration_time =
       prefs->GetTime(pref_names::kEnterprisePromotionExpirationTime);
   if (!expiration_time.is_null() && base::Time::Now() <= expiration_time) {
-    std::string promotion_type_string = api::webstore_private::ToString(
-        static_cast<api::webstore_private::PromotionType>(prefs->GetInteger(
-            enterprise_promotion::kEnterprisePromotionEligibility)));
+    std::string promotion_type_string =
+        api::webstore_private::ToString(WebstorePromotionBannerPrefToApiResult(
+            static_cast<enterprise::PromotionType>(prefs->GetInteger(
+                enterprise_promotion::kEnterprisePromotionEligibility))));
     return RespondNow(WithArguments(promotion_type_string));
   }
 
   // If multiples tags are opened at the same time without valid cache, only the
   // first page will be checked and potential get banner.
-  prefs->SetInteger(
-      enterprise_promotion::kEnterprisePromotionEligibility,
-      static_cast<int>(
-          api::webstore_private::PromotionType::kPromotionTypeUnspecified));
+  enterprise::PromotionType default_pref =
+      enterprise::PromotionType::kUnspecified;
+  prefs->SetInteger(enterprise_promotion::kEnterprisePromotionEligibility,
+                    static_cast<int>(default_pref));
   prefs->SetTime(pref_names::kEnterprisePromotionExpirationTime,
                  base::Time::Now() + base::Days(1));
 
@@ -1448,7 +1464,7 @@ WebstorePrivateShouldShowEnterprisePromotionBannerFunction::Run() {
     // unspecified.
     if (!promotion_eligibility_checker_) {
       return RespondNow(WithArguments(api::webstore_private::ToString(
-          api::webstore_private::PromotionType::kPromotionTypeUnspecified)));
+          WebstorePromotionBannerPrefToApiResult(default_pref))));
     }
   }
 
@@ -1464,25 +1480,18 @@ void WebstorePrivateShouldShowEnterprisePromotionBannerFunction::
     OnPromotionEligibilityDetermined(
         enterprise_management::GetUserEligiblePromotionsResponse response) {
   enterprise::PromotionType pref_promotion_type;
-  api::webstore_private::PromotionType api_promotion_type;
 
   // TODO(crbug.com/465709271) Switch to cws_privacy_details_promotion when
   // server is ready.
   switch (response.promotions().policy_page_promotion()) {
     case enterprise_management::CHROME_ENTERPRISE_CORE:
       pref_promotion_type = enterprise::PromotionType::kChromeEnterpriseCore;
-      api_promotion_type =
-          api::webstore_private::PromotionType::kChromeEnterpriseCore;
       break;
     case enterprise_management::CHROME_ENTERPRISE_PREMIUM:
       pref_promotion_type = enterprise::PromotionType::kChromeEnterprisePremium;
-      api_promotion_type =
-          api::webstore_private::PromotionType::kChromeEnterprisePremium;
       break;
     default:
       pref_promotion_type = enterprise::PromotionType::kUnspecified;
-      api_promotion_type =
-          api::webstore_private::PromotionType::kPromotionTypeUnspecified;
       break;
   }
 
@@ -1490,11 +1499,11 @@ void WebstorePrivateShouldShowEnterprisePromotionBannerFunction::
       Profile::FromBrowserContext(browser_context())->GetPrefs();
   prefs->SetInteger(enterprise_promotion::kEnterprisePromotionEligibility,
                     static_cast<int>(pref_promotion_type));
-
   prefs->SetTime(pref_names::kEnterprisePromotionExpirationTime,
                  base::Time::Now() + base::Days(1));
 
-  Respond(WithArguments(api::webstore_private::ToString(api_promotion_type)));
+  Respond(WithArguments(api::webstore_private::ToString(
+      WebstorePromotionBannerPrefToApiResult(pref_promotion_type))));
 }
 
 WebstorePrivateLogEnterprisePromoShownFunction::
