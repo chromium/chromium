@@ -8,6 +8,7 @@
 #include <optional>
 #include <queue>
 
+#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 
 namespace updater {

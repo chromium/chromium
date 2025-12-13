@@ -5,6 +5,7 @@
 #ifndef CHROME_SERVICES_SHARING_NEARBY_NEARBY_PRESENCE_H_
 #define CHROME_SERVICES_SHARING_NEARBY_NEARBY_PRESENCE_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

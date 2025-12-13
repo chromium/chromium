@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/command_updater_delegate.h"
 #include "chrome/browser/feedback/show_feedback_page.h"

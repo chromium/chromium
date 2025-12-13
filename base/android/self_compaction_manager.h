@@ -10,6 +10,7 @@
 #include "base/android/pre_freeze_background_memory_trimmer.h"
 #include "base/byte_count.h"
 #include "base/debug/proc_maps_linux.h"
+#include "base/gtest_prod_util.h"
 #include "base/no_destructor.h"
 #include "base/profiler/sample_metadata.h"
 

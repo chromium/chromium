@@ -6,12 +6,14 @@
 #define SERVICES_DEVICE_GEOLOCATION_LOCATION_PROVIDER_MANAGER_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/cancelable_callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"

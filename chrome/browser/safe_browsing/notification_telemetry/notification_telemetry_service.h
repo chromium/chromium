@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/safe_browsing/notification_telemetry/notification_telemetry_store.h"

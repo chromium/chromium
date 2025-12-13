@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 
 namespace content {

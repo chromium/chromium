@@ -39,6 +39,7 @@
 #include <type_traits>
 
 #include "base/check_op.h"
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_data_range.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_index_result.h"

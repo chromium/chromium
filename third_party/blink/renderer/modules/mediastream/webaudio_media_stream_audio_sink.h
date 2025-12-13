@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "media/base/audio_converter.h"

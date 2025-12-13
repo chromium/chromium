@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"

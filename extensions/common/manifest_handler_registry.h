@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_COMMON_MANIFEST_HANDLER_REGISTRY_H_
 #define EXTENSIONS_COMMON_MANIFEST_HANDLER_REGISTRY_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "extensions/common/manifest_handler.h"

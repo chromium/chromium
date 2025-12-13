@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/clock.h"
 #include "base/values.h"

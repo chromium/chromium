@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/web_contents_observer.h"

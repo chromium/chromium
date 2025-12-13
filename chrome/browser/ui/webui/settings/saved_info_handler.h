@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SAVED_INFO_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SAVED_INFO_HANDLER_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"

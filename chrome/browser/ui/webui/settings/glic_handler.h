@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_GLIC_HANDLER_H_
 
 #include "base/callback_list.h"
+#include "base/gtest_prod_util.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "content/public/browser/web_ui.h"
 

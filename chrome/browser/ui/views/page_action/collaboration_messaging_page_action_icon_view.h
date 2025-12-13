@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_COLLABORATION_MESSAGING_PAGE_ACTION_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_COLLABORATION_MESSAGING_PAGE_ACTION_ICON_VIEW_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"

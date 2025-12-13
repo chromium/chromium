@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_GEOLOCATION_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_GEOLOCATION_ELEMENT_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"

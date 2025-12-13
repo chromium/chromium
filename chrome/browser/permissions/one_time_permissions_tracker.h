@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 
+#include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"

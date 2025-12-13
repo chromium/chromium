@@ -6,6 +6,7 @@
 #define ASH_CAPTURE_MODE_STOP_RECORDING_BUTTON_TRAY_H_
 
 #include "ash/system/tray/tray_background_view.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 

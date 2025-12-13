@@ -29,6 +29,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/character_break_iterator.h"

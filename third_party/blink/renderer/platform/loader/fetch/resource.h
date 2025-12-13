@@ -30,6 +30,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/span.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"

@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_OZONE_IMAGE_REPRESENTATION_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_OZONE_IMAGE_REPRESENTATION_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/gtest_prod_util.h"
 #include "base/strings/cstring_view.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"

@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/gtest_prod_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"

@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/no_destructor.h"
 #include "base/profiler/sample_metadata.h"

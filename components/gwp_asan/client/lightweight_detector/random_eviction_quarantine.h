@@ -14,6 +14,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/gtest_prod_util.h"
 #include "base/rand_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/task_traits.h"

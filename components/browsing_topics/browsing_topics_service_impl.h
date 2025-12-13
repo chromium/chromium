@@ -6,6 +6,7 @@
 #define COMPONENTS_BROWSING_TOPICS_BROWSING_TOPICS_SERVICE_IMPL_H_
 
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/wall_clock_timer.h"

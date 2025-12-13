@@ -11,6 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "base/callback_list.h"
+#include "base/gtest_prod_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/view_factory.h"

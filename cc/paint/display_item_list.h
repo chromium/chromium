@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "cc/base/rtree.h"
 #include "cc/paint/directly_composited_image_info.h"

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOBSTER_ANNOUNCEMENT_VIEW_H_
 #define CHROME_BROWSER_ASH_LOBSTER_ANNOUNCEMENT_VIEW_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/lobster/announcement_label.h"

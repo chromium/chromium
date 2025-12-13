@@ -33,6 +33,7 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/paint_record.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"

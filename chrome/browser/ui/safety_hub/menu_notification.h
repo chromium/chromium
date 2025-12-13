@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"

@@ -6,6 +6,7 @@
 #define ASH_WM_OVERVIEW_BIRCH_TAB_APP_SELECTION_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/gtest_prod_util.h"
 #include "base/token.h"
 #include "ui/views/layout/box_layout_view.h"
 

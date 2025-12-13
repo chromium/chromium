@@ -6,6 +6,7 @@
 #define ASH_WM_OVERVIEW_BIRCH_CORAL_CHIP_BUTTON_H_
 
 #include "ash/wm/overview/birch/birch_chip_button.h"
+#include "base/gtest_prod_util.h"
 #include "base/timer/timer.h"
 #include "ui/views/metadata/view_factory.h"
 

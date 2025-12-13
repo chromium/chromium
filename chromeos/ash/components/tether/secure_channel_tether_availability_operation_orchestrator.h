@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TETHER_SECURE_CHANNEL_TETHER_AVAILABILITY_OPERATION_ORCHESTRATOR_H_
 #define CHROMEOS_ASH_COMPONENTS_TETHER_SECURE_CHANNEL_TETHER_AVAILABILITY_OPERATION_ORCHESTRATOR_H_
 
+#include "base/gtest_prod_util.h"
 #include "chromeos/ash/components/tether/tether_availability_operation_orchestrator.h"
 #include "chromeos/ash/components/tether/tether_host_fetcher.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"

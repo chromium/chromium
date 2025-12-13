@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/palette/stylus_battery_delegate.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
