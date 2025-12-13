@@ -329,7 +329,7 @@ suite('GlicSubpage', function() {
       // Toggles should all have values from the real pref and be enabled.
       let toggles = page.shadowRoot!.querySelectorAll(
           'settings-toggle-button[checked]:not([disabled])');
-      assertEquals(6, toggles.length);
+      assertEquals(7, toggles.length);
 
       await setDisallowedByAdminAndSimulateUpdate(true);
 
@@ -343,7 +343,7 @@ suite('GlicSubpage', function() {
 
       toggles = page.shadowRoot!.querySelectorAll(
           'settings-toggle-button:not([checked])[disabled]');
-      assertEquals(6, toggles.length);
+      assertEquals(7, toggles.length);
 
       // Re-enable the policy, the page should go back to the initial state.
       await setDisallowedByAdminAndSimulateUpdate(false);
@@ -355,7 +355,7 @@ suite('GlicSubpage', function() {
 
       toggles = page.shadowRoot!.querySelectorAll(
           'settings-toggle-button[checked]:not([disabled])');
-      assertEquals(6, toggles.length);
+      assertEquals(7, toggles.length);
     });
 
     test('ManageActivityRow', async () => {
