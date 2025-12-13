@@ -118,6 +118,7 @@
 <translation id="2216543877350048334">Logout untuk menghapus Akun Google Anda dari Chrome</translation>
 <translation id="2236949375853147973">Aktivitas Saya</translation>
 <translation id="22791603784558743">Tutup Gemini di Chrome Dev</translation>
+<translation id="2284380654876659752">Saat Anda membuka situs, Chrome mengirimkan bagian URL yang di-obfuscate ke <ph name="BEGIN_LINK" />Google Safe Browsing<ph name="END_LINK" /> melalui server privasi yang menyembunyikan alamat IP Anda. Jika situs melakukan hal yang mencurigakan, URL lengkap dan bit konten halaman juga akan dikirim.</translation>
 <translation id="2290014774651636340">Kunci API Google tidak ada. Beberapa fungsi Google Chrome tidak akan berfungsi.</translation>
 <translation id="2290095356545025170">Apakah Anda yakin ingin mencopot penginstalan Google Chrome?</translation>
 <translation id="2301513536169703857">Untuk mendapatkan sandi, bookmark, dan info Anda yang lain di semua perangkat Anda, login ke Chrome</translation>

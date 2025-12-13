@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Hiljutine foto <ph name="INDEX" />/<ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Google Tasksi ahendamine</translation>
 <translation id="2208323208084708176">Ühendatud töölaua režiim</translation>
+<translation id="2210311543574621570">Lõikelaud kuvatakse, kui vajutate pikalt klahve Ctrl + v. Saate selle otsetee välja lülitada, lülitades failis chrome://flags välja lipu #clipboard-history-longpress.</translation>
 <translation id="2215920961700443347">Internetiühendus puudub. Looge ühendus internetiga ja proovige uuesti.</translation>
 <translation id="2222841058024245321">Töölaud 7</translation>
 <translation id="2223384056430485343">Jagatud ekraanikuva režiimis</translation>

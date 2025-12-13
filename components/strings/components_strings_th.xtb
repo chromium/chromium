@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">บันทึก IBAN ไหม</translation>
 <translation id="1113869188872983271">&amp;เลิกทำการจัดลำดับใหม่</translation>
 <translation id="1118429183611783760">เครื่องดูดฝุ่นและอุปกรณ์ทำความสะอาดพื้น</translation>
+<translation id="111897705806685148">ใช้พาสคีย์จากอุปกรณ์อื่น</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการข้อมูล Chrome ที่คุณบันทึกไว้ในบัญชี Google</translation>
 <translation id="1122714970786750095">อุปกรณ์อิเล็กทรอนิกส์และเครื่องใช้ไฟฟ้า</translation>
 <translation id="1123753900084781868">ใช้คำบรรยายสดไม่ได้ในขณะนี้</translation>
@@ -4134,6 +4135,7 @@
 <translation id="7648527891719919697">เว็บไซต์นี้จะยังคงถูกบล็อกเนื่องจากคุณเปิดการปกป้องขั้นสูงใน<ph name="BEGIN_ANDROID_SETTINGS_LINK" />การตั้งค่า Android<ph name="END_ANDROID_SETTINGS_LINK" /> <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับคำเตือนนี้<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">จัดเก็บไฟล์บนอุปกรณ์นี้</translation>
 <translation id="7649070708921625228">ความช่วยเหลือ</translation>
+<translation id="7650141368285545431">ใช้พาสคีย์จากอุปกรณ์อื่น</translation>
 <translation id="7653957176542370971">แผ่นงานของเครื่องจัดการการชำระเงินปิดอยู่</translation>
 <translation id="7655766454902053387">ประกาศรับสมัครงาน</translation>
 <translation id="765676359832457558">ซ่อนการตั้งค่าขั้นสูง...</translation>

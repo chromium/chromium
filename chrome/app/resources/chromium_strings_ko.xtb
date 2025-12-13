@@ -217,6 +217,7 @@
 <translation id="3313189106987092621">Chromium에서 안전하지 않은 연결을 사용해 사이트를 로드하기 전에 경고를 표시합니다.</translation>
 <translation id="3316771292331273802">Chromium에 로그인한 경우 Google 계정을 제외한 모든 Chromium 창을 닫으면 대부분의 사이트에서 로그아웃됩니다. 사이트에서 나를 기억하도록 하려면 <ph name="SETTINGS_LINK" />하세요.</translation>
 <translation id="3322413454779348750">Chromium 외부에서 기본 검색엔진이 변경되었습니다. 사용자를 보호하기 위해 Chromium에서 기본 검색엔진을 재설정했습니다.</translation>
+<translation id="3331557257666250900">Chromium에 로그인하여 모든 기기에서 내 비밀번호, 북마크 등을 사용하세요.</translation>
 <translation id="3352986031709923790">검색 영역의 오른쪽 상단: 오른쪽 <ph name="RIGHT" />%, 상단 <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">사용자 계정의 Chromium 데이터</translation>
 <translation id="3369405342922656244">이미지 검색으로 이 페이지 검색하기</translation>
@@ -268,6 +269,7 @@
 <translation id="3971865010372729242">주소 표시줄이나 검색창에 입력하면 추천을 받을 수 있도록 Chromium에서 입력 내용을 조직의 검색, AI, 에이전트 도구로 전송합니다.</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testing 정보</translation>
 <translation id="3997429360543082038">ChromiumOS 정보</translation>
+<translation id="4010059961270896984">사이트 방문 시 Chromium에서 사용자의 IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 <ph name="BEGIN_LINK" />Google 세이프 브라우징<ph name="END_LINK" />으로 전송합니다. 사이트에서 의심스러운 작업이 수행되면 전체 URL과 페이지 콘텐츠 일부도 전송됩니다.</translation>
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux 개발 환경<ph name="END_LINK_LINUX_OSS" />과 마찬가지로, ChromiumOS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
 <translation id="4022972681110646219">화면 번역</translation>
 <translation id="4023601594785368013">원본 언어, <ph name="LANGUAGE" /></translation>
@@ -587,6 +589,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="77283119132245232"><ph name="BROWSER_NAME" />에 시스템 추적 서비스가 제공됩니다. 이 서비스를 사용 중지하면 브라우저에서 생성한 성능 추적에 컨텍스트 전환 및 준비된 스레드 이벤트와 같은 시스템 전체 이벤트가 포함되지 않습니다.</translation>
 <translation id="7745317241717453663">인터넷 사용 기록이 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chromium에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
 <translation id="7747138024166251722">설치 프로그램이 임시 디렉터리를 만들지 못했습니다. 디스크 공간 및 설치 권한을 확인해 보세요.</translation>
+<translation id="7750130090210923118">기본 Chromium으로 재설정</translation>
 <translation id="7786760609782648049">Chromium의 속도를 높여보세요</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">내 인터넷 트래픽에 액세스할 수 있는 사용자가 내가 방문하는 사이트를 확인하기가 더 어려워집니다. Chromium은 DNS(도메인 이름 시스템)에서 사이트의 IP 주소를 조회하는 데 보안 연결을 사용합니다.</translation>
@@ -687,6 +690,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8907580949721785412">Chromium에서 비밀번호를 표시하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="8941642502866065432">Chromium을 업데이트하지 못함</translation>
 <translation id="897581876605952338">Chromium Enterprise 로고</translation>
+<translation id="8981150672034878610">프로필을 여는 중에 문제가 발생하여 Chromium을 시작할 수 없습니다. Chromium을 다시 시작해 보세요.</translation>
 <translation id="8988036198400390003">Chromium 프로필 관리</translation>
 <translation id="9019929317751753759">Google에서는 Chromium의 보안을 강화하기 위해 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에 표시되지 않고 사용자가 모르게 추가되었을 수 있는 다음 확장 프로그램의 사용을 중지했습니다.</translation>
 <translation id="904366664621834601">보관 파일에 멀웨어를 숨길 수 있는 다른 파일이 포함되어 있기 때문에 Chromium에서 이 다운로드를 차단했습니다</translation>

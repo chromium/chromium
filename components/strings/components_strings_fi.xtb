@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Tallennetaanko IBAN?</translation>
 <translation id="1113869188872983271">K&amp;umoa uudelleenjärjestely</translation>
 <translation id="1118429183611783760">Imurit ja lattianhoito</translation>
+<translation id="111897705806685148">Käytä avainkoodia toiselta laitteelta</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, paina sarkainta ja sitten Enteriä, niin voit valita, mitä Chromen tietoja tallennetaan Google-tilillesi</translation>
 <translation id="1122714970786750095">Elektroniikka ja sähkölaitteet</translation>
 <translation id="1123753900084781868">Livetekstitys ei ole juuri nyt käytettävissä</translation>
@@ -4136,6 +4137,7 @@ Lisätietoja:
 <translation id="7648527891719919697">Tämä sivusto pysyy estettynä, koska Lisäsuojaus on päällä <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android-asetuksissa<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Lue lisää tästä varoituksesta<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Tallentaa tiedostoja tälle laitteelle.</translation>
 <translation id="7649070708921625228">Ohje</translation>
+<translation id="7650141368285545431">Käytä avainkoodia toiselta laitteelta</translation>
 <translation id="7653957176542370971">Maksujenkäsittelytaulukko on suljettu</translation>
 <translation id="7655766454902053387">Työpaikat</translation>
 <translation id="765676359832457558">Piilota lisäasetukset...</translation>

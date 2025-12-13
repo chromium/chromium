@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Nedavna fotografija <ph name="INDEX" /> od <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Sažmi Google zadatke</translation>
 <translation id="2208323208084708176">Način jedinstvene radne površine</translation>
+<translation id="2210311543574621570">Međumemorija će se prikazivati kad pritisnete tipke Ctrl + V i zadržite pritisak. Taj prečac možete isključiti tako da onemogućite oznaku #clipboard-history-longpress u chrome://flags.</translation>
 <translation id="2215920961700443347">Nema interneta. Povežite se s internetom i pokušajte ponovo.</translation>
 <translation id="2222841058024245321">Radna površina 7</translation>
 <translation id="2223384056430485343">Na podijeljenom zaslonu</translation>

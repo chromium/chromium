@@ -2222,6 +2222,7 @@
 <translation id="2476901513051581836">تا زمانی که اندازه فضای ذخیره‌سازی آفلاین مشخص نشود نمی‌توان فضای ذخیره‌سازی را پاک کرد.</translation>
 <translation id="2476974672882258506">‏برای حذف نصب <ph name="PARALLELS_DESKTOP" />، ‏Windows را خاموش کنید.</translation>
 <translation id="2477065602824695373">چون چند کلید راه‌اندازی کرده‌اید، اسکن خودکار خاموش شده است.</translation>
+<translation id="2477218554275525952">‏وقتی‌که زبانه جدیدی باز می‌کنید، نوار کناری Gemini باز بماند</translation>
 <translation id="2477607419416067650">‏سایر داده‌های Google</translation>
 <translation id="2478176599153288112">مجوزهای فایل رسانه‌ای برای «<ph name="EXTENSION" />»</translation>
 <translation id="24786041351753425">فعال کردن سرویس بازیابی داده.</translation>
@@ -3347,7 +3348,7 @@
 <translation id="3262336253311870293">‏از آن‌جایی‌که این حساب توسط <ph name="DOMAIN" /> مدیریت می‌شود، از سیستم «حساب Google» خود خارج نخواهید شد. نشانک‌ها، سابقه، گذرواژه‌ها، و سایر تنظیمات دیگر همگام‌سازی نمی‌شوند. اما داده‌های همگام‌سازی‌شده قبلی در «حساب Google» شما باقی می‌ماند و می‌توان آن‌ها را در <ph name="BEGIN_LINK" />داشبورد Google<ph name="END_LINK" /> مدیریت کرد.</translation>
 <translation id="3262986719682892278">بسیار بزرگ است</translation>
 <translation id="3264544094376351444">‏قلم Sans-Serif</translation>
-<translation id="3264582393905923483">زمینه</translation>
+<translation id="3264582393905923483">بافت</translation>
 <translation id="3265459715026181080">بستن پنجره</translation>
 <translation id="3266022278425892773">‏محیط برنامه‌نویسی Linux</translation>
 <translation id="3266030505377585301">‏برای حذف کردن داده‌های مرور فقط از این دستگاه و نگهداری آن در «حساب Google»، <ph name="BEGIN_LINK" />از سیستم خارج شوید<ph name="END_LINK" />.</translation>
@@ -6192,7 +6193,6 @@
 <translation id="520576054436518354">‏اجازه دهید Gemini برایتان مرور کند</translation>
 <translation id="5207949376430453814">برجسته کردن هشتک نوشتار</translation>
 <translation id="520840839826327499">‏<ph name="SERVICE_NAME" /> می‌خواهد بررسی کند شما از دستگاه ChromeOS واجدشرایط استفاده می‌کنید یا نه.</translation>
-<translation id="5208722776934437424">تغییر اجازه‌ها</translation>
 <translation id="5208926629108082192">اطلاعات شبکه تلفن همراه دستگاه</translation>
 <translation id="5208988882104884956">نیم‌عرض</translation>
 <translation id="5209320130288484488">دستگاهی یافت نشد</translation>
@@ -6758,7 +6758,6 @@
 <translation id="5600706100022181951">به‌روزرسانی با مصرف <ph name="UPDATE_SIZE_MB" /> مگابایت داده تلفن همراه بارگیری می‌شود. ادامه می‌دهید؟</translation>
 <translation id="5601503069213153581">پین</translation>
 <translation id="5601833336918638013">به سایت‌ها اجازه داده نشود دستگاه‌های بلوتوث را جستجو کنند</translation>
-<translation id="560213628963806709">‏این برنامه <ph name="OPENINGS_COUNT" /> زبانه جدید Chrome باز کرده است. می‌توانید این رفتار را در بخش اجازه «بالاپرها و هدایت‌ها» مدیریت کنید.</translation>
 <translation id="5602586420788540146">باز کردن در گروه زبانه جدید</translation>
 <translation id="5605758115928394442">برای تأیید اینکه خودتان هستید، اعلانی به تلفنتان ارسال شد.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{این افزونه مسدود شده است}one{این افزونه‌ها مسدود شده‌اند}other{این افزونه‌ها مسدود شده‌اند}}</translation>
@@ -8015,7 +8014,6 @@
 <translation id="6493991254603208962">کم کردن روشنایی</translation>
 <translation id="6494327278868541139">نمایش جزئیات محافظت بهبودیافته</translation>
 <translation id="6494483173119160146">دستگاه با خطای غیرقابل‌بازیابی مواجه شده است. لطفاً دستگاهتان را بازنشانی و سپس دوباره امتحان کنید (با این کار همه داده‌های کاربر پاک‌سازی می‌شود).</translation>
-<translation id="6495261233408033662">بستن زبانه‌های باز</translation>
 <translation id="6495266441917713704">‏Wi-Fi منتقل نشد</translation>
 <translation id="6495453178162183932">‏زمینه به پیش‌فرض Chrome تغییر کرد</translation>
 <translation id="6496641546298525838">دستگاه شما</translation>
@@ -9372,7 +9370,6 @@
 <translation id="7427348830195639090">صفحه پس‌زمینه: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">این نمایه تحت‌مدیریت است</translation>
 <translation id="7427798576651127129">تماس از <ph name="DEVICE_NAME" /></translation>
-<translation id="7429004613638800673">‫<ph name="APP_NAME" /> زبانه‌های متعدد باز کرده است.</translation>
 <translation id="7429415133937917139">‏خروجی نمایشگر بریل قابل‌بازخوانی را در
     پانل ChromeVox در بالای صفحه شبیه‌سازی می‌کند</translation>
 <translation id="7429568074268678162">‏‫<ph name="FILENAME" /> ممکن است خطرناک باشد. اگر می‌خواهید Chrome آن را درستی‌سنجی کند، گذرواژه اضافه کنید یا می‌توانید مستقیماً آن را بارگیری کنید.</translation>
@@ -12035,6 +12032,7 @@
 <translation id="9207434080086272167">آفتابی</translation>
 <translation id="9207669213427469593">اگر پنجره‌ای را برای استفاده از صفحهٔ دونیمه به یک سمت بچسبانید، پیشنهادهایی برای انتخاب پنجره سمت دیگر خواهید دید.</translation>
 <translation id="9209563766569767417">‏درحال بررسی تنظیم محتوی Linux</translation>
+<translation id="9212565256020141627">‏هم‌رسانی تصویر با Gemini ممکن نبود. دوباره امتحان کنید یا تصویر دیگری را امتحان کنید.</translation>
 <translation id="9214520840402538427">متأسفیم! مهلت مقداردهی اولیه از ویژگی‌های زمان نصب به پایان رسیده است. لطفاً با نماینده پشتیبانی خود تماس بگیرید.</translation>
 <translation id="9214695392875603905">کیک فنجانی</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" اضافه شد</translation>

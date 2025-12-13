@@ -217,6 +217,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3313189106987092621">Chromium-ek abisatu egingo dizu webgune bat konexio ez-seguru batekin kargatu aurretik</translation>
 <translation id="3316771292331273802">Chromium-eko leiho guztiak ixtean, webgune gehienetako saioa amaituko da Google-ko kontuarena izan ezik, baldin eta Chromium-en saioa hasita badaukazu. Webguneek gogora zaitzaten, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">Bilatzaile lehenetsia Chromium-etik kanpo aldatu da. Zu babesteko, Chromium-ek berrezarri egin du.</translation>
+<translation id="3331557257666250900">Pasahitzak, laster-markak eta abar gailu guztietan eskura izateko, hasi saioa Chromium-en</translation>
 <translation id="3352986031709923790">bilaketa-eremuaren goiko eskuineko ertza: % <ph name="RIGHT" /> eskuinean, % <ph name="TOP" /> goian</translation>
 <translation id="3366305173356742781">Kontuan dauden Chromium-eko datuak</translation>
 <translation id="3369405342922656244">Egin bilaketak orri honetan irudi-bilaketarekin</translation>
@@ -268,6 +269,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3971865010372729242">Helbide-barran edo bilaketa-koadroan zerbait idazten duzunean, Chromium-ek erakundearen bilaketa- eta agente-tresnetara, eta AA bidezkoetara bidaltzen du idatzitakoa, iradokizunak lortzeko.</translation>
 <translation id="3975724895399328945">Google Chrome for Testing-i buruz</translation>
 <translation id="3997429360543082038">Chromium OS-ri buruz</translation>
+<translation id="4010059961270896984">Webgune bat bisitatzen duzunean, Chromium-ek URLaren zati nahasi bat bidaltzen dio <ph name="BEGIN_LINK" />Google-ren Arakatze segurua<ph name="END_LINK" /> eginbideari, zure IP helbidea ezkutatzen duen pribatutasun-zerbitzari baten bidez. Webgune batek susmagarria den zerbait egiten badu, URL osoak eta orriaren edukiaren zati batzuk ere bidaltzen dira.</translation>
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_CROS_OSS" />Kode irekiko software<ph name="END_LINK_CROS_OSS" /> gehigarriari esker da posible Chromium OS; adibidez, <ph name="BEGIN_LINK_LINUX_OSS" />Linux-eko garapen-ingurunea<ph name="END_LINK_LINUX_OSS" /> erabiltzen da.</translation>
 <translation id="4022972681110646219">Itzuli pantaila</translation>
 <translation id="4023601594785368013">Jatorrizko hizkuntza: <ph name="LANGUAGE" /></translation>
@@ -587,6 +589,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="77283119132245232"><ph name="BROWSER_NAME" /> arakatzailerako sistemaren jarraipen-zerbitzuak ematen ditu. Zerbitzua desgaitzen bada, arakatzaileak sortutako errendimendu-arrastoetan ez dira sartuko sistema osoko gertaerak (adibidez, testuinguru-aldaketen eta elkarrizketa-hariak prest egotearen gertaerak).</translation>
 <translation id="7745317241717453663">Gailuko arakatze-datuak ezabatuko dira. Geroago datuak eskuratu nahi izanez gero, hasi saioa Chromium-en <ph name="USER_EMAIL" /> gisa.</translation>
 <translation id="7747138024166251722">Instalatzaileak ezin izan du sortu behin behineko direktoriorik. Softwarea instalatzeko, egiaztatu diskoan duzun espazio librea eta baimena.</translation>
+<translation id="7750130090210923118">Berrezarri Chromium gai lehenetsira</translation>
 <translation id="7786760609782648049">Bizkortu Chromium</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Zaildu zure Interneteko trafikorako sarbidea duten pertsonei bisitatzen dituzun webguneak ikustea. Chromium-ek konexio seguru bat erabiltzen du DNSan (domeinu-izenen sistema) webgune baten IP helbidea bilatzean.</translation>
@@ -687,6 +690,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8907580949721785412">Chromium pasahitzak erakusten saiatzen ari da. Hori baimentzeko, idatzi Windows pasahitza.</translation>
 <translation id="8941642502866065432">Ezin da eguneratu Chromium</translation>
 <translation id="897581876605952338">Chromium Enterprise-ren logotipoa</translation>
+<translation id="8981150672034878610">Ezin da abiarazi Chromium, arazo bat izan delako profila irekitzean. Berrabiarazi Chromium.</translation>
 <translation id="8988036198400390003">Kudeatu Chromium-eko profilak</translation>
 <translation id="9019929317751753759">Chromium seguruagoa izan dadin, zuk jakin gabe gehitu den eta <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dendan zerrendatu gabe dagoen luzapena desgaitu dugu.</translation>
 <translation id="904366664621834601">Chromium-ek deskarga hau blokeatu du, artxibo-fitxategi honek beste fitxategi batzuk dituelako, eta agian haietan malwarea dagoelako</translation>

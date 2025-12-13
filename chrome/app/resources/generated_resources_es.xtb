@@ -1591,6 +1591,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2062354623176996748">Navega por Internet sin guardar tu historial de navegación con una ventana de Incógnito</translation>
 <translation id="206308717637808771">Elimina los datos al cerrar todas las ventanas. Los datos se tratan igual que en el sitio web que estás viendo.</translation>
 <translation id="2066700471214517561">Usa el micrófono con formación de haces para que la persona que usa el Chromebook se oiga con claridad.</translation>
+<translation id="2068581968816126410">Usar marcadores en varios dispositivos</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> ha terminado de imprimir en <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">No hay ningún archivo de registro local.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Haz clic para instalar la extensión}other{Haz clic para instalar las extensiones}}</translation>
@@ -1961,6 +1962,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
       <ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> El sistema se reiniciará durante el proceso.</translation>
 <translation id="23030561267973084"><ph name="EXTENSION_NAME" /> ha solicitado permisos adicionales.</translation>
 <translation id="2304820083631266885">Planeta</translation>
+<translation id="2305202347479035002">Cómo funciona</translation>
 <translation id="2306794767168143227">Guardar en <ph name="BRAND" /> en este dispositivo</translation>
 <translation id="2308798336967462263">No se admiten estas teclas: Tabulador, Mayús, Control, Escape, Bloq Mayús y teclas de volumen</translation>
 <translation id="2309620859903500144">Esta página no tiene permiso para acceder a los sensores de luz y movimiento.</translation>
@@ -1977,6 +1979,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2319072477089403627">Estableciendo conexión con tu teléfono Android…</translation>
 <translation id="2319459402137712349">Selecciona un campo de texto para abrir el teclado. También puedes seleccionar el icono del teclado en la parte inferior de la pantalla.</translation>
 <translation id="2319993584768066746">Fotos de la pantalla de inicio de sesión</translation>
+<translation id="2321487076181785382">Dividir pestañas</translation>
 <translation id="2322193970951063277">Encabezado y pie de página</translation>
 <translation id="2322318151094136999">Preguntar cuando un sitio web quiera acceder a los puertos serie (recomendado)</translation>
 <translation id="2322622365472107569">Hora de finalización: <ph name="TIME" /></translation>
@@ -3439,6 +3442,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3336855445806447827">No lo sé</translation>
 <translation id="3337568642696914359">No permitir que los sitios procesen protocolos</translation>
 <translation id="333863344734218290">Te avisa de los sitios públicos y privados no seguros</translation>
+<translation id="3339789735267352349">Te protege frente a sitios, descargas y extensiones que se sabe que son peligrosos</translation>
 <translation id="3340620525920140773">Descarga completa: <ph name="FILE_NAME" />.</translation>
 <translation id="3340978935015468852">configuración</translation>
 <translation id="3341091511696469129">Chrome puede crear y traducir subtítulos en los idiomas que se muestran aquí</translation>
@@ -3738,6 +3742,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="354060433403403521">Adaptador de CA</translation>
 <translation id="354068948465830244">Puede leer y cambiar datos de sitios</translation>
 <translation id="3541823293333232175">Asignado</translation>
+<translation id="3543296862747913985">Qué hace</translation>
 <translation id="3543298914473315872">Proceso de actualización</translation>
 <translation id="3543393733900874979">Se ha producido un error durante la actualización (error: <ph name="ERROR_NUMBER" />).</translation>
 <translation id="3543597750097719865">Firma X9.62 ECDSA con SHA-512</translation>
@@ -6176,7 +6181,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="520576054436518354">Deja que Gemini navegue por ti</translation>
 <translation id="5207949376430453814">Resaltar el símbolo de intercalación del texto</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> quiere comprobar si estás utilizando un dispositivo ChromeOS apto.</translation>
-<translation id="5208722776934437424">Cambiar permisos</translation>
 <translation id="5208926629108082192">Información de redes móviles del dispositivo</translation>
 <translation id="5208988882104884956">Ancho medio</translation>
 <translation id="5209320130288484488">No se ha encontrado ningún dispositivo.</translation>
@@ -6741,7 +6745,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5600706100022181951">Para descargar la actualización se necesitan <ph name="UPDATE_SIZE_MB" /> MB de datos móviles. ¿Quieres continuar?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601833336918638013">No permitir que los sitios busquen dispositivos Bluetooth</translation>
-<translation id="560213628963806709">Esta aplicación ha abierto <ph name="OPENINGS_COUNT" /> pestañas nuevas de Chrome. Puedes gestionar este comportamiento con el permiso Ventanas emergentes y redirecciones.</translation>
 <translation id="5602586420788540146">Abrir en un nuevo grupo de pestañas</translation>
 <translation id="5605758115928394442">Se ha enviado una notificación a tu teléfono para confirmar que eres tú.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Esta extensión está bloqueada}other{Estas extensiones están bloqueadas}}</translation>
@@ -6883,6 +6886,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5702161882524398150">Pregunta sobre la pestaña anterior</translation>
 <translation id="5702749864074810610">Sugerencia rechazada</translation>
 <translation id="5703716265115423771">bajar el volumen</translation>
+<translation id="5703998022096520811">Ofrece protección proactiva en tiempo real enviando más información a Navegación segura de Google</translation>
 <translation id="5704875434923668958">Sincronizando con</translation>
 <translation id="5705005699929844214">Mostrar siempre opciones de accesibilidad</translation>
 <translation id="5705882733397021510">Volver</translation>
@@ -7997,7 +8001,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6493991254603208962">Reducir el brillo</translation>
 <translation id="6494327278868541139">Mostrar detalles de la protección mejorada</translation>
 <translation id="6494483173119160146">Se ha producido un error irrecuperable en el dispositivo. Restablece tu dispositivo (se borrarán todos los datos de usuario) y vuelve a intentarlo.</translation>
-<translation id="6495261233408033662">Cerrar pestañas abiertas</translation>
 <translation id="6495266441917713704">No se puede transferir la red Wi-Fi</translation>
 <translation id="6495453178162183932">Tema actualizado al predeterminado de Chrome</translation>
 <translation id="6496641546298525838">Tu dispositivo</translation>
@@ -9352,7 +9355,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7427348830195639090">Página en segundo plano: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">Este perfil está gestionado</translation>
 <translation id="7427798576651127129">Llamar desde <ph name="DEVICE_NAME" /></translation>
-<translation id="7429004613638800673"><ph name="APP_NAME" /> ha abierto varias pestañas.</translation>
 <translation id="7429415133937917139">Simula una pantalla braille que se puede actualizar
     en el panel de ChromeVox situado en la parte superior de la pantalla</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> podría ser peligroso. Añade una contraseña si quieres que Chrome lo verifique o descárgalo directamente.</translation>
@@ -9699,6 +9701,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="766560638707011986">Mostrar dominios</translation>
 <translation id="766635563210446220">No se pueden importar las contraseñas. Revisa <ph name="FILENAME" /> y comprueba que tenga el formato correcto. <ph name="BEGIN_LINK" />Consulta más información<ph name="END_LINK" />.</translation>
 <translation id="7666531788977935712">Botón Continuar habilitado</translation>
+<translation id="7666966001957552011">Te advierte de sitios, descargas y extensiones que se sabe que son peligrosos. Puedes desactivar estas advertencias en cualquier momento. Si ves una advertencia para contenido legítimo, puedes <ph name="BEGIN_LINK" />informar de un error<ph name="END_LINK" />.</translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{Devuelve el <ph name="DEVICE_TYPE" /> en el plazo de {NUM_WEEKS} semana}other{Devuelve el <ph name="DEVICE_TYPE" /> en el plazo de {NUM_WEEKS} semanas}}</translation>
 <translation id="7668205084604701639">Ajustes de archivos de Office</translation>
 <translation id="7668423670802040666">En el Gestor de contraseñas de Google de <ph name="ACCOUNT" /></translation>
@@ -9723,6 +9726,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7676019765091965045">Detección de contraseñas vulneradas</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> pestaña encontrada para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Envía tu voz a Google para utilizar el dictado en cualquier campo de texto.</translation>
+<translation id="7678198209643823714">Quitar <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">¿Restablecer todos los permisos del dispositivo USB?</translation>
 <translation id="7679171213002716280">Hay <ph name="PRINTER_COUNT" /> impresoras gestionadas.</translation>
 <translation id="7679895819123160382">Haz que a las personas con acceso a tu tráfico de Internet les resulte más complicado ver los sitios que visitas. <ph name="PRODUCT_NAME" /> usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio). Algunos dominios que ha configurado tu administrador no usan conexiones seguras.</translation>
@@ -10221,6 +10225,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8011372169388649948">Se ha movido "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="8012188750847319132">bloq mayús</translation>
 <translation id="8012463809859447963">Detalles de la conexión compartida instantánea</translation>
+<translation id="8013181884974864006">Tareas contextuales</translation>
 <translation id="8013534738634318212">Estos sitios están en un grupo definido por <ph name="RWS_OWNER" />. Los sitios que forman parte de un grupo pueden ver tu actividad en el grupo.</translation>
 <translation id="8013993649590906847">Si una imagen no tiene ninguna descripción útil, Chrome intentará proporcionártela. Para crear las descripciones, las imágenes se envían a Google.</translation>
 <translation id="8014154204619229810">La herramienta de actualización se está ejecutando en este momento. Actualiza en un minuto para comprobarlo de nuevo.</translation>

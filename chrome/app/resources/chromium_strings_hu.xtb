@@ -216,6 +216,7 @@
 <translation id="3313189106987092621">A Chromium figyelmezteti Önt a nem biztonságos kapcsolatot használó webhelyek betöltése előtt</translation>
 <translation id="3316771292331273802">Az összes Chromium-ablak bezárásakor a legtöbb webhelyről kijelentkezteti a rendszer, kivéve a Google-fiókját, ha bejelentkezett a Chromiumba. Ha engedélyezni szeretné, hogy a webhelyek emlékezzenek Önre, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">Az alapértelmezett keresőmotor a Chromiumon kívülről lett módosítva. A Chromium visszaállította az Ön biztonsága érdekében.</translation>
+<translation id="3331557257666250900">Jelentkezzen be a Chromiumba, hogy az összes eszközén hozzáférhessen jelszavaihoz, könyvjelzőihez és más beállításaihoz.</translation>
 <translation id="3352986031709923790">keresési terület jobb felső sarka: jobb <ph name="RIGHT" />%, fent <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">A fiókjában lévő Chromium-adatok</translation>
 <translation id="3369405342922656244">Keresés ezen az oldalon a Képkereső használatával</translation>
@@ -267,6 +268,7 @@
 <translation id="3971865010372729242">Amikor beír valamit a címsávba vagy a keresőmezőbe, a Chromium elküldi a beírt szöveget a szervezet keresési, AI- és ügynökeszközeinek javaslatok biztosítása érdekében.</translation>
 <translation id="3975724895399328945">A Google Chrome for Testing névjegye</translation>
 <translation id="3997429360543082038">A ChromiumOS névjegye</translation>
+<translation id="4010059961270896984">Amikor Ön felkeres egy webhelyet, a Chromium az URL egy obfuszkált (érthetetlenné tett) részét elküldi a <ph name="BEGIN_LINK" />Google Biztonságos Böngészésnek<ph name="END_LINK" /> egy olyan adatvédelmi szerveren keresztül, amely elrejti az Ön IP-címét. Ha valamelyik oldalon gyanús műveletet észlel, akkor a böngésző a teljes URL-eket és az oldal tartalmának egyes részeit is elküldi.</translation>
 <translation id="4019629340646866719">A ChromiumOS létrejöttéhez egyéb <ph name="BEGIN_LINK_CROS_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_CROS_OSS" /> is hozzájárultak, ahogyan a <ph name="BEGIN_LINK_LINUX_OSS" />Linux fejlesztői környezet<ph name="END_LINK_LINUX_OSS" /> létrejöttéhez is.</translation>
 <translation id="4022972681110646219">Képernyőtartalom lefordítása</translation>
 <translation id="4023601594785368013">Eredeti nyelv: <ph name="LANGUAGE" /></translation>
@@ -584,6 +586,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="77283119132245232">Rendszerkövetési szolgáltatásokat biztosít a(z) <ph name="BROWSER_NAME" /> böngészőhöz. Ha ez a szolgáltatás le van tiltva, a böngésző által létrehozott teljesítménynyomok nem tartalmazzák a rendszerszintű eseményeket, például a kontextusváltási és a ready thread-eseményeket.</translation>
 <translation id="7745317241717453663">Ezzel az eszközön lévő összes böngészési adat törlődik. Az adatok későbbi lekéréséhez jelentkezzen be a Chromiumba a következő e-mail-címmel: <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">A telepítőnek nem sikerült létrehoznia az ideiglenes könyvtárat. Kérjük ellenőrizze, hogy van-e elegendő hely a lemezen, és rendelkezik-e engedéllyel a szoftvertelepítésre.</translation>
+<translation id="7750130090210923118">Visszaállítás az alapértelmezett Chromiumra</translation>
 <translation id="7786760609782648049">A Chromium felgyorsítása</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Megnehezítheti az internetes forgalmához hozzáférő személyek számára, hogy lássák, milyen webhelyeket keres fel. A Chromium biztonságos kapcsolatot használ a webhelyek IP-címének DNS-ben (domainnévrendszerben) való megkereséséhez.</translation>
@@ -684,6 +687,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8907580949721785412">A Chromium megkísérli megjeleníteni a jelszavakat. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
 <translation id="8941642502866065432">Nem sikerült a Chromium frissítése</translation>
 <translation id="897581876605952338">A Chromium Enterprise logója</translation>
+<translation id="8981150672034878610">Nem indítható el a Chromium, mert hiba történt a profilja megnyitása során. Próbálkozzon a Chromium újraindításával.</translation>
 <translation id="8988036198400390003">Chromium-profilok kezelése</translation>
 <translation id="9019929317751753759">A Chromium biztonságosabbá tétele érdekében kikapcsoltuk a következő bővítményt, amely nem a(z) <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> szolgáltatásból származik, és előfordulhat, hogy az Ön tudta nélkül lett telepítve.</translation>
 <translation id="904366664621834601">A Chromium letiltotta ezt a letöltést, mert az archívumfájl olyan egyéb fájlokat is tartalmaz, amelyek rosszindulatú programokat is rejthetnek</translation>

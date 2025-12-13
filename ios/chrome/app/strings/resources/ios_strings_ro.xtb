@@ -156,6 +156,7 @@
 <translation id="1545749641540134597">Scanează codul QR</translation>
 <translation id="1545757265410828525">Istoricul prețurilor</translation>
 <translation id="1547610699249301703">Trimite parole</translation>
+<translation id="1554043146674176775">Dezactivează Modul AI</translation>
 <translation id="1554477036522844996">Fereastră nouă</translation>
 <translation id="1558391695376153246">Închide filele incognito</translation>
 <translation id="1565371473877914088">Filă incognito nouă</translation>
@@ -457,6 +458,7 @@
 <translation id="2688535388040882469">Bannere</translation>
 <translation id="2690858294534178585">Camera foto este în uz</translation>
 <translation id="2691653761409724435">Indisponibil offline</translation>
+<translation id="2697530870203420261">Pseudonim nevalid</translation>
 <translation id="269819437389494246">Vezi paginile pe care le-ai accesat sau șterge-le din istoric</translation>
 <translation id="2704606927547763573">Copiat</translation>
 <translation id="2708051474374549906">Protecție proactivă în timp real împotriva site-urilor, descărcărilor și extensiilor periculoase, pe baza datelor de navigare trimise la Google</translation>
@@ -1561,6 +1563,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6830728435402077660">Nesecurizată</translation>
 <translation id="6831043979455480757">Tradu</translation>
 <translation id="6842136130964845393">Confirmă-ți identitatea ca să te asiguri că ai în permanență acces la parolele salvate</translation>
+<translation id="6844773122575789617">Activează Modul AI</translation>
 <translation id="6851516051005285358">Solicită site desktop</translation>
 <translation id="6857446173140146664">Șterge fundalul</translation>
 <translation id="6858718102216837409">Adaugă o limbă…</translation>

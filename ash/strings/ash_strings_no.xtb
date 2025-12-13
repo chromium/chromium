@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Nylig bilde <ph name="INDEX" /> av <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Skjul Google Huskeliste</translation>
 <translation id="2208323208084708176">Enhetlig skrivebordsmodus</translation>
+<translation id="2210311543574621570">Du ser utklippstavlen når du trykker og holder inne Ctrl + V. Du kan slå av denne hurtigtasten ved å deaktivere flagget #clipboard-history-longpress i chrome://flags.</translation>
 <translation id="2215920961700443347">Ingen internettilkobling. Koble til internett, og prøv på nytt.</translation>
 <translation id="2222841058024245321">Skrivebord 7</translation>
 <translation id="2223384056430485343">På delt skjerm</translation>

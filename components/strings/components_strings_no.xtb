@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Vil du lagre IBAN-nummeret?</translation>
 <translation id="1113869188872983271">&amp;Angre omorganiseringen</translation>
 <translation id="1118429183611783760">Støvsugere og gulvpleie</translation>
+<translation id="111897705806685148">Bruk passnøkkel fra en annen enhet</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere hvilken Chrome-informasjon du lagrer i Google-kontoen din</translation>
 <translation id="1122714970786750095">Elektronikk og elektrisk utstyr</translation>
 <translation id="1123753900084781868">Direkteteksting er ikke tilgjengelig akkurat nå</translation>
@@ -4134,6 +4135,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7648527891719919697">Dette nettstedet forblir blokkert fordi du har Avansert beskyttelse påslått i <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android-innstillingene<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer om denne advarselen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">lagre filer på denne enheten</translation>
 <translation id="7649070708921625228">Hjelp</translation>
+<translation id="7650141368285545431">Bruk passnøkkel fra en annen enhet</translation>
 <translation id="7653957176542370971">Arket for betalingsbehandling er lukket</translation>
 <translation id="7655766454902053387">Stillingsannonser</translation>
 <translation id="765676359832457558">Skjul avanserte innstillinger</translation>

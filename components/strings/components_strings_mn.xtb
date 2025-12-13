@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Олон улсын банк акаунтны дугаарыг хадгалах уу?</translation>
 <translation id="1113869188872983271">&amp; Дахин эрэмбэлэх үйлдлийг буцаах</translation>
 <translation id="1118429183611783760">Тоос сорогч болон шалны арчилгаа</translation>
+<translation id="111897705806685148">Өөр төхөөрөмжөөс нэвтрэх түлхүүр ашиглах</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Бүртгэлдээ Chrome-н ямар мэдээллийг хадгалахаа удирдахын тулд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="1122714970786750095">Электрон болон цахилгаан төхөөрөмж</translation>
 <translation id="1123753900084781868">Шууд тайлбар яг одоо боломжгүй байна</translation>
@@ -4134,6 +4135,7 @@
 <translation id="7648527891719919697">Та <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android-н тохиргооноос<ph name="END_ANDROID_SETTINGS_LINK" /> Дэвшилтэт хамгаалалтыг асаасан тул энэ сайтыг блоклосон хэвээр үлдэнэ. <ph name="BEGIN_LEARN_MORE_LINK" />Энэ сануулгын талаар нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Энэхүү төхөөрөмж дээр файлуудыг хадгалах</translation>
 <translation id="7649070708921625228">Тусламж</translation>
+<translation id="7650141368285545431">Өөр төхөөрөмжөөс нэвтрэх түлхүүр ашиглах</translation>
 <translation id="7653957176542370971">Төлбөр хариуцагчийн хүснэгт хаалттай байна</translation>
 <translation id="7655766454902053387">Ажлын байрны жагсаалтууд</translation>
 <translation id="765676359832457558">Ахисан түвшний тохиргоог нуух...</translation>

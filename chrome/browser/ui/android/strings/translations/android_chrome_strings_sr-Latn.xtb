@@ -427,6 +427,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2854916915045135148">Dodirnite i zadržite da biste prešli u režim bez arhiviranja</translation>
 <translation id="2860954141821109167">Uverite se da je neka aplikacija za telefon omogućena na ovom uređaju</translation>
 <translation id="2861923151411510142">Neke Chrome funkcije više neće biti dostupne</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> i još 1 kartica}one{<ph name="URL" /> i još <ph name="TAB_COUNT_MANY" /> kartica}few{<ph name="URL" /> i još <ph name="TAB_COUNT_MANY" /> kartice}other{<ph name="URL" /> i još <ph name="TAB_COUNT_MANY" /> kartica}}</translation>
 <translation id="2869430948265924908">Da biste zaštitili osetljiv sadržaj u automobilu, morate da primenite zaključavanje profila automobila.  To možete da uradite pomoću PIN-a, koda ili lozinke.</translation>
 <translation id="2870560284913253234">Sajt</translation>
 <translation id="2871733351037274014">Predučitavajte stranice</translation>

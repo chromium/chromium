@@ -427,6 +427,7 @@
 <translation id="2854916915045135148">गुप्त मोडवर स्विच करण्यासाठी स्पर्श करून धरून ठेवा</translation>
 <translation id="2860954141821109167">या डिव्हाइसवर फोन अ‍ॅप सुरू केले असल्याची खात्री करा</translation>
 <translation id="2861923151411510142">काही Chrome वैशिष्ट्ये यापुढे उपलब्ध होणार नाहीत</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> आणि दुसरा १ टॅब}other{<ph name="URL" /> आणि आणखी <ph name="TAB_COUNT_MANY" /> टॅब}}</translation>
 <translation id="2869430948265924908">तुमचा संवेदनशील आशय कारमध्ये संरक्षित ठेवण्यासाठी, तुम्ही कार प्रोफाइल लॉक तयार करणे आवश्यक आहे.  पिन, कोड किंवा पासवर्ड वापरून तुम्ही हे करू शकता.</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2871733351037274014">पेज प्रीलोड करा</translation>

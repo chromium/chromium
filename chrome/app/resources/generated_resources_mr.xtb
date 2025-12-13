@@ -2225,6 +2225,7 @@
 <translation id="2476901513051581836">ऑफलाइन स्टोरेज जागा ज्ञात होईपर्यंत स्टोरेज साफ करू शकत नाही.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> अनइंस्टॉल करण्यासाठी Windows बंद करा.</translation>
 <translation id="2477065602824695373">तुम्ही एकाहून अधिक स्विच सेट केल्यामुळे ऑटो-स्कॅन बंद करण्यात आले आहे.</translation>
+<translation id="2477218554275525952">तुम्ही नवीन टॅब उघडता, तेव्हा Gemini साइडबार उघडा ठेवा</translation>
 <translation id="2477607419416067650">इतर Google डेटा</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" साठी मीडिया-फाईल परवानग्या</translation>
 <translation id="24786041351753425">डेटा रिकव्‍हरी सेवा सुरू करा.</translation>
@@ -6193,7 +6194,6 @@
 <translation id="520576054436518354">Gemini ला तुमच्यासाठी ब्राउझ करू द्या</translation>
 <translation id="5207949376430453814">मजकूर कॅरेट हायलाइट करा</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> ला तुम्ही पात्र ChromeOS डिव्हाइस वापरत आहात की नाही हे तपासायचे आहे.</translation>
-<translation id="5208722776934437424">परवानग्या बदला</translation>
 <translation id="5208926629108082192">डिव्हाइसच्या मोबाइल नेटवर्कची माहिती</translation>
 <translation id="5208988882104884956">अर्धीरुंदी</translation>
 <translation id="5209320130288484488">कोणतीही डिव्हाइसेस आढळली नाहीत</translation>
@@ -6759,7 +6759,6 @@
 <translation id="5600706100022181951">अपडेट <ph name="UPDATE_SIZE_MB" /> MB मोबाइल डेटा वापरून डाउनलोड केले जाईल. तुम्हाला सुरू ठेवायचे आहे का?</translation>
 <translation id="5601503069213153581">पिन</translation>
 <translation id="5601833336918638013">साइटना ब्लूटूथ डिव्हाइस शोधण्याची अनुमती देऊ नका</translation>
-<translation id="560213628963806709">या अ‍ॅपने <ph name="OPENINGS_COUNT" /> नवीन Chrome टॅब उघडले आहेत. तुम्ही हे वर्तन "पॉप-अप आणि रीडिरेक्ट" परवानगीच्या अंतर्गत व्यवस्थापित करू शकता.</translation>
 <translation id="5602586420788540146">नवीन टॅब गटामध्ये उघडा</translation>
 <translation id="5605758115928394442">ते तुम्हीच आहात हे निश्चित करण्यासाठी तुमच्या फोनवर सूचना पाठवली होती.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{हे एक्स्टेंशन ब्लॉक केले आहे}other{ही एक्स्टेंशन ब्लॉक केली आहेत}}</translation>
@@ -8019,7 +8018,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6493991254603208962">चकाकी कमी करा</translation>
 <translation id="6494327278868541139">वर्धित संरक्षणाचे तपशील दाखवा</translation>
 <translation id="6494483173119160146">डिव्हाइसमध्ये रिकव्‍हर न करता येणारी एरर आली आहे. कृपया तुमचे डिव्हाइस रीसेट करा (यामुळे सर्व वापरकर्ता डेटा मिटेल) आणि पुन्हा प्रयत्न करा.</translation>
-<translation id="6495261233408033662">उघडलेले टॅब बंद करा</translation>
 <translation id="6495266441917713704">वाय-फाय ट्रान्सफर करू शकत नाही</translation>
 <translation id="6495453178162183932">थीम ही डीफॉल्ट Chrome वर अपडेट केली आहे</translation>
 <translation id="6496641546298525838">तुमचे डिव्हाइस</translation>
@@ -9374,7 +9372,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7427348830195639090">बॅकग्राउंड पेज: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">हे खाते व्यवस्थापित केलेले आहे</translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> चा कॉल</translation>
-<translation id="7429004613638800673"><ph name="APP_NAME" /> ने एकाहून अधिक टॅब उघडले आहेत.</translation>
 <translation id="7429415133937917139">स्क्रीनच्या वरच्या बाजूला ChromeVox पॅनलमध्ये
     रिफ्रेश करता येण्यासारख्या ब्रेल डिस्प्लेचे आउटपुट सिम्युलेट करते</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> धोकादायक असू शकते. Chrome ने तिची पडताळणी करावी असे तुम्हाला वाटत असल्यास, पासवर्ड जोडा किंवा तुम्ही ती थेट डाउनलोड करू शकता.</translation>
@@ -12037,6 +12034,7 @@ I feel - विटांची इमारत</translation>
 <translation id="9207434080086272167">सूर्यप्रकाश</translation>
 <translation id="9207669213427469593">स्प्लिट-स्क्रीन वापरण्यासाठी तुम्ही विंडो एका बाजूला स्नॅप केल्यास, तुम्हाला दुसऱ्या बाजूसाठी विंडो सूचना दिसतील</translation>
 <translation id="9209563766569767417">Linux कंटेनर सेटअप तपासत आहे</translation>
+<translation id="9212565256020141627">Gemini सोबत इमेज शेअर करता आली नाही. पुन्हा प्रयत्न करा किंवा दुसरी इमेज वापरून पहा.</translation>
 <translation id="9214520840402538427">अरेरे! स्थापना-वेळ विशेषतांचे इंस्टॉलेशन कालबाह्य झाले. कृपया तुमच्या सपोर्ट प्रतिनिधीशी संपर्क साधा.</translation>
 <translation id="9214695392875603905">कपकेक</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" जोडले</translation>

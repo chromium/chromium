@@ -6184,7 +6184,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="520576054436518354">Laisser Gemini naviguer pour vous</translation>
 <translation id="5207949376430453814">Mettre le point d'insertion de texte en surbrillance</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> veut vérifier si vous utilisez un appareil Chrome OS admissible.</translation>
-<translation id="5208722776934437424">Modifier les autorisations</translation>
 <translation id="5208926629108082192">Informations sur le réseau mobile de l'appareil</translation>
 <translation id="5208988882104884956">Demi-largeur</translation>
 <translation id="5209320130288484488">Aucun appareil trouvé</translation>
@@ -6749,7 +6748,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5600706100022181951">La mise à jour sera téléchargée en utilisant <ph name="UPDATE_SIZE_MB" /> Mo de données cellulaires. Voulez-vous continuer?</translation>
 <translation id="5601503069213153581">NIP</translation>
 <translation id="5601833336918638013">Ne pas autoriser les sites à rechercher les appareils Bluetooth</translation>
-<translation id="560213628963806709"><ph name="OPENINGS_COUNT" /> nouveaux onglets Chrome ont été ouverts par cette appli. Vous pouvez gérer ce comportement dans l'autorisation « Fenêtres contextuelles et redirections ».</translation>
 <translation id="5602586420788540146">Ouvrir dans un nouveau groupe d'onglets</translation>
 <translation id="5605758115928394442">Nous avons envoyé une notification à votre téléphone pour confirmer votre identité.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Cette extension est bloquée}one{Cette extension est bloquée}other{Ces extensions sont bloquées}}</translation>
@@ -8006,7 +8004,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6493991254603208962">Diminuer la luminosité</translation>
 <translation id="6494327278868541139">Afficher les renseignements sur la protection renforcée</translation>
 <translation id="6494483173119160146">L'appareil a rencontré une erreur irrécupérable. Veuillez réinitialiser votre appareil (cela effacera toutes les données de l'utilisateur) et réessayez.</translation>
-<translation id="6495261233408033662">Fermer les onglets ouverts</translation>
 <translation id="6495266441917713704">Impossible de transférer le Wi-Fi</translation>
 <translation id="6495453178162183932">Thème mis à jour vers Chrome par défaut</translation>
 <translation id="6496641546298525838">Votre appareil</translation>
@@ -9362,7 +9359,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7427348830195639090">Page en arrière-plan : <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">Ce profil est géré</translation>
 <translation id="7427798576651127129">Appel de <ph name="DEVICE_NAME" /></translation>
-<translation id="7429004613638800673"><ph name="APP_NAME" /> a ouvert plusieurs onglets.</translation>
 <translation id="7429415133937917139">Simule la sortie d'un afficheur braille actualisable
         dans le panneau ChromeVox, dans le haut de l'écran</translation>
 <translation id="7429568074268678162">Le fichier <ph name="FILENAME" /> pourrait être dangereux. Ajoutez un mot de passe si vous souhaitez que Chrome le vérifie ou vous pouvez le télécharger directement.</translation>

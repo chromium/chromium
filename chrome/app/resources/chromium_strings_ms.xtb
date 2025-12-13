@@ -283,6 +283,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="4095980151185649725">{COUNT,plural, =1{Organisasi anda akan menutup Chromium secara automatik apabila Chromium tidak digunakan selama 1 minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}other{Organisasi anda akan menutup Chromium secara automatik apabila Chromium tidak digunakan selama # minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}}</translation>
 <translation id="4118474109249235144">Inkognito Chromium</translation>
 <translation id="4122186850977583290">Akses halaman Perihal Chromium</translation>
+<translation id="4135244987012252068">Sesuaikan Chromium untuk memberikan penyemak imbas anda rupa baharu</translation>
 <translation id="4147856324248078748">Sesuaikan Chromium anda</translation>
 <translation id="4148957013307229264">Memasang...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Log Masuk Rangkaian - Chromium</translation>

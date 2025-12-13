@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Vols desar l'IBAN?</translation>
 <translation id="1113869188872983271">&amp;Desfés el canvi d'ordre</translation>
 <translation id="1118429183611783760">Aspiradores i neteja de terres</translation>
+<translation id="111897705806685148">Utilitza la clau d'accés d'un altre dispositiu</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; prem Tab i després Retorn per gestionar la informació de Chrome que deses al teu Compte de Google.</translation>
 <translation id="1122714970786750095">Electricitat i electrònica</translation>
 <translation id="1123753900084781868">La funció Subtítols instantanis no està disponible en aquests moments</translation>
@@ -4135,6 +4136,7 @@ Detalls addicionals:
 <translation id="7648527891719919697">Aquest lloc web es mantindrà bloquejat perquè tens activada la Protecció avançada a la <ph name="BEGIN_ANDROID_SETTINGS_LINK" />configuració d'Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Més informació sobre aquest advertiment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Emmagatzema fitxers en aquest dispositiu</translation>
 <translation id="7649070708921625228">Ajuda</translation>
+<translation id="7650141368285545431">Utilitza la clau d'accés d'un altre dispositiu</translation>
 <translation id="7653957176542370971">El full del gestor de pagaments està tancat</translation>
 <translation id="7655766454902053387">Ofertes de feina</translation>
 <translation id="765676359832457558">Amaga la configuració avançada...</translation>

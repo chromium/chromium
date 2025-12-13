@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">ບັນທຶກ IBAN ບໍ?</translation>
 <translation id="1113869188872983271">ປ່ຽນ​ກັບ​ຄືນຄໍາສັ່ງຈັດລໍາດັບຄືນ</translation>
 <translation id="1118429183611783760">ເຄື່ອງດູດຝຸ່ນ ແລະ ເບິ່ງແຍງພື້ນ</translation>
+<translation id="111897705806685148">ໃຊ້ກະແຈຜ່ານຈາກອຸປະກອນອື່ນ</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຕາມດ້ວຍ Enter ເພື່ອຈັດການຂໍ້ມູນ Chrome ທີ່ທ່ານບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="1122714970786750095">ອີເລັກໂທຣນິກ ແລະ ການໄຟຟ້າ</translation>
 <translation id="1123753900084781868">ຄຳບັນຍາຍສົດບໍ່ສາມາດໃຊ້ໄດ້ໃນຕອນນີ້</translation>
@@ -4134,6 +4135,7 @@
 <translation id="7648527891719919697">ເວັບໄຊນີ້ຈະຍັງຖືກບລັອກຢູ່ ຍ້ອນວ່າທ່ານໄດ້ເປີດການປົກປ້ອງຂັ້ນສູງໃນ <ph name="BEGIN_ANDROID_SETTINGS_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຳເຕືອນນີ້<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">ເກັ​ບ​ຮັກ​ສາ​ໄຟ​ລ໌​ໄວ້​ຢູ່​ໃນ​ອຸ​ປະ​ກອນ​ນີ້</translation>
 <translation id="7649070708921625228">ຊ່ວຍ​ເຫຼືອ</translation>
+<translation id="7650141368285545431">ໃຊ້ກະແຈຜ່ານຈາກອຸປະກອນອື່ນ</translation>
 <translation id="7653957176542370971">ແຜ່ນວຽກຂອງເຄື່ອງຈັດການການຈ່າຍເງິນປິດຢູ່</translation>
 <translation id="7655766454902053387">ປະກາດຮັບສະໝັກວຽກ</translation>
 <translation id="765676359832457558">ເຊື່ອງ​ການ​ຕັ້ງຄ່າຂັ້ນສູງ ...</translation>

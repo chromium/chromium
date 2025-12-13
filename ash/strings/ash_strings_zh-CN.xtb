@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">近期照片中的第 <ph name="INDEX" /> 张，共 <ph name="TOTAL_COUNT" /> 张。</translation>
 <translation id="2201687081523799384">收起 Google Tasks</translation>
 <translation id="2208323208084708176">统一桌面模式</translation>
+<translation id="2210311543574621570">按住 Ctrl + V 即可查看剪贴板。若要停用此快捷键，您可前往 chrome://flags 停用 #clipboard-history-longpress flag。</translation>
 <translation id="2215920961700443347">未连接到互联网。请连接到互联网，然后重试。</translation>
 <translation id="2222841058024245321">桌面 7</translation>
 <translation id="2223384056430485343">在分屏模式下</translation>

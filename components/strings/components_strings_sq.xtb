@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Të ruhet numri IBAN?</translation>
 <translation id="1113869188872983271">&amp;Zhbëj rirenditjen</translation>
 <translation id="1118429183611783760">Fshesa me korrent dhe kujdesi për dyshemenë</translation>
+<translation id="111897705806685148">Përdor çelësin e kalimit nga një pajisje tjetër</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab" dhe më pas "Enter" për të menaxhuar se çfarë informacionesh të Chrome ruhen në "Llogarinë tënde të Google"</translation>
 <translation id="1122714970786750095">Pajisje elektrike dhe elektronike</translation>
 <translation id="1123753900084781868">"Titrat në çast" nuk ofrohen për momentin</translation>
@@ -4133,6 +4134,7 @@ Detaje shtesë:
 <translation id="7648527891719919697">Ky sajt do të qëndrojë i bllokuar sepse ke të aktivizuar "Mbrojtjen e përparuar" te <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Cilësimet e Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë për këtë paralajmërim<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Ruaji skedarët në këtë pajisje</translation>
 <translation id="7649070708921625228">Ndihma</translation>
+<translation id="7650141368285545431">Përdor çelësin e kalimit nga një pajisje tjetër</translation>
 <translation id="7653957176542370971">Fleta e përpunuesit të pagesës është mbyllur</translation>
 <translation id="7655766454902053387">Listimet e punëve</translation>
 <translation id="765676359832457558">Fshih cilësimet e përparuara...</translation>

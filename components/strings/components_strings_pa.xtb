@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">ਕੀ IBAN ਨੂੰ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1113869188872983271">&amp;ਦੁਬਾਰਾ ਕ੍ਰਮ ਦੇਣ ਨੂੰ ਅਨਡੂ ਕਰੋ</translation>
 <translation id="1118429183611783760">ਵੈਕਿਊਮ ਅਤੇ ਫ਼ਰਸ਼ ਦੀ ਦੇਖ ਭਾਲ</translation>
+<translation id="111897705806685148">ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ ਤੋਂ ਪਾਸਕੀ ਵਰਤੋ</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾਓ, ਫਿਰ ਇਹ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Enter ਦਬਾਓ ਕਿ ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਕਿਹੜੀ Chrome ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰਦੇ ਹੋ</translation>
 <translation id="1122714970786750095">ਇਲੈਕਟ੍ਰਾਨਿਕ ਅਤੇ ਇਲੈਕਟ੍ਰੀਕਲ</translation>
 <translation id="1123753900084781868">ਲਾਈਵ ਸੁਰਖੀਆਂ ਫ਼ਿਲਹਾਲ ਉਪਲਬਧ ਨਹੀਂ ਹਨ</translation>
@@ -4130,6 +4131,7 @@
 <translation id="7648527891719919697">ਇਹ ਸਾਈਟ ਬਲਾਕ ਰਹੇਗੀ ਕਿਉਂਕਿ ਤੁਸੀਂ Android ਸੈਟਿੰਗਾਂ ਵਿੱਚ <ph name="BEGIN_ANDROID_SETTINGS_LINK" />ਅਡਵਾਂਸ ਸੁਰੱਖਿਆ<ph name="END_ANDROID_SETTINGS_LINK" /> ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਹੋਇਆ ਹੈ। <ph name="BEGIN_LEARN_MORE_LINK" />ਇਸ ਚਿਤਾਵਨੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਫਾਈਲਾਂ ਸਟੋਰ ਕਰੋ</translation>
 <translation id="7649070708921625228">ਸਹਾਇਤਾ</translation>
+<translation id="7650141368285545431">ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ ਤੋਂ ਪਾਸਕੀ ਵਰਤੋ</translation>
 <translation id="7653957176542370971">ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਸ਼ੀਟ ਬੰਦ ਹੈ</translation>
 <translation id="7655766454902053387">ਨੌਕਰੀਆਂ ਦੀਆਂ ਸੂਚੀਆਂ</translation>
 <translation id="765676359832457558">ਉੱਨਤ ਸੈਟਿੰਗਾਂ ਲੁਕਾਓ...</translation>

@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Vai saglabāt IBAN?</translation>
 <translation id="1113869188872983271">&amp;Atsaukt pārkārtošanu</translation>
 <translation id="1118429183611783760">Putekļu sūcēji un grīdas kopšanas ierīces</translation>
+<translation id="111897705806685148">Izmantot piekļuves atslēgu no citas ierīces</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai pārvaldītu, kāda Chrome informācija tiek saglabāta jūsu Google kontā, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="1122714970786750095">Elektroniskās un elektriskās ierīces</translation>
 <translation id="1123753900084781868">Subtitri reāllaikā pašlaik nav pieejami.</translation>
@@ -4133,6 +4134,7 @@ Papildu informācija:
 <translation id="7648527891719919697">Šī vietne joprojām būs bloķēta, jo <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android iestatījumos<ph name="END_ANDROID_SETTINGS_LINK" /> esat ieslēdzis papildu aizsardzību. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk par šo brīdinājumu<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="7648992873808071793">saglabāt failus šajā ierīcē</translation>
 <translation id="7649070708921625228">Palīdzība</translation>
+<translation id="7650141368285545431">Izmantot piekļuves atslēgu no citas ierīces</translation>
 <translation id="7653957176542370971">Maksājumu apstrādātāja lapa ir aizvērta</translation>
 <translation id="7655766454902053387">Darba sludinājumi</translation>
 <translation id="765676359832457558">Slēpt papildu iestatījumus...</translation>

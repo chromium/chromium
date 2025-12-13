@@ -427,6 +427,7 @@
 <translation id="2854916915045135148">Чтобы перейти в режим инкогнито, нажмите и удерживайте</translation>
 <translation id="2860954141821109167">Убедитесь, что на устройстве есть приложение "Телефон".</translation>
 <translation id="2861923151411510142">Некоторые функции Chrome станут недоступны</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> и ещё 1 вкладка}one{<ph name="URL" /> и ещё <ph name="TAB_COUNT_MANY" /> вкладка}few{<ph name="URL" /> и ещё <ph name="TAB_COUNT_MANY" /> вкладки}many{<ph name="URL" /> и ещё <ph name="TAB_COUNT_MANY" /> вкладок}other{<ph name="URL" /> и ещё <ph name="TAB_COUNT_MANY" /> вкладки}}</translation>
 <translation id="2869430948265924908">Для защиты ваших конфиденциальных данных в автомобиле необходимо настроить блокировку профиля.  Это можно сделать с помощью PIN-кода, кода блокировки или пароля.</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2871733351037274014">Предзагрузка страниц</translation>

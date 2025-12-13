@@ -156,6 +156,7 @@
 <translation id="1545749641540134597">掃描 QR code</translation>
 <translation id="1545757265410828525">價格記錄</translation>
 <translation id="1547610699249301703">分享密碼</translation>
+<translation id="1554043146674176775">關閉 AI 模式</translation>
 <translation id="1554477036522844996">開啟新視窗</translation>
 <translation id="1558391695376153246">關閉無痕分頁</translation>
 <translation id="1565371473877914088">新無痕分頁</translation>
@@ -457,6 +458,7 @@
 <translation id="2688535388040882469">橫幅</translation>
 <translation id="2690858294534178585">相機正在使用中</translation>
 <translation id="2691653761409724435">無法離線使用</translation>
+<translation id="2697530870203420261">暱稱無效</translation>
 <translation id="269819437389494246">系統會顯示造訪過的網頁，你也可以將這些網頁從歷史記錄中刪除</translation>
 <translation id="2704606927547763573">已複製</translation>
 <translation id="2708051474374549906">系統會根據你傳送到 Google 的瀏覽資料，即時、主動防範危險的網站、下載內容和擴充功能</translation>
@@ -820,7 +822,7 @@
 <translation id="4172051516777682613">一律顯示</translation>
 <translation id="417273154673973994">{count,plural, =1{已關閉並儲存 1 個分頁群組}other{已關閉並儲存 {count} 個分頁群組}}</translation>
 <translation id="417612446554534067">傳送到你的裝置</translation>
-<translation id="4180726336228139707">僅在這部裝置上</translation>
+<translation id="4180726336228139707">僅儲存到這部裝置</translation>
 <translation id="4181841719683918333">語言</translation>
 <translation id="4183350924949589798">想要加強安全性嗎？</translation>
 <translation id="4184063163998877398">{count,plural, =1{有 {count} 組低強度密碼}other{有 {count} 組低強度密碼}}</translation>
@@ -1561,6 +1563,7 @@
 <translation id="6830728435402077660">不安全</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6842136130964845393">為確保你可以隨時存取已儲存的密碼，請驗證你的身分</translation>
+<translation id="6844773122575789617">開啟 AI 模式</translation>
 <translation id="6851516051005285358">切換為電腦版網站</translation>
 <translation id="6857446173140146664">刪除背景</translation>
 <translation id="6858718102216837409">新增語言…</translation>

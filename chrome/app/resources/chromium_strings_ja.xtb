@@ -213,6 +213,7 @@
 <translation id="3313189106987092621">Chromium で安全でない接続を使用してサイトを読み込む前に警告を表示します</translation>
 <translation id="3316771292331273802">Chromium のウィンドウをすべて閉じると、ほとんどのサイトからログアウトします。ただし Chromium にログインしている場合、Google アカウントからはログアウトしません。サイトにあなたの情報を記憶させるには、<ph name="SETTINGS_LINK" />します。</translation>
 <translation id="3322413454779348750">デフォルトの検索エンジンが Chromium の外部から変更されました。ユーザー保護のため、Chromium でリセットしました。</translation>
+<translation id="3331557257666250900">Chromium にログインすると、すべてのデバイスでパスワード、ブックマーク、その他の設定にアクセスできます</translation>
 <translation id="3352986031709923790">検索範囲の右上隅: 右 <ph name="RIGHT" />%、上 <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">アカウントの Chromium データ</translation>
 <translation id="3369405342922656244">画像検索でこのページを検索する</translation>
@@ -264,6 +265,7 @@
 <translation id="3971865010372729242">Chromium でアドレスバーや検索ボックスに入力を始めると、入力内容が組織の検索ツール、AI ツール、エージェント ツールに送信され、検索候補が表示されます。</translation>
 <translation id="3975724895399328945">Google Chrome for Testing について(&amp;G)</translation>
 <translation id="3997429360543082038">Chromium OS について</translation>
+<translation id="4010059961270896984">ユーザーがサイトにアクセスすると、Chromium はユーザーの IP アドレスを隠すプライバシー サーバーを経由して、URL の一部を難読化してから <ph name="BEGIN_LINK" />Google セーフ ブラウジング<ph name="END_LINK" />に送信します。サイトで不審な動作が検出された場合は、URL 全体とページ コンテンツの一部も送信されます。</translation>
 <translation id="4019629340646866719">Chromium OS は、<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開発環境<ph name="END_LINK_LINUX_OSS" />と同様に、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="4022972681110646219">画面を翻訳</translation>
 <translation id="4023601594785368013">元の言語: <ph name="LANGUAGE" /></translation>
@@ -276,6 +278,7 @@
 <translation id="4095980151185649725">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chromium を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}other{# 分間使用しなかった場合、組織は Chromium を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}}</translation>
 <translation id="4118474109249235144">Chromium のシークレット モード</translation>
 <translation id="4122186850977583290">Chromium についてのページに移動</translation>
+<translation id="4135244987012252068">Chromium をカスタマイズして、ブラウザのデザインを一新</translation>
 <translation id="4147856324248078748">Chromium をカスタマイズ(&amp;U)</translation>
 <translation id="4148957013307229264">インストール中...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - ネットワークにログイン - Chromium</translation>
@@ -579,6 +582,7 @@
 <translation id="77283119132245232"><ph name="BROWSER_NAME" /> のシステム トレース サービスを提供します。このサービスを無効にした場合、ブラウザによって作成されるパフォーマンス トレースに、コンテキスト切り替えやスレッドの準備完了などのシステム全体のイベントは含められません。</translation>
 <translation id="7745317241717453663">このデバイスから閲覧データを削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chromium にログインしてください。</translation>
 <translation id="7747138024166251722">インストーラーの一時ディレクトリを作成できませんでした。ディスクの空き領域とソフトウェアのインストール許可があることを確認してください。</translation>
+<translation id="7750130090210923118">デフォルトの Chromium にリセット</translation>
 <translation id="7786760609782648049">Chromium を高速化する</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">あなたのインターネット トラフィックにアクセスできるユーザーに、あなたがアクセスしたサイトを知られないようにします。Chromium では、安全な接続を使用して、DNS（ドメイン ネーム システム）でサイトの IP アドレスを検索します。</translation>
@@ -679,6 +683,7 @@
 <translation id="8907580949721785412">Chromium でパスワードを表示しようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="8941642502866065432">Chromium を更新できません</translation>
 <translation id="897581876605952338">Chromium Enterprise ロゴ</translation>
+<translation id="8981150672034878610">プロファイルを開く際にエラーが発生したため、Chromium を起動できません。Chromium を再起動してみてください。</translation>
 <translation id="8988036198400390003">Chromium プロファイルを管理</translation>
 <translation id="9019929317751753759">Chromium をより安全にご利用いただくために、<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />で提供していない次の拡張機能を無効にしました。これは知らないうちに追加された可能性があります。</translation>
 <translation id="904366664621834601">このダウンロードは Chromium でブロックされました。アーカイブ ファイルに他のファイルが含まれており、マルウェアが隠されている可能性があります</translation>

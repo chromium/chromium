@@ -218,6 +218,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3313189106987092621">Chromium sal jou waarsku voordat enige werf met ’n onveilige verbinding gelaai word</translation>
 <translation id="3316771292331273802">Jy sal by die meeste werwe afgemeld word wanneer jy alle Chromium-vensters toemaak, behalwe jou Google-rekening as jy by Chromium aangemeld is. Om werwe toe te laat om jou te onthou, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">Jou versteksoekenjin is van buite Chromium af verander. Chromium het dit teruggestel om jou te beskerm.</translation>
+<translation id="3331557257666250900">Meld by Chromium aan om jou wagwoorde, boekmerke en meer op al jou toestelle te kry</translation>
 <translation id="3352986031709923790">boonste regterhoek van soekgebied: regs <ph name="RIGHT" />%, bo <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Chromium-data in jou rekening</translation>
 <translation id="3369405342922656244">Soek hierdie bladsy met Prentsoektog</translation>
@@ -269,6 +270,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3971865010372729242">Wanneer jy in die adresbalk of soekkassie tik, stuur Chromium dit wat jy tik na jou organisasie se soek-, KI- en agentnutsgoed om voorstelle te kry.</translation>
 <translation id="3975724895399328945">Meer oor &amp;Google Chrome-toetsweergawe</translation>
 <translation id="3997429360543082038">Meer oor Chromium-bedryfstelsel</translation>
+<translation id="4010059961270896984">Wanneer jy ’n werf besoek, stuur Chromium ’n verdoeselde gedeelte van die URL na <ph name="BEGIN_LINK" />Google Veiligblaai<ph name="END_LINK" /> toe deur ’n privaatheidbediener wat jou IP-adres versteek. As ’n webwerf iets verdag doen, word volledige URL’e en stukkies van die bladsyinhoud ook gestuur.</translation>
 <translation id="4019629340646866719">Chromium-bedryfstelsel word moontlik gemaak deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" />, soos die geval ook is met <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ontwikkelingomgewing<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Vertaal skerm</translation>
 <translation id="4023601594785368013">Oorspronklike taal: <ph name="LANGUAGE" /></translation>
@@ -588,6 +590,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="77283119132245232">Verskaf stelselnasporingdienste vir <ph name="BROWSER_NAME" />. As hierdie diens gedeaktiveer is, sal prestasiespore wat deur die blaaier geskep word, nie stelselwye gevalle soos kontekswisseling en gespreksdraadgevalle wat gereed is, insluit nie.</translation>
 <translation id="7745317241717453663">Dit sal jou blaaierdata op hierdie toestel uitvee. Meld as <ph name="USER_EMAIL" /> by Chromium aan om jou data later op te haal.</translation>
 <translation id="7747138024166251722">Die installeerder kon nie 'n tydelike gids skep nie. Gaan asseblief na vir beskikbare skyfspasie en toestemming om sagteware te installeer.</translation>
+<translation id="7750130090210923118">Stel terug na verstek-Chromium</translation>
 <translation id="7786760609782648049">Maak Chromium vinniger</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Maak dit moeiliker vir mense met toegang tot jou internetverkeer om te sien watter werwe jy besoek. Chromium gebruik ’n veilige verbinding om ’n webwerf se IP-adres in die DNS (domeinnaamstelsel) op te soek.</translation>
@@ -688,6 +691,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8907580949721785412">Chromium probeer tans om wagwoorde te wys. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="8941642502866065432">Kan nie Chromium opdateer nie</translation>
 <translation id="897581876605952338">Chromium Enterprise-logo</translation>
+<translation id="8981150672034878610">Kan nie Chromium begin nie omdat iets skeefgeloop het toe jou profiel oopgemaak is. Probeer om Chromium te herbegin.</translation>
 <translation id="8988036198400390003">Bestuur Chromium-profiele</translation>
 <translation id="9019929317751753759">Om Chromium veiliger te maak, het ons die volgende uitbreiding, wat nie in die <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> gelys word nie en wat dalk sonder jou medewete bygevoeg is, gedeaktiveer.</translation>
 <translation id="904366664621834601">Chromium het hierdie aflaai geblokkeer omdat die argieflêer ander lêers insluit wat wanware kan versteek</translation>

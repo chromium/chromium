@@ -2225,6 +2225,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2476901513051581836">Tidak dapat mengosongkan storan sehingga saiz storan luar talian diketahui.</translation>
 <translation id="2476974672882258506">Matikan Windows untuk menyahpasang <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Sejak anda menyediakan berbilang suis, autoimbas telah dimatikan.</translation>
+<translation id="2477218554275525952">Pastikan bar sisi Gemini dibuka apabila anda membuka tab baharu</translation>
 <translation id="2477607419416067650">Data Google lain</translation>
 <translation id="2478176599153288112">Kebenaran Fail Media untuk "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Dayakan perkhidmatan pemulihan data.</translation>
@@ -6195,7 +6196,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="520576054436518354">Benarkan Gemini menyemak imbas untuk anda</translation>
 <translation id="5207949376430453814">Serlahkan karet teks</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> mahu menyemak sama ada anda menggunakan peranti Chrome OS yang layak.</translation>
-<translation id="5208722776934437424">Tukar kebenaran</translation>
 <translation id="5208926629108082192">Maklumat rangkaian mudah alih peranti</translation>
 <translation id="5208988882104884956">Kelebaran separa</translation>
 <translation id="5209320130288484488">Tiada peranti ditemui</translation>
@@ -6761,7 +6761,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5600706100022181951">Kemas kini akan dimuat turun menggunakan <ph name="UPDATE_SIZE_MB" /> MB data mudah alih. Adakah anda ingin meneruskan?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601833336918638013">Jangan benarkan laman mencari peranti Bluetooth</translation>
-<translation id="560213628963806709"><ph name="OPENINGS_COUNT" /> tab Chrome baharu telah dibuka oleh apl ini. Anda boleh mengurus gelagat ini dalam bahagian kebenaran "Menu timbul dan Pengubahan Hala kepada".</translation>
 <translation id="5602586420788540146">Buka dalam kumpulan tab baharu</translation>
 <translation id="5605758115928394442">Pemberitahuan telah dihantar ke telefon anda untuk mengesahkan orang itu ialah anda.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Sambungan ini disekat}other{Sambungan ini disekat}}</translation>
@@ -8018,7 +8017,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6493991254603208962">Kurangkan kecerahan</translation>
 <translation id="6494327278868541139">Paparkan butiran perlindungan dipertingkatkan</translation>
 <translation id="6494483173119160146">Peranti mengalami ralat yang tidak dapat dipulihkan. Sila tetapkan semula peranti anda (tindakan ini akan memadamkan semua data pengguna anda) dan cuba lagi.</translation>
-<translation id="6495261233408033662">Tutup tab yang dibuka</translation>
 <translation id="6495266441917713704">Tidak dapat memindahkan Wi-Fi</translation>
 <translation id="6495453178162183932">Tema dikemaskinikan kepada Chrome Lalai</translation>
 <translation id="6496641546298525838">Peranti anda</translation>
@@ -9373,7 +9371,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7427348830195639090">Halaman Latar Belakang: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">Profil ini terurus</translation>
 <translation id="7427798576651127129">Panggilan daripada <ph name="DEVICE_NAME" /></translation>
-<translation id="7429004613638800673"><ph name="APP_NAME" /> telah membuka berbilang tab.</translation>
 <translation id="7429415133937917139">Menyerupai output paparan braille yang boleh dimuat semula
     dalam panel ChromeVox di bahagian atas skrin</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> mungkin berbahaya. Tambahkan kata laluan jika anda mahu Chrome mengesahkan fail tersebut atau anda boleh memuat turun terus fail itu.</translation>
@@ -12036,6 +12033,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="9207434080086272167">Cerah</translation>
 <translation id="9207669213427469593">Jika anda menyentap tetingkap pada satu sisi untuk menggunakan skrin pisah, anda akan dapat melihat cadangan tetingkap untuk sisi yang lain</translation>
 <translation id="9209563766569767417">Menyemak persediaan bekas Linux</translation>
+<translation id="9212565256020141627">Tidak dapat berkongsi imej dengan Gemini. Cuba lagi atau cuba imej lain.</translation>
 <translation id="9214520840402538427">Alamak! Pemulaan sifat masa pemasangan telah tamat masa. Sila hubungi wakil sokongan anda.</translation>
 <translation id="9214695392875603905">Kek cawan</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" ditambah</translation>

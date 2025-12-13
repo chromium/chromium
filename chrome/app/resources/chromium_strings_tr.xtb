@@ -213,6 +213,7 @@
 <translation id="3313189106987092621">Chromium, güvenli olmayan bağlantı kullanan siteleri yüklemeden önce sizi uyarır</translation>
 <translation id="3316771292331273802">Tüm Chromium pencerelerini kapattığınızda çoğu sitedeki oturumunuz kapatılır. Chromium'da oturum açtıysanız Google Hesabınız buna dahil değildir. Sitelerin sizi hatırlamasını sağlamak için <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">Varsayılan arama motorunuz Chromium dışından değiştirildi. Chromium, sizi korumak için bu işlemi geri aldı.</translation>
+<translation id="3331557257666250900">Tüm cihazlarınızda şifrelerinizi, yer işaretlerinizi ve daha fazlasını almak için Chromium'da oturum açın</translation>
 <translation id="3352986031709923790">arama alanının sağ üst köşesi: sağ %<ph name="RIGHT" />, üst %<ph name="TOP" /></translation>
 <translation id="3366305173356742781">Hesabınızdaki Chromium verileri</translation>
 <translation id="3369405342922656244">Bu sayfayı görsel aramayla arayın</translation>
@@ -264,6 +265,7 @@
 <translation id="3971865010372729242">Adres çubuğuna veya arama kutusuna yazdığınızda Chromium, öneriler almak için, yazdıklarınızı kuruluşunuzun arama, yapay zeka ve temsilci araçlarına gönderir.</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testing hakkında</translation>
 <translation id="3997429360543082038">ChromiumOS hakkında</translation>
+<translation id="4010059961270896984">Bir siteyi ziyaret ettiğinizde Chromium, URL'nin kodu karartılmış bir kısmını, IP adresinizi saklayan bir gizlilik sunucusu üzerinden<ph name="BEGIN_LINK" />Google Güvenli Tarama<ph name="END_LINK" />'ya gönderir. Site şüpheli bir işlem gerçekleştirirse tam URL'ler ve sayfa içeriğinin bir kısmı da gönderilir.</translation>
 <translation id="4019629340646866719">ChromiumOS, <ph name="BEGIN_LINK_LINUX_OSS" />Linux geliştirme ortamında<ph name="END_LINK_LINUX_OSS" /> olduğu gibi ek <ph name="BEGIN_LINK_CROS_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_CROS_OSS" /> yararlanılarak geliştirilmiştir.</translation>
 <translation id="4022972681110646219">Ekrandaki yazıları çevir</translation>
 <translation id="4023601594785368013">Orijinal dil: <ph name="LANGUAGE" /></translation>
@@ -583,6 +585,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="77283119132245232"><ph name="BROWSER_NAME" /> için sistem izleme hizmetleri sağlar. Bu hizmet devre dışı bırakılırsa tarayıcı tarafından oluşturulan performans izleri, bağlam geçişi ve hazır iş parçacığı etkinlikleri gibi sistem genelindeki etkinlikleri içermez.</translation>
 <translation id="7745317241717453663">Bu işlem tarama verilerinizi bu cihazdan silecektir. Verilerinizi daha sonra geri almak için Chromium'da <ph name="USER_EMAIL" /> hesabıyla oturum açın.</translation>
 <translation id="7747138024166251722">Yükleyici geçici bir dizin oluşturamadı. Lütfen, kullanılabilir disk alanını ve yazılım yükleme iznini kontrol edin.</translation>
+<translation id="7750130090210923118">Chromium Varsayılanına Sıfırla</translation>
 <translation id="7786760609782648049">Chromium'u daha hızlı hale getirin</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">İnternet trafiğinize erişimi olan kişilerin, ziyaret ettiğiniz siteleri görmesini zorlaştırın. Chromium, DNS'de (Alan Adı Sistemi) bir sitenin IP adresini aramak için güvenli bağlantı kullanır.</translation>
@@ -683,6 +686,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8907580949721785412">Chromium şifreleri göstermeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="8941642502866065432">Chromium güncellenemiyor</translation>
 <translation id="897581876605952338">Chromium Enterprise logosu</translation>
+<translation id="8981150672034878610">Profiliniz açılırken bir hata oluştuğundan Chromium başlatılamıyor. Chromium'u yeniden başlatmayı deneyin.</translation>
 <translation id="8988036198400390003">Chromium profillerini yönetin</translation>
 <translation id="9019929317751753759">Chromium'u daha güvenli bir hale getirmek için <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> altında listelenmeyen ve bilginiz dışında eklenmiş olabilecek aşağıdaki uzantıyı devre dışı bıraktık.</translation>
 <translation id="904366664621834601">Arşiv dosyası, kötü amaçlı yazılımın gizlenmiş olabileceği başka dosyalar içerdiği için Chromium bu indirme işlemini engelledi</translation>

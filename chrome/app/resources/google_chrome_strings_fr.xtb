@@ -121,6 +121,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2216543877350048334">Pour supprimer votre compte Google de Chrome, déconnectez-vous</translation>
 <translation id="2236949375853147973">Mon activité</translation>
 <translation id="22791603784558743">Fermer Gemini dans Chrome Dev</translation>
+<translation id="2284380654876659752">Lorsque vous consultez un site, Chrome envoie une partie obscurcie de l'URL à la <ph name="BEGIN_LINK" />navigation sécurisée Google<ph name="END_LINK" /> par le biais d'un serveur de confidentialité qui masque votre adresse IP. Si un site a un comportement suspect, les URL complètes et des extraits du contenu des pages sont également envoyés.</translation>
 <translation id="2290014774651636340">Les clés API Google sont manquantes. Certaines fonctionnalités de Google Chrome vont être désactivées.</translation>
 <translation id="2290095356545025170">Voulez-vous vraiment désinstaller Google Chrome ?</translation>
 <translation id="2301513536169703857">Pour accéder à vos mots de passe, vos favoris et plus sur tous vos appareils, connectez-vous à Chrome</translation>

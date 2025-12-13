@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Želite shraniti številko IBAN?</translation>
 <translation id="1113869188872983271">&amp;Razveljavi razvrstitev</translation>
 <translation id="1118429183611783760">Sesalci in naprave za nego tal</translation>
+<translation id="111897705806685148">Uporabi ključ za dostop iz druge naprave</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite upravljati, katere podatke v Chromu shranjujete v računu Google</translation>
 <translation id="1122714970786750095">Elektronske in električne naprave</translation>
 <translation id="1123753900084781868">Samodejni podnapisi trenutno niso na voljo</translation>
@@ -4135,6 +4136,7 @@ Dodatne podrobnosti:
 <translation id="7648527891719919697">To spletno mesto bo ostalo blokirano, ker je v <ph name="BEGIN_ANDROID_SETTINGS_LINK" />nastavitvah za Android<ph name="END_ANDROID_SETTINGS_LINK" /> vklopljena dodatna zaščita. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem opozorilu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Shranjevanje datotek v tej napravi</translation>
 <translation id="7649070708921625228">Pomoč</translation>
+<translation id="7650141368285545431">Uporabi ključ za dostop iz druge naprave</translation>
 <translation id="7653957176542370971">List rutine za obravnavo plačil je zaprt</translation>
 <translation id="7655766454902053387">Odprta delovna mesta</translation>
 <translation id="765676359832457558">Skrij dodatne nastavitve ...</translation>

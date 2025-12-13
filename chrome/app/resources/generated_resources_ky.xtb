@@ -6195,7 +6195,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="520576054436518354">Gemini'га сиздин атыңыздан серептөөгө уруксат бериңиз</translation>
 <translation id="5207949376430453814">Текст киргизүү учурунда курсор баса белгиленсин</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> кызматы ылайыктуу ChromeOS түзмөгүн колдонуп жатканыңызды текшериши керек.</translation>
-<translation id="5208722776934437424">Уруксаттарды өзгөртүү</translation>
 <translation id="5208926629108082192">Түзмөктүн мобилдик тармагы тууралуу маалымат</translation>
 <translation id="5208988882104884956">Жарым эндүү</translation>
 <translation id="5209320130288484488">Түзмөктөр табылган жок</translation>
@@ -6761,7 +6760,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5600706100022181951">Жаңыртууну жүктөп алуу үчүн мобилдик Интернеттен <ph name="UPDATE_SIZE_MB" /> МБ сарпталат. Уланта бересизби?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601833336918638013">Сайттарга Bluetooth түзмөктөрүн издөөгө тыюу салуу</translation>
-<translation id="560213628963806709">Бул колдонмо <ph name="OPENINGS_COUNT" /> жаңы Chrome өтмөгүн ачты. Бул аракетти "Калкыма терезелер жана багыттоолор" уруксатынан тескей аласыз.</translation>
 <translation id="5602586420788540146">Жаңы өтмөктөр тобунда ачуу</translation>
 <translation id="5605758115928394442">Сиз экениңизди ырастоо үчүн телефонуңузга билдирме жөнөтүлдү.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Бул кеңейтүү бөгөттөлгөн}other{Бул кеңейтүүлөр бөгөттөлгөн}}</translation>
@@ -8018,7 +8016,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6493991254603208962">Күңүртүрөөк</translation>
 <translation id="6494327278868541139">Жакшыртылган коргоонун чоо-жайын көрсөтүү</translation>
 <translation id="6494483173119160146">Түзмөктө оңдолбос ката кетти. Түзмөгүңүздү баштапкы абалга келтирип (колдонуучунун бардык маалыматтары өчүрүлөт), кайталап көрүңүз.</translation>
-<translation id="6495261233408033662">Ачылган өтмөктөрдү жабуу</translation>
 <translation id="6495266441917713704">Wi-Fi өткөрүлбөй жатат</translation>
 <translation id="6495453178162183932">Тема демейки Chrome'го жаңыртылды</translation>
 <translation id="6496641546298525838">Сиздин түзмөк</translation>
@@ -9372,7 +9369,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7427348830195639090">Фондук бет: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">Бул профиль тескелип жатат</translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> келген чалуу</translation>
-<translation id="7429004613638800673"><ph name="APP_NAME" /> бир нече өтмөктү ачты.</translation>
 <translation id="7429415133937917139">Экрандын жогору жагындагы ChromeVox панелинде
     жаңыртылып туруучу брайль дисплейин көрсөтүп турат</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> кооптуу болушу мүмкүн. Аны Chrome'го текшерткиңиз келсе, сырсөздү териңиз же түздөн-түз жүктөп алыңыз.</translation>

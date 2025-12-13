@@ -156,6 +156,7 @@
 <translation id="1545749641540134597">QR コードをスキャンします</translation>
 <translation id="1545757265410828525">価格の推移</translation>
 <translation id="1547610699249301703">パスワードを共有</translation>
+<translation id="1554043146674176775">AI モードをオフにする</translation>
 <translation id="1554477036522844996">新規ウインドウ</translation>
 <translation id="1558391695376153246">シークレット タブを閉じる</translation>
 <translation id="1565371473877914088">新しいシークレット タブ</translation>
@@ -457,6 +458,7 @@
 <translation id="2688535388040882469">バナー</translation>
 <translation id="2690858294534178585">カメラが使用中です</translation>
 <translation id="2691653761409724435">オフラインで使用不可</translation>
+<translation id="2697530870203420261">無効なニックネーム</translation>
 <translation id="269819437389494246">アクセスしたページを確認したり履歴から削除したりできます</translation>
 <translation id="2704606927547763573">コピーしました</translation>
 <translation id="2708051474374549906">Google に送信される閲覧データに基づき、危険なサイト、ダウンロード、拡張機能から、リアルタイムで予防的に保護します。</translation>
@@ -1561,6 +1563,7 @@
 <translation id="6830728435402077660">保護されていません</translation>
 <translation id="6831043979455480757">翻訳</translation>
 <translation id="6842136130964845393">保存したパスワードに常にアクセスできるようにするには、本人確認を行ってください</translation>
+<translation id="6844773122575789617">AI モードをオンにする</translation>
 <translation id="6851516051005285358">PC 版サイトを見る</translation>
 <translation id="6857446173140146664">背景を削除</translation>
 <translation id="6858718102216837409">言語を追加…</translation>

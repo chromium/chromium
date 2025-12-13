@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Enregistrer l'IBAN ?</translation>
 <translation id="1113869188872983271">&amp;Annuler la réorganisation</translation>
 <translation id="1118429183611783760">Aspirateurs et entretien des sols</translation>
+<translation id="111897705806685148">Utiliser la clé d'accès d'un autre appareil</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyer sur Tabulation, puis sur Entrée pour gérer les infos Chrome que vous enregistrez dans votre compte Google</translation>
 <translation id="1122714970786750095">Appareils électroniques et électriques</translation>
 <translation id="1123753900084781868">Sous-titres instantanés non disponibles pour l'instant</translation>
@@ -801,7 +802,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2277753418458118549">Voir les détails de la connexion</translation>
 <translation id="2277949605527755300"><ph name="URL" /> souhaite suivre vos mains</translation>
 <translation id="22792995594807632">Examen requis avant le téléchargement</translation>
-<translation id="2283340219607151381">Enregistrer et renseigner les adresses</translation>
+<translation id="2283340219607151381">Enregistrer et saisir automatiquement les adresses</translation>
 <translation id="2283447177162560884">Page "<ph name="PAGE_TITLE" />" supprimée</translation>
 <translation id="2283599456633275070">Voyages</translation>
 <translation id="2285709459648658719">Passeports</translation>
@@ -4136,6 +4137,7 @@ Informations supplémentaires :
 <translation id="7648527891719919697">Ce site restera bloqué, car la Protection Avancée est activée dans les <ph name="BEGIN_ANDROID_SETTINGS_LINK" />paramètres Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Stocker les fichiers sur cet appareil</translation>
 <translation id="7649070708921625228">Aide</translation>
+<translation id="7650141368285545431">Utiliser la clé d'accès d'un autre appareil</translation>
 <translation id="7653957176542370971">La feuille du gestionnaire de paiement est fermée</translation>
 <translation id="7655766454902053387">Offres d'emploi</translation>
 <translation id="765676359832457558">Masquer les paramètres avancés…</translation>

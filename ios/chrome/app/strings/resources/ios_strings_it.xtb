@@ -156,6 +156,7 @@
 <translation id="1545749641540134597">Scansiona codice QR</translation>
 <translation id="1545757265410828525">Cronologia dei prezzi</translation>
 <translation id="1547610699249301703">Condividi le password</translation>
+<translation id="1554043146674176775">Disattiva AI Mode</translation>
 <translation id="1554477036522844996">Nuova finestra</translation>
 <translation id="1558391695376153246">Chiudi schede in incognito</translation>
 <translation id="1565371473877914088">Nuova scheda Incognito</translation>
@@ -457,6 +458,7 @@
 <translation id="2688535388040882469">Banner</translation>
 <translation id="2690858294534178585">La videocamera è in uso</translation>
 <translation id="2691653761409724435">Non disponibile offline</translation>
+<translation id="2697530870203420261">Nickname non valido</translation>
 <translation id="269819437389494246">Puoi visualizzare le pagine che hai visitato o eliminarle dalla cronologia</translation>
 <translation id="2704606927547763573">Copiata</translation>
 <translation id="2708051474374549906">Protezione proattiva in tempo reale da estensioni, siti e download pericolosi in base ai tuoi dati di navigazione inviati a Google.</translation>
@@ -1561,6 +1563,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6830728435402077660">Non sicuro</translation>
 <translation id="6831043979455480757">Traduci</translation>
 <translation id="6842136130964845393">Per assicurarti di poter accedere alle tue password salvate in qualsiasi momento, verifica la tua identità</translation>
+<translation id="6844773122575789617">Attiva AI Mode</translation>
 <translation id="6851516051005285358">Richiedi sito desktop</translation>
 <translation id="6857446173140146664">Elimina sfondo</translation>
 <translation id="6858718102216837409">Aggiungi lingua…</translation>
@@ -2047,7 +2050,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8625706492572042370">Modifica la schermata Home</translation>
 <translation id="8631370184731241854">Schede di navigazione in incognito bloccate</translation>
 <translation id="8633025649649592204">Attività recente</translation>
-<translation id="8636825310635137004">Attiva la sincronizzazione per trovare le tue schede degli altri dispositivi.</translation>
+<translation id="8636825310635137004">Attiva la sincronizzazione per recuperare le tue schede dagli altri dispositivi.</translation>
 <translation id="8637431369725868556">Ricevi protezione da siti pericolosi.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nessuna password compromessa}=1{{COUNT} password compromessa}other{{COUNT} password compromesse}}</translation>
 <translation id="8643403533759285912">Elimina gruppo</translation>

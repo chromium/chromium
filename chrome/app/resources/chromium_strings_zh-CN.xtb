@@ -215,6 +215,7 @@
 <translation id="3313189106987092621">Chromium 会在使用不安全的连接加载网站前向您发出警告</translation>
 <translation id="3316771292331273802">关闭所有 Chromium 窗口后，您将会从大多数网站退出账号；但如果您已登录 Chromium，则您的 Google 账号不会退出。若要让网站记住您，请<ph name="SETTINGS_LINK" />。</translation>
 <translation id="3322413454779348750">您的默认搜索引擎已在 Chromium 外部更改。为保护您的安全，Chromium 已将其重置。</translation>
+<translation id="3331557257666250900">登录 Chrome 即可让您的密码、书签等信息在所有设备上触手可及</translation>
 <translation id="3352986031709923790">搜索区域的右上角：右侧 <ph name="RIGHT" />%，顶部 <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">您账号中的 Chromium 数据</translation>
 <translation id="3369405342922656244">使用图片搜索功能搜索此页面</translation>
@@ -266,6 +267,7 @@
 <translation id="3971865010372729242">当您在地址栏或搜索框中输入内容时，Chromium 会将您输入的内容发送给组织的搜索、AI 和代理工具，以便获取建议。</translation>
 <translation id="3975724895399328945">关于 Google Chrome for Testing(&amp;G)</translation>
 <translation id="3997429360543082038">关于 Chromium 操作系统</translation>
+<translation id="4010059961270896984">当您访问某个网站时，Chromium 会通过可隐藏 IP 地址的隐私保护服务器，将经过混淆处理的网址片段发送给 <ph name="BEGIN_LINK" />Google 安全浏览服务<ph name="END_LINK" />。如果网站有可疑行为，系统也会发送完整网址和少量网页内容。</translation>
 <translation id="4019629340646866719">与 <ph name="BEGIN_LINK_LINUX_OSS" />Linux 开发环境<ph name="END_LINK_LINUX_OSS" />一样，Chromium 操作系统也是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开源软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
 <translation id="4022972681110646219">翻译屏幕</translation>
 <translation id="4023601594785368013">源语言：<ph name="LANGUAGE" /></translation>
@@ -585,6 +587,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="77283119132245232">为 <ph name="BROWSER_NAME" /> 提供系统跟踪服务。如果停用此服务，浏览器创建的性能轨迹将不包含系统级事件，例如上下文切换和就绪线程事件。</translation>
 <translation id="7745317241717453663">这会从这台设备上删除您的浏览数据。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chromium。</translation>
 <translation id="7747138024166251722">安装程序无法创建临时目录。请检查您是否有足够的磁盘空间和权限来安装该软件。</translation>
+<translation id="7750130090210923118">重置为默认 Chromium</translation>
 <translation id="7786760609782648049">提高 Chromium 的运行速度</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">让对您的互联网流量有访问权限的用户更难看到您访问的网站。Chromium 会使用安全连接在 DNS（域名系统）中查找网站的 IP 地址。</translation>
@@ -685,6 +688,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8907580949721785412">Chromium正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>
 <translation id="8941642502866065432">无法更新 Chromium</translation>
 <translation id="897581876605952338">Chromium 企业版徽标</translation>
+<translation id="8981150672034878610">无法启动 Chromium，因为打开您的个人资料时出了点问题。请尝试重启 Chromium。</translation>
 <translation id="8988036198400390003">管理 Chromium 个人资料</translation>
 <translation id="9019929317751753759">为了提高 Chromium 的安全性，我们停用了以下扩展程序（该扩展程序未列在<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中，并且可能是在您不知情的情况下添加的）。</translation>
 <translation id="904366664621834601">Chromium 阻止了此项下载操作，因为归档文件包含可能隐藏恶意软件的其他文件</translation>

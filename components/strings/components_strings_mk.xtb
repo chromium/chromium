@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Да се зачува IBAN?</translation>
 <translation id="1113869188872983271">&amp;Врати преуредување</translation>
 <translation id="1118429183611783760">Правосмукалки и нега на подови</translation>
+<translation id="111897705806685148">Користете криптографски клуч од друг уред</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, па Enter за да управувате со податоците од Chrome што ги зачувувате во вашата сметка на Google</translation>
 <translation id="1122714970786750095">Електронски и електрични уреди</translation>
 <translation id="1123753900084781868">„Автоматски титлови“ не е достапна во моментов</translation>
@@ -4134,6 +4135,7 @@
 <translation id="7648527891719919697">Сајтов ќе остане блокиран бидејќи имате вклучено „Напредна заштита“ во <ph name="BEGIN_ANDROID_SETTINGS_LINK" />поставките за Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе за предупредувањево<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Складирај датотеки на уредов</translation>
 <translation id="7649070708921625228">Помош</translation>
+<translation id="7650141368285545431">Користете криптографски клуч од друг уред</translation>
 <translation id="7653957176542370971">Листот на ракувачот со плаќања е затворен</translation>
 <translation id="7655766454902053387">Огласи за работа</translation>
 <translation id="765676359832457558">Скриј напредни поставки...</translation>

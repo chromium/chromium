@@ -1602,6 +1602,7 @@
 <translation id="2062354623176996748">गुप्त विंडो की मदद से, अपना ब्राउज़िंग इतिहास सेव किए बिना वेब को इस्तेमाल करें</translation>
 <translation id="206308717637808771">सभी विंडो बंद करने पर डेटा मिटाएं. देखी जा रही साइट के लिए, स्टोरेज ऐक्सेस की जो सेटिंग चुनी गई है वही डेटा के लिए भी लागू होती है</translation>
 <translation id="2066700471214517561">बीमफ़ॉर्मिंग माइक के ज़रिए, Chromebook इस्तेमाल करने वाले व्यक्ति की आवाज़ साफ़ सुनाई देती है.</translation>
+<translation id="2068581968816126410">सभी डिवाइसों पर बुकमार्क इस्तेमाल करें</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> ने <ph name="PRINTER_NAME" /> की मदद से प्रिंट कर दिया है</translation>
 <translation id="2071393345806050157">कोई स्थानीय लॉग फ़ाइल नहीं है.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{एक्सटेंशन को इंस्टॉल करने के लिए क्लिक करें}one{इन एक्सटेंशन को इंस्टॉल करने के लिए क्लिक करें}other{इन एक्सटेंशन को इंस्टॉल करने के लिए क्लिक करें}}</translation>
@@ -1974,6 +1975,7 @@
       <ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" />  प्रोसेस के दौरान, सिस्टम को फिर चालू किया जाएगा.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ने अतिरिक्त अनुमतियों का अनुरोध किया है.</translation>
 <translation id="2304820083631266885">ग्रह</translation>
+<translation id="2305202347479035002">यह कैसे काम करता है</translation>
 <translation id="2306794767168143227">इस डिवाइस पर <ph name="BRAND" /> में सेव करें</translation>
 <translation id="2308798336967462263">इन कुंजियों को अपनी पसंद के मुताबिक नहीं बनाया जा सकता: Tab, Shift, Control, Escape, Caps Lock, Volume</translation>
 <translation id="2309620859903500144">इस साइट को आपके डिवाइस के गति या रोशनी के सेंसर ऐक्सेस करने से ब्लॉक कर दिया गया है.</translation>
@@ -1990,6 +1992,7 @@
 <translation id="2319072477089403627">आपके Android फ़ोन से कनेक्ट किया जा रहा है...</translation>
 <translation id="2319459402137712349">कीबोर्ड खोलने के लिए कोई टेक्स्ट फ़ील्ड चुनें. आपके पास स्क्रीन पर सबसे नीचे कीबोर्ड आइकॉन को चुनने का विकल्प भी मौजूद होता है.</translation>
 <translation id="2319993584768066746">साइन-इन स्क्रीन पर दी गई फ़ोटो</translation>
+<translation id="2321487076181785382">टैब को स्प्लिट करें</translation>
 <translation id="2322193970951063277">हेडर और फ़ुटर</translation>
 <translation id="2322318151094136999">जब कोई साइट सीरियल पाेर्ट (सुझाया गया) ऐक्सेस करना चाहे, तो इसके लिए पूछें</translation>
 <translation id="2322622365472107569">खत्म होने का समय <ph name="TIME" /></translation>
@@ -3452,6 +3455,7 @@
 <translation id="3336855445806447827">पक्के तौर पर नहीं बता सकता</translation>
 <translation id="3337568642696914359">साइटों को प्रोटोकॉल हैंडल करने की अनुमति न दें</translation>
 <translation id="333863344734218290">इससे आपको सार्वजनिक और निजी साइटों के असुरक्षित होने की चेतावनी मिलती है</translation>
+<translation id="3339789735267352349">यह आपको खतरनाक या नुकसान पहुंचाने वाली साइटों, डाउनलोड, और एक्सटेंशन से सुरक्षित रखता है</translation>
 <translation id="3340620525920140773">फ़ाइल डाउनलोड हो गई: <ph name="FILE_NAME" />.</translation>
 <translation id="3340978935015468852">सेटिंग</translation>
 <translation id="3341091511696469129">Chrome, यहां दिखाई गई भाषाओं के लिए कैप्शन बना सकता है और उनका अनुवाद कर सकता है</translation>
@@ -3751,6 +3755,7 @@
 <translation id="354060433403403521">AC अडैप्टर</translation>
 <translation id="354068948465830244">यह साइट डेटा पढ़ सकता है और बदल सकता है</translation>
 <translation id="3541823293333232175">असाइन किया गया</translation>
+<translation id="3543296862747913985">इससे क्या होता है</translation>
 <translation id="3543298914473315872">अपडेट करने की प्रोसेस</translation>
 <translation id="3543393733900874979">अपडेट नहीं हो पाया (गड़बड़ी: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">SHA-512 के साथ X9.62 ECDSA हस्ताक्षर</translation>
@@ -6189,7 +6194,6 @@
 <translation id="520576054436518354">Gemini को आपके लिए ब्राउज़ करने की अनुमति दें</translation>
 <translation id="5207949376430453814">लेख कैरेट हाइलाइट करें</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> यह देखना चाहता है कि क्या उपयोगकर्ता मंज़ूरी दिए गए किसी ChromeOS डिवाइस का इस्तेमाल कर रहे हैं.</translation>
-<translation id="5208722776934437424">अनुमतियां बदलें</translation>
 <translation id="5208926629108082192">डिवाइस के मोबाइल नेटवर्क की जानकारी</translation>
 <translation id="5208988882104884956">आधी-चौड़ाई</translation>
 <translation id="5209320130288484488">कोई डिवाइस नहीं मि‍ला</translation>
@@ -6402,7 +6406,7 @@
 <translation id="5365858324977454035">अचानक हुई किसी गड़बड़ी की वजह से फ़ाइल अपलोड नहीं की जा सकी.</translation>
 <translation id="5365881113273618889">आपने जो फ़ोल्डर चुना है उसमें संवेदनशील फ़ाइलें हैं. क्या आप वाकई "<ph name="APP_NAME" />" को इस फ़ोल्डर में लिखने का ऐक्सेस हमेशा के लिए देना चाहते हैं?</translation>
 <translation id="536638840841140142">कोई नहीं</translation>
-<translation id="5368246151595623328"><ph name="DEVICE_NAME" /> से मिले '<ph name="NETWORK_NAME" />' को सेव कर लिया गया है</translation>
+<translation id="5368246151595623328"><ph name="DEVICE_NAME" /> से मिले ‘<ph name="NETWORK_NAME" />' को सेव कर लिया गया है</translation>
 <translation id="5368441245151140827">यह एक्सटेंशन, साइट की जानकारी को पढ़ नहीं सकता और न ही उसमें बदलाव कर सकता है. इसके अलावा, यह बैकग्राउंड में चल नहीं सकता</translation>
 <translation id="5368720394188453070">आपका फ़ोन लॉक हो गया है. प्रवेश करने के लिए उसे अनलॉक करें.</translation>
 <translation id="536882527576164740">{0,plural, =1{गुप्त}one{गुप्त (#)}other{गुप्त (#)}}</translation>
@@ -6754,7 +6758,6 @@
 <translation id="5600706100022181951">अपडेट को डाउनलोड करने में <ph name="UPDATE_SIZE_MB" /> एमबी मोबाइल डेटा का इस्तेमाल होगा. क्या आप जारी रखना चाहते हैं?</translation>
 <translation id="5601503069213153581">पिन</translation>
 <translation id="5601833336918638013">साइटों को ब्लूटूथ डिवाइस खोजने की अनुमति न दें</translation>
-<translation id="560213628963806709">इस ऐप्लिकेशन ने <ph name="OPENINGS_COUNT" /> नए Chrome टैब खोले हैं. आपके पास, "पॉप-अप और रीडायरेक्ट" अनुमति में जाकर इस सेटिंग को मैनेज करने का विकल्प होता है.</translation>
 <translation id="5602586420788540146">नए टैब ग्रुप में खोलें</translation>
 <translation id="5605758115928394442">आपकी पहचान की पुष्टि करने के लिए, आपके फ़ोन पर एक सूचना भेजी गई थी.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{इस एक्सटेंशन को ब्लॉक किया गया है}one{इस एक्सटेंशन को ब्लॉक किया गया है}other{इन एक्सटेंशन को ब्लॉक किया गया है}}</translation>
@@ -6896,6 +6899,7 @@
 <translation id="5702161882524398150">पिछले टैब पर मौजूद कॉन्टेंट के बारे में सवाल पूछें</translation>
 <translation id="5702749864074810610">सुझाव खारिज किया गया</translation>
 <translation id="5703716265115423771">वॉल्‍यूम कम करें</translation>
+<translation id="5703998022096520811">Google सुरक्षित ब्राउज़िंग को ज़्यादा जानकारी भेजकर, रीयल-टाइम में प्रोऐक्टिव (बिना मांगे मिलने वाली) सुरक्षा पाएं</translation>
 <translation id="5704875434923668958">इससे सिंक हो रहा है:</translation>
 <translation id="5705005699929844214">सुलभता के विकल्प हमेशा दिखाएं</translation>
 <translation id="5705882733397021510">वापस जाएं</translation>
@@ -8010,7 +8014,6 @@
 <translation id="6493991254603208962">स्‍क्रीन की रोशनी कम करें</translation>
 <translation id="6494327278868541139">बेहतर सुरक्षा की जानकारी देखें</translation>
 <translation id="6494483173119160146">डिवाइस में कोई ऐसी गड़बड़ी हुई है जिसे ठीक नहीं किया जा सकता. कृपया अपना डिवाइस रीसेट करें (इससे उपयोगकर्ता का पूरा डेटा हमेशा के लिए मिट जाएगा) और फिर से कोशिश करें.</translation>
-<translation id="6495261233408033662">खुले हुए टैब बंद करें</translation>
 <translation id="6495266441917713704">वाई-फ़ाई कनेक्ट नहीं किया जा सका</translation>
 <translation id="6495453178162183932">थीम को Chrome की डिफ़ॉल्ट थीम पर सेट किया गया</translation>
 <translation id="6496641546298525838">आपका डिवाइस</translation>
@@ -9367,7 +9370,6 @@
 <translation id="7427348830195639090">पेजभूमि पेज: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">इस प्रोफ़ाइल को मैनेज किया जा रहा है</translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> से कॉल करें</translation>
-<translation id="7429004613638800673"><ph name="APP_NAME" /> ने एक से ज़्यादा टैब खोले हैं.</translation>
 <translation id="7429415133937917139">स्क्रीन पर सबसे ऊपर मौजूद ChromeVox पैनल में रीफ़्रेश किए जा सकने वाले ब्रेल डिसप्ले के आउटपुट की नकल पेश करता है</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> फ़ाइल खतरनाक हो सकती है. अगर आपको Chrome के ज़रिए फ़ाइल की पुष्टि करनी है, तो पासवर्ड जोड़ें या सीधे इसे डाउनलोड करें.</translation>
 <translation id="7431719494109538750">कोई भी एचआईडी डिवाइस नहीं मिला</translation>
@@ -9713,6 +9715,7 @@
 <translation id="766560638707011986">डोमेन दिखाएं</translation>
 <translation id="766635563210446220">पासवर्ड इंपोर्ट नहीं किए जा सके. <ph name="FILENAME" /> की जांच करें और पक्का करें कि इसका फ़ॉर्मैट सही हो. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="7666531788977935712">'जारी रखें' बटन को चालू किया गया</translation>
+<translation id="7666966001957552011">यह आपको, खतरनाक या नुकसान पहुंचाने वाली साइटों, डाउनलोड, और एक्सटेंशन के बारे में चेतावनी देता है. इन चेतावनियों को कभी भी बंद किया जा सकता है. अगर आपको सही कॉन्टेंट के लिए चेतावनी दिखती है, तो <ph name="BEGIN_LINK" />गलती की शिकायत<ph name="END_LINK" /> की जा सकती है.</translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> को {NUM_WEEKS} हफ़्ते में लौटाएं}one{<ph name="DEVICE_TYPE" /> को {NUM_WEEKS} हफ़्ते में लौटाएं}other{<ph name="DEVICE_TYPE" /> को {NUM_WEEKS} हफ़्तों में लौटाएं}}</translation>
 <translation id="7668205084604701639">Office के लिए फ़ाइल की सेटिंग</translation>
 <translation id="7668423670802040666">Google पासवर्ड मैनेजर में <ph name="ACCOUNT" /> का पासवर्ड</translation>
@@ -9737,6 +9740,7 @@
 <translation id="7676019765091965045">हैक या चोरी हुए पासवर्ड का पता लगाने की सुविधा</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />' के लिए, <ph name="NUM" /> टैब मिला</translation>
 <translation id="7676867886086876795">किसी भी लेख फ़ील्ड में बोलकर टाइप करने की सुविधा देने के लिए आपकी आवाज़ Google को भेजी जाती है.</translation>
+<translation id="7678198209643823714"><ph name="SHORTCUT_TITLE" /> को हटाएं</translation>
 <translation id="7678588695732963732">क्या आपको यूएसबी डिवाइस की सभी अनुमतियां रीसेट करनी हैं?</translation>
 <translation id="7679171213002716280">मैनेज किए गए <ph name="PRINTER_COUNT" /> प्रिंटर हैं.</translation>
 <translation id="7679895819123160382">आपके इंटरनेट ट्रैफ़िक का ऐक्सेस रखने वाले लोगों के लिए, यह देखना मुश्किल बनाएं कि आपने किन साइटों पर विज़िट किया है. <ph name="PRODUCT_NAME" />, डीएनएस (डोमेन नेम सिस्टम) में किसी साइट का आईपी पता खोजने के लिए, सुरक्षित कनेक्शन का इस्तेमाल करता है. आपके एडमिन ने कुछ ऐसे डोमेन कॉन्फ़िगर किए हैं, जिनके लिए सुरक्षित कनेक्शन का इस्तेमाल नहीं किया जाता.</translation>
@@ -10235,6 +10239,7 @@
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' की जगह बदली गई.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">इंस्टैंट हॉटस्पॉट के बारे में जानकारी</translation>
+<translation id="8013181884974864006">कॉन्टेक्स्चुअल टास्क</translation>
 <translation id="8013534738634318212">ये साइटें <ph name="RWS_OWNER" /> के सेट किए गए ग्रुप में हैं. ग्रुप में शामिल साइटें, ग्रुप में आपकी गतिविधि देख सकती हैं.</translation>
 <translation id="8013993649590906847">अगर किसी इमेज के बारे में मददगार जानकारी मौजूद नहीं है, तो Chrome उसके बारे में जानकारी देने की कोशिश करेगा. जानकारी तैयार करने के लिए, इमेज Google को भेजी जाती हैं.</translation>
 <translation id="8014154204619229810">अपडेटर वर्तमान में चल रहा है. फिर से देखने के लिए एक मिनट में रीफ्रेश करें.</translation>

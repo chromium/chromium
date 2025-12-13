@@ -156,6 +156,7 @@
 <translation id="1545749641540134597">Skenirajte QR kôd</translation>
 <translation id="1545757265410828525">Povijest cijena</translation>
 <translation id="1547610699249301703">Dijeljenje zaporki</translation>
+<translation id="1554043146674176775">Isključi AI način</translation>
 <translation id="1554477036522844996">Novi prozor</translation>
 <translation id="1558391695376153246">Zatvori anonimne kartice</translation>
 <translation id="1565371473877914088">Nova anonimna kartica</translation>
@@ -457,6 +458,7 @@
 <translation id="2688535388040882469">Natpisi</translation>
 <translation id="2690858294534178585">Fotoaparat je aktivan</translation>
 <translation id="2691653761409724435">Nije dostupno offline</translation>
+<translation id="2697530870203420261">Nevažeći nadimak</translation>
 <translation id="269819437389494246">Možete pogledati stranice koje ste posjetili ili ih izbrisati iz povijesti</translation>
 <translation id="2704606927547763573">Kopirano</translation>
 <translation id="2708051474374549906">Proaktivna zaštita u stvarnom vremenu od opasnih web-lokacija, preuzimanja i proširenja koja se temelji na slanju vaših podataka o pregledavanju Googleu</translation>
@@ -1561,6 +1563,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6830728435402077660">Nije sigurno</translation>
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6842136130964845393">Da biste uvijek mogli pristupati spremljenim zaporkama, potvrdite da ste to vi</translation>
+<translation id="6844773122575789617">Uključi AI način</translation>
 <translation id="6851516051005285358">Zatraži web-lokaciju za računala</translation>
 <translation id="6857446173140146664">Brisanje pozadine</translation>
 <translation id="6858718102216837409">Dodaj jezik…</translation>

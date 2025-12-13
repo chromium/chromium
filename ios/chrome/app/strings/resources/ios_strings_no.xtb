@@ -156,6 +156,7 @@
 <translation id="1545749641540134597">Skann en QR-kode</translation>
 <translation id="1545757265410828525">Prishistorikk</translation>
 <translation id="1547610699249301703">Del passord</translation>
+<translation id="1554043146674176775">Slå av AI-modus</translation>
 <translation id="1554477036522844996">Nytt vindu</translation>
 <translation id="1558391695376153246">Lukk inkognitofaner</translation>
 <translation id="1565371473877914088">Ny inkognitofane</translation>
@@ -457,6 +458,7 @@
 <translation id="2688535388040882469">Bannere</translation>
 <translation id="2690858294534178585">Kameraet er i bruk</translation>
 <translation id="2691653761409724435">Ikke tilgjengelig uten nett</translation>
+<translation id="2697530870203420261">Ugyldig kallenavn</translation>
 <translation id="269819437389494246">Du kan se sidene du har besøkt, eller slette dem fra loggen</translation>
 <translation id="2704606927547763573">Kopiert</translation>
 <translation id="2708051474374549906">Proaktiv sanntidsbeskyttelse mot farlige nettsteder, nedlastinger og utvidelser, som fungerer ved at nettlesingsdataene dine sendes til Google</translation>
@@ -1561,6 +1563,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6830728435402077660">Ikke sikker</translation>
 <translation id="6831043979455480757">Oversett</translation>
 <translation id="6842136130964845393">For å sikre at du alltid har tilgang til de lagrede passordene dine, må du bekrefte at det er deg</translation>
+<translation id="6844773122575789617">Slå på AI-modus</translation>
 <translation id="6851516051005285358">Be om datamaskinversjonen av nettstedet</translation>
 <translation id="6857446173140146664">Slett bakgrunn</translation>
 <translation id="6858718102216837409">Legg til språk…</translation>

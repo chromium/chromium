@@ -6189,7 +6189,6 @@
 <translation id="520576054436518354">讓 Gemini 為你瀏覽</translation>
 <translation id="5207949376430453814">突顯文字插入符號</translation>
 <translation id="520840839826327499">「<ph name="SERVICE_NAME" />」想檢查您是否使用符合資格的 Chrome OS 裝置。</translation>
-<translation id="5208722776934437424">變更權限</translation>
 <translation id="5208926629108082192">裝置流動網絡資料</translation>
 <translation id="5208988882104884956">半形</translation>
 <translation id="5209320130288484488">找不到裝置</translation>
@@ -6754,7 +6753,6 @@
 <translation id="5600706100022181951">下載更新將會使用 <ph name="UPDATE_SIZE_MB" /> MB 流動數據。要繼續嗎？</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601833336918638013">不允許網站尋找藍牙裝置</translation>
-<translation id="560213628963806709">此應用程式開啟了 <ph name="OPENINGS_COUNT" /> 個新的 Chrome 分頁。你可以透過「彈出式視窗和重新導向」權限管理有關行為。</translation>
 <translation id="5602586420788540146">在新分頁中開啟</translation>
 <translation id="5605758115928394442">已將通知傳送至您的手機，以確認您的身分。</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{已封鎖這個擴充程式}other{已封鎖這些擴充程式}}</translation>
@@ -8008,7 +8006,6 @@
 <translation id="6493991254603208962">調低亮度</translation>
 <translation id="6494327278868541139">顯示進階保護功能詳情</translation>
 <translation id="6494483173119160146">裝置發生無法復原的錯誤。請重設裝置 (系統將清除所有使用者資料)，然後再試一次。</translation>
-<translation id="6495261233408033662">關閉已開啟的分頁</translation>
 <translation id="6495266441917713704">無法轉移 Wi-Fi</translation>
 <translation id="6495453178162183932">主題更新咗做預設嘅 Chrome</translation>
 <translation id="6496641546298525838">你的裝置</translation>
@@ -9363,7 +9360,6 @@
 <translation id="7427348830195639090">背景頁面：<ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">這是受管個人檔案</translation>
 <translation id="7427798576651127129">透過 <ph name="DEVICE_NAME" /> 撥打電話</translation>
-<translation id="7429004613638800673">「<ph name="APP_NAME" />」開啟了多個分頁。</translation>
 <translation id="7429415133937917139">在 ChromeVox 面板的畫面頂部模擬展示可重新整理的點字顯示器輸出結果</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> 可能唔安全。如果要 Chrome 驗證檔案，可以加個密碼。你亦可以直接下載檔案。</translation>
 <translation id="7431719494109538750">找不到 HID 裝置</translation>

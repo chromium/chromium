@@ -285,6 +285,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="4095980151185649725">{COUNT,plural, =1{Organizacija automatski zatvara Chromium kada se ne koristi 1 minut. Podaci pregledanja se brišu. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja.}one{Organizacija automatski zatvara Chromium kada se ne koristi # minut. Podaci pregledanja se brišu. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja.}few{Organizacija automatski zatvara Chromium kada se ne koristi # minuta. Podaci pregledanja se brišu. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja.}other{Organizacija automatski zatvara Chromium kada se ne koristi # minuta. Podaci pregledanja se brišu. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja.}}</translation>
 <translation id="4118474109249235144">Chromium bez arhiviranja</translation>
 <translation id="4122186850977583290">Idite na stranicu O Chromium-u</translation>
+<translation id="4135244987012252068">Prilagodite Chromium da biste prešli na nov izgled pregledača</translation>
 <translation id="4147856324248078748">P&amp;rilagodite Chromium</translation>
 <translation id="4148957013307229264">Instaliranje...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – prijavljivanje na mrežu – Chromium</translation>

@@ -218,6 +218,7 @@
 <translation id="3313189106987092621">Chromium ደህንነቱ ያልተጠበቀ ግንኙነት በመጠቀም ማንኛውንም ጣቢያ ከመጫንዎ በፊት ያስጠነቅቀዎታል</translation>
 <translation id="3316771292331273802">ከGoogle መለያዎ በስተቀር በChromium ውስጥ ገብተው ከሆነ፣ ሁሉንም የChromium መስኮቶች ሲዘጉ ከአብዛኞቹ ጣቢያዎች ይወጣሉ። ጣቢያዎች እንዲያስታውሱዎ ለማድረግ <ph name="SETTINGS_LINK" />።</translation>
 <translation id="3322413454779348750">ነባሪ የፍለጋ ፕሮግራምዎ ከChromium ውጭ ተለውጧል። እርስዎን ለመጠበቅ Chromium ዳግም አስጀምሮታል።</translation>
+<translation id="3331557257666250900">በሁሉም መሣሪያዎችዎ ላይ የእርስዎን የይለፍ ቃላት፣ ዕልባቶች እና ሌሎችንም ለማግኘት ወደ Chromium በመለያ ይግቡ</translation>
 <translation id="3352986031709923790">የፍለጋው አካባቢ ከላይ በስተቀኝ ጥግ፦ ቀኝ <ph name="RIGHT" />%፣ ከላይ <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">በመለያዎ ውስጥ ያለው የChromium ውሂብ</translation>
 <translation id="3369405342922656244">ይህን ገፅ በምስል ፍለጋ ይፈልጉ</translation>
@@ -269,6 +270,7 @@
 <translation id="3971865010372729242">የአድራሻ አሞሌው ወይም የፍለጋ ሳጥኑ ውስጥ ሲተይቡ ወይም መታ ሲያደርጉ Chromium ጥቆማዎችን ለማግኘት ወደ ድርጅትዎ ፍለጋ፣ ሰው ሠራሽ አስተውሎት እና ወኪል መሣሪያዎች ውስጥ የሚተይቡትን ነገር ይልካል።</translation>
 <translation id="3975724895399328945">ስለ Google Chrome ለሙከራ</translation>
 <translation id="3997429360543082038">ስለChromiumOS</translation>
+<translation id="4010059961270896984">አንድን ጣቢያ ሲጎበኙ Chromium የአይፒ አድራሻዎን በሚደብቅ የግላዊነት አገልጋይ በኩል የተደበቀውን የዩአርኤል ክፍል ወደ <ph name="BEGIN_LINK" />Google የጥንቃቄ አሰሳ<ph name="END_LINK" /> ይልካል። ጣቢያ አጠራጣሪ ነገር ካደረገ፣ እንዲሁም የገጽ ይዘት ሙሉ ዩአርኤሎች እና ቢቶች ይላካሉ።</translation>
 <translation id="4019629340646866719">ChromiumOS እና <ph name="BEGIN_LINK_LINUX_OSS" />የLinux ግንባታ ምህዳር<ph name="END_LINK_LINUX_OSS" /> ሊሠሩ የቻሉት በተጨማሪ <ph name="BEGIN_LINK_CROS_OSS" />የክፍት ምንጭ ሶፍትዌር<ph name="END_LINK_CROS_OSS" /> ነው።</translation>
 <translation id="4022972681110646219">ማያ ገፁን ተርጉም</translation>
 <translation id="4023601594785368013">የመጀመሪያው ቋንቋ፦ <ph name="LANGUAGE" /></translation>
@@ -588,6 +590,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="77283119132245232">ለ<ph name="BROWSER_NAME" /> የሥርዓት ክትትል አገልግሎቶች ያቀርባል። ይህ አገልግሎት ከተሰናከለ በአሳሹ የተፈጠሩ የአፈጻጸም መከታተያዎች እንደ የዓውድ መቀያየሪያ እና ዝግጁ ተከታታይ ክስተቶች ያሉ ሥርዓት አቀፍ ክስተቶችን አያካትቱም።</translation>
 <translation id="7745317241717453663">ይሄ የአሰሳ ውሂብዎን ከዚህ መሣሪያ ይሰርዘዋል። ውሂብዎን በኋላ ላይ ሰርስረው ለማውጣት እንደ <ph name="USER_EMAIL" /> ሆነው ወደ Chromium ይግቡ።</translation>
 <translation id="7747138024166251722">ጫኝው ጊዜያዊ ማውጫ መፍጠር አልቻለም። እባክዎ ነፃ የዲስክ ቦታ እና ሶፍትዌር የመጫን ፍቃድ እንዳለ ይፈትሹ።</translation>
+<translation id="7750130090210923118">ወደ ነባሪ Chromium ዳግም አስጀምር</translation>
 <translation id="7786760609782648049">Chromiumን የበለጠ ፈጣን ያድርጉት</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">የበይነመረብ ትራፊክዎ መዳረሻ ላላቸው ሰዎች እርስዎ የትኞቹን ጣቢያዎች እንደሚጎበኙ ማየት ያክብዱባቸው። Chromium የጣቢያውን አይ ፒ አድራሻ በዲኤንኤስ (የጎራ ስም ሥርዓት) ውስጥ ለመፈለግ የተመሰጠረ ግንኙነትን ይጠቀማል።</translation>
@@ -688,6 +691,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="8907580949721785412">Chromium የይለፍ ቃሎችን ለማሳየት እየሞከረ ነው። ይህንን ለመፍቀድ የWindows የይለፍ ቃልዎን ይተይቡ።</translation>
 <translation id="8941642502866065432">Chromiumን ማዘመን አልተቻለም</translation>
 <translation id="897581876605952338">የChromium Enterprise ዓርማ</translation>
+<translation id="8981150672034878610">መገለጫዎን ሲከፍቱ የሆነ ስሕተት ስለተከሰተ Chromiumን መጀመር አይቻልም። Chromiumን እንደገና ለማስጀመር ይሞክሩ።</translation>
 <translation id="8988036198400390003">የChromium መገለጫዎችን ያስተዳድሩ</translation>
 <translation id="9019929317751753759">Chromiumን ይበልጥ ደህንነቱ የተጠበቀ እንዲሆን ለማድረግ፣ በ<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ውስጥ ያልተዘረዘረውን የሚከተለውን ቅጥያ አሰናክለነዋል እና እርስዎ ሳያውቁት የታከለ ሊሆን ይችላል።</translation>
 <translation id="904366664621834601">የማህደር ፋይሉ ተንኮል አዘል ዌርን ሊደብቁ የሚችሉ ሌሎች ፋይሎችን ስላካተተ Chromium ይህን ውርድ አግዶታል</translation>

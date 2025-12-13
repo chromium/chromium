@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Foto recente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Fechar o Google Tarefas</translation>
 <translation id="2208323208084708176">Modo de área de trabalho unificada.</translation>
+<translation id="2210311543574621570">A área de transferência será mostrada quando você pressionar e segurar Ctrl + V. Para remover esse atalho, desative a flag #clipboard-history-longpress em chrome://flags.</translation>
 <translation id="2215920961700443347">Sem Internet. Conecte-se à Internet e tente de novo.</translation>
 <translation id="2222841058024245321">Espaço de trabalho 7</translation>
 <translation id="2223384056430485343">Em uma tela dividida</translation>

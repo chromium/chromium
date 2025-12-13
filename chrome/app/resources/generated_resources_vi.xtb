@@ -1601,6 +1601,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2062354623176996748">Duyệt web mà không lưu nhật ký duyệt web qua một cửa sổ Ẩn danh</translation>
 <translation id="206308717637808771">Xoá dữ liệu khi bạn đóng tất cả cửa sổ. Dữ liệu được xử lý theo cách tương tự như trang web bạn đang xem</translation>
 <translation id="2066700471214517561">Micrô tạo chùm tia giúp nghe rõ người dùng Chromebook.</translation>
+<translation id="2068581968816126410">Sử dụng dấu trang trên nhiều thiết bị</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> đã in xong bằng <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Không có tệp nhật ký cục bộ.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Nhấp để cài đặt tiện ích này}other{Nhấp để cài đặt các tiện ích này}}</translation>
@@ -1973,6 +1974,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
       <ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" />  Hệ thống sẽ khởi động lại trong quá trình này.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" đã yêu cầu thêm quyền.</translation>
 <translation id="2304820083631266885">Hành tinh</translation>
+<translation id="2305202347479035002">Cách hoạt động</translation>
 <translation id="2306794767168143227">Lưu vào <ph name="BRAND" /> trên thiết bị này</translation>
 <translation id="2308798336967462263">Các phím sau không được hỗ trợ: Tab, Shift, Control, Escape, Caps lock, Âm lượng</translation>
 <translation id="2309620859903500144">Trang web này đã bị chặn sử dụng cảm biến chuyển động hoặc ánh sáng của thiết bị.</translation>
@@ -1989,6 +1991,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2319072477089403627">Đang kết nối với điện thoại Android của bạn...</translation>
 <translation id="2319459402137712349">Chọn một trường văn bản để mở bàn phím. Bạn cũng có thể chọn biểu tượng Bàn phím ở cuối màn hình.</translation>
 <translation id="2319993584768066746">Ảnh trên màn hình đăng nhập</translation>
+<translation id="2321487076181785382">Tách thẻ</translation>
 <translation id="2322193970951063277">Đầu trang và chân trang</translation>
 <translation id="2322318151094136999">Hỏi khi có trang web muốn truy cập vào cổng nối tiếp (khuyên dùng)</translation>
 <translation id="2322622365472107569">Thời gian kết thúc <ph name="TIME" /></translation>
@@ -3451,6 +3454,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3336855445806447827">Không rõ</translation>
 <translation id="3337568642696914359">Không cho phép trang web xử lý các giao thức</translation>
 <translation id="333863344734218290">Cảnh báo bạn về các trang web công khai và riêng tư không an toàn</translation>
+<translation id="3339789735267352349">Bảo vệ bạn khỏi các trang web, nội dung tải xuống và tiện ích được xác định là nguy hiểm</translation>
 <translation id="3340620525920140773">Đã tải xuống xong: <ph name="FILE_NAME" />.</translation>
 <translation id="3340978935015468852">cài đặt</translation>
 <translation id="3341091511696469129">Chrome có thể tạo và dịch phụ đề cho các ngôn ngữ được hiển thị tại đây</translation>
@@ -3750,6 +3754,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="354060433403403521">Bộ sạc nguồn AC</translation>
 <translation id="354068948465830244">Tiện ích này có thể đọc và thay đổi dữ liệu trang web</translation>
 <translation id="3541823293333232175">Ðã gán</translation>
+<translation id="3543296862747913985">Tác dụng</translation>
 <translation id="3543298914473315872">Quy trình của trình cập nhật</translation>
 <translation id="3543393733900874979">Cập nhật không thành công (lỗi: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">Chữ ký X9.62 ECDSA với SHA-512</translation>
@@ -6190,7 +6195,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="520576054436518354">Hãy để Gemini duyệt web giúp bạn</translation>
 <translation id="5207949376430453814">Đánh dấu điểm chèn văn bản</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> muốn kiểm tra xem thiết bị ChromeOS bạn đang sử dụng có đủ điều kiện hay không.</translation>
-<translation id="5208722776934437424">Thay đổi quyền</translation>
 <translation id="5208926629108082192">Thông tin về mạng di động của thiết bị</translation>
 <translation id="5208988882104884956">Nửa độ rộng</translation>
 <translation id="5209320130288484488">Không tìm thấy thiết bị nào</translation>
@@ -6756,7 +6760,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5600706100022181951">Bản cập nhật sẽ được tải xuống bằng cách dùng <ph name="UPDATE_SIZE_MB" /> MB dữ liệu di động. Bạn có muốn tiếp tục không?</translation>
 <translation id="5601503069213153581">Mã PIN</translation>
 <translation id="5601833336918638013">Không cho phép các trang web tìm thiết bị Bluetooth</translation>
-<translation id="560213628963806709">Ứng dụng này đã mở <ph name="OPENINGS_COUNT" /> thẻ mới trên Chrome. Bạn có thể quản lý hành vi này trong phần quyền về "Cửa sổ bật lên và liên kết chuyển hướng".</translation>
 <translation id="5602586420788540146">Mở trong nhóm thẻ mới</translation>
 <translation id="5605758115928394442">Chúng tôi đã gửi một thông báo đến điện thoại của bạn để xác nhận đó là bạn.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Tiện ích này đã bị chặn}other{Các tiện ích này đã bị chặn}}</translation>
@@ -6898,6 +6901,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5702161882524398150">Hỏi về thẻ trước</translation>
 <translation id="5702749864074810610">Đã đóng đề xuất</translation>
 <translation id="5703716265115423771">giảm âm lượng</translation>
+<translation id="5703998022096520811">Bảo vệ chủ động theo thời gian thực bằng cách gửi nhiều thông tin hơn cho tính năng Duyệt web An toàn của Google</translation>
 <translation id="5704875434923668958">Đồng bộ hóa với</translation>
 <translation id="5705005699929844214">Luôn hiện các tuỳ chọn hỗ trợ tiếp cận</translation>
 <translation id="5705882733397021510">Quay lại</translation>
@@ -8012,7 +8016,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6493991254603208962">Giảm độ sáng</translation>
 <translation id="6494327278868541139">Hiển thị thông tin chi tiết về phương thức bảo vệ nâng cao</translation>
 <translation id="6494483173119160146">Thiết bị đã gặp một lỗi không thể khôi phục. Vui lòng đặt lại thiết bị (thao tác này sẽ xoá tất cả dữ liệu người dùng) rồi thử lại.</translation>
-<translation id="6495261233408033662">Đóng các thẻ đã mở</translation>
 <translation id="6495266441917713704">Không thể truyền Wi-Fi</translation>
 <translation id="6495453178162183932">Giao diện đã được cập nhật thành Chrome mặc định</translation>
 <translation id="6496641546298525838">Thiết bị của bạn</translation>
@@ -9369,7 +9372,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7427348830195639090">Trang nền: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">Đây là hồ sơ được quản lý</translation>
 <translation id="7427798576651127129">Gọi từ <ph name="DEVICE_NAME" /></translation>
-<translation id="7429004613638800673"><ph name="APP_NAME" /> đã mở nhiều thẻ.</translation>
 <translation id="7429415133937917139">Mô phỏng đầu ra của màn hình chữ nổi có thể làm mới
     trong bảng điều khiển ChromeVox ở đầu màn hình</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> có thể nguy hiểm. Hãy thêm mật khẩu nếu bạn muốn Chrome xác minh tệp hoặc bạn có thể trực tiếp tải tệp xuống.</translation>
@@ -9716,6 +9718,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="766560638707011986">Hiển thị miền</translation>
 <translation id="766635563210446220">Không nhập được mật khẩu. Hãy kiểm tra <ph name="FILENAME" /> để đảm bảo tệp này có định dạng chính xác. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="7666531788977935712">Nút Tiếp tục đã được kích hoạt</translation>
+<translation id="7666966001957552011">Cảnh báo cho bạn về các trang web, nội dung tải xuống và tiện ích được xác định là nguy hiểm. Bạn có thể tắt các cảnh báo này bất cứ lúc nào. Nếu thấy cảnh báo đối với nội dung hợp pháp, bạn có thể <ph name="BEGIN_LINK" />báo cáo lỗi<ph name="END_LINK" />.</translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{Trả lại thiết bị <ph name="DEVICE_TYPE" /> trong vòng {NUM_WEEKS} tuần}other{Trả lại thiết bị <ph name="DEVICE_TYPE" /> trong vòng {NUM_WEEKS} tuần}}</translation>
 <translation id="7668205084604701639">Cài đặt tệp Office</translation>
 <translation id="7668423670802040666">Cập nhật mật khẩu của <ph name="ACCOUNT" /> trong Trình quản lý mật khẩu của Google</translation>
@@ -9740,6 +9743,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7676019765091965045">Phát hiện mật khẩu bị lộ</translation>
 <translation id="7676119992609591770">Đã tìm thấy <ph name="NUM" /> thẻ cho "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Gửi giọng nói của bạn tới Google để cho phép nhập bằng giọng nói vào bất kỳ trường văn bản nào.</translation>
+<translation id="7678198209643823714">Xoá <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="7678588695732963732">Đặt lại tất cả các quyền của thiết bị USB?</translation>
 <translation id="7679171213002716280">Có <ph name="PRINTER_COUNT" /> máy in được quản lý.</translation>
 <translation id="7679895819123160382">Giữ kín danh sách các trang web bạn truy cập sao cho những người có quyền truy cập vào dữ liệu lưu lượng truy cập Internet của bạn khó biết được hơn. <ph name="PRODUCT_NAME" /> dùng một kết nối bảo mật để tra cứu địa chỉ IP của mỗi trang web trong DNS (Hệ thống tên miền). Không sử dụng kết nối bảo mật cho một số miền do quản trị viên của bạn định cấu hình.</translation>
@@ -10238,6 +10242,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8011372169388649948">Đã di chuyển "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8012463809859447963">Thông tin chi tiết về Điểm phát sóng tức thì</translation>
+<translation id="8013181884974864006">Thao tác theo ngữ cảnh</translation>
 <translation id="8013534738634318212">Các trang web này nằm trong một nhóm do <ph name="RWS_OWNER" /> xác định. Các trang web nằm trong một nhóm có thể xem hoạt động của bạn trong nhóm.</translation>
 <translation id="8013993649590906847">Chrome sẽ cố gắng mô tả cho bạn những hình ảnh không có nội dung mô tả hữu ích. Để tạo nội dung mô tả, các hình ảnh sẽ được gửi đến Google.</translation>
 <translation id="8014154204619229810">Trình cập nhật hiện đang chạy. Hãy làm mới sau một phút nữa để kiểm tra lại.</translation>

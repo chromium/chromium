@@ -6178,7 +6178,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="520576054436518354">Laat Gemini voor je browsen</translation>
 <translation id="5207949376430453814">Tekstcursor markeren</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> wil checken of je een geschikt Chrome OS-apparaat gebruikt.</translation>
-<translation id="5208722776934437424">Rechten wijzigen</translation>
 <translation id="5208926629108082192">Informatie over mobiel netwerk van apparaat</translation>
 <translation id="5208988882104884956">Halve breedte</translation>
 <translation id="5209320130288484488">Geen apparaten gevonden</translation>
@@ -6743,7 +6742,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5600706100022181951">De update wordt gedownload met <ph name="UPDATE_SIZE_MB" /> MB mobiele data. Wil je doorgaan?</translation>
 <translation id="5601503069213153581">Pincode</translation>
 <translation id="5601833336918638013">Niet toestaan dat sites naar bluetooth-apparaten zoeken</translation>
-<translation id="560213628963806709">Deze app heeft <ph name="OPENINGS_COUNT" /> nieuwe Chrome-tabbladen geopend. Je kunt dit gedrag beheren via het recht Pop-ups en omleidingen.</translation>
 <translation id="5602586420788540146">Openen in nieuwe tabbladgroep</translation>
 <translation id="5605758115928394442">Er is een melding naar je telefoon verstuurd om te bevestigen dat jij het bent.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Deze extensie is geblokkeerd}other{Deze extensies zijn geblokkeerd}}</translation>
@@ -7997,7 +7995,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6493991254603208962">helderheid omlaag</translation>
 <translation id="6494327278868541139">Details van geoptimaliseerde beveiliging bekijken</translation>
 <translation id="6494483173119160146">Er is een onherstelbare fout opgetreden op het apparaat. Reset het apparaat (hiermee worden alle gebruikersgegevens gewist) en probeer het opnieuw.</translation>
-<translation id="6495261233408033662">Geopende tabbladen sluiten</translation>
 <translation id="6495266441917713704">Kan wifi niet overzetten</translation>
 <translation id="6495453178162183932">Thema geüpdatet naar Chrome-standaard</translation>
 <translation id="6496641546298525838">Je apparaat</translation>
@@ -9352,7 +9349,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7427348830195639090">Achtergrondpagina: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">Dit profiel wordt beheerd</translation>
 <translation id="7427798576651127129">Gesprek van <ph name="DEVICE_NAME" /></translation>
-<translation id="7429004613638800673"><ph name="APP_NAME" /> heeft meerdere tabbladen geopend.</translation>
 <translation id="7429415133937917139">Simuleert de uitvoer van een vernieuwbare brailleleesregel in het ChromeVox-venster bovenaan het scherm</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> is misschien gevaarlijk. Voeg een wachtwoord toe als je wilt dat Chrome het verifieert. Je kunt het bestand ook rechtstreeks downloaden.</translation>
 <translation id="7431719494109538750">Geen HID-apparaten gevonden</translation>

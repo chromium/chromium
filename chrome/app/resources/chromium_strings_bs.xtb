@@ -218,6 +218,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3313189106987092621">Chromium će vas upozoriti prije učitavanja bilo koje web lokacije putem nesigurne veze</translation>
 <translation id="3316771292331273802">Kada zatvorite sve prozore Chromiuma, odjavit ćete se s većine web lokacija, osim s Google računa ako ste prijavljeni u Chromium. Da omogućite da vas web lokacije zapamte, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">Zadani pretraživač je promijenjen izvan Chromiuma. Chromium ga je vratio na zadano radi vaše zaštite.</translation>
+<translation id="3331557257666250900">Prijavite se u Chromium da dobijete lozinke, oznake i druge stavke na svim svojim uređajima</translation>
 <translation id="3352986031709923790">gornji desni ugao područja za pretraživanje: desno <ph name="RIGHT" />%, gore <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Podaci Chromiuma na vašem računu</translation>
 <translation id="3369405342922656244">Pretražite ovu stranicu uz pretraživanje pomoću slika</translation>
@@ -269,6 +270,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3971865010372729242">Kada pišete u traci za adresu ili okviru za pretraživanje, Chromium šalje ono što pišete u alate za pretraživanje, AI i agente vaše organizacije da dobijete prijedloge.</translation>
 <translation id="3975724895399328945">O verziji &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">O ChromiumOS-u</translation>
+<translation id="4010059961270896984">Kada posjetite web lokaciju, Chromium šalje prikriveni dio URL-a <ph name="BEGIN_LINK" />Sigurnom pregledanju na Googleu<ph name="END_LINK" /> putem servera za privatnost koji sakriva vašu IP adresu. Ako web lokacija uradi nešto sumnjivo, također se šalju potpuni URL-ovi i dijelovi sadržaja stranice.</translation>
 <translation id="4019629340646866719">ChromiumOS je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />, isto kao i <ph name="BEGIN_LINK_LINUX_OSS" />Linuxovo okruženje za razvoj<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Prevedi ekran</translation>
 <translation id="4023601594785368013">Izvorni jezik: <ph name="LANGUAGE" /></translation>
@@ -588,6 +590,7 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="77283119132245232">Pruža usluge praćenja sistema za preglednik <ph name="BROWSER_NAME" />. Ako se ta usluga onemogući, praćenja performansi koje je kreirao preglednik neće uključivati događaje na nivou sistema kao što je promjena konteksta i događaji spremnosti Threada.</translation>
 <translation id="7745317241717453663">Na ovaj način će se podaci o pregledanju izbrisati s ovog uređaja. Za preuzimanje podataka kasnije prijavite se u Chromium kao korisnik <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Aplikacija za instaliranje nije uspjela kreirati privremeni direktorij. Provjerite imate li slobodnog prostora na disku kao i odobrenje da instalirate softver.</translation>
+<translation id="7750130090210923118">Vrati na zadani Chromium</translation>
 <translation id="7786760609782648049">Ubrzajte Chromium</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Otežajte osobama s pristupom vašem internetskom saobraćaju da vide koje web lokacije posjećujete. Chromium koristi sigurnu vezu da potraži IP adresu web lokacije u DNS-u (Sistem naziva domena).</translation>
@@ -688,6 +691,7 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="8907580949721785412">Chromium pokušava prikazati lozinke. Upišite Windows lozinku da ovo omogućite.</translation>
 <translation id="8941642502866065432">Nije moguće ažurirati Chromium</translation>
 <translation id="897581876605952338">Logotip za Chromium Enterprise</translation>
+<translation id="8981150672034878610">Nije moguće otvoriti Chromium jer je došlo do greške prilikom otvaranja profila. Pokušajte ponovo pokrenuti Chromium.</translation>
 <translation id="8988036198400390003">Upravljajte profilima u Chromiumu</translation>
 <translation id="9019929317751753759">Kako bi Chromium bio sigurniji, onemogućili smo sljedeću ekstenziju koja nije navedena na stranici <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i koja je dodana bez vašeg znanja.</translation>
 <translation id="904366664621834601">Chromium je blokirao preuzimanje jer arhivski fajl uključuje druge fajlove koji možda sakrivaju zlonamjerni softver</translation>

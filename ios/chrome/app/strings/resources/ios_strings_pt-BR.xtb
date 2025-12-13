@@ -156,6 +156,7 @@
 <translation id="1545749641540134597">Ler QR code</translation>
 <translation id="1545757265410828525">Histórico de preços</translation>
 <translation id="1547610699249301703">Compartilhe senhas</translation>
+<translation id="1554043146674176775">Desativar o Modo IA</translation>
 <translation id="1554477036522844996">Nova janela</translation>
 <translation id="1558391695376153246">Fechar guias anônimas</translation>
 <translation id="1565371473877914088">Nova guia anônima</translation>
@@ -457,6 +458,7 @@
 <translation id="2688535388040882469">Banners</translation>
 <translation id="2690858294534178585">A câmera está sendo usada</translation>
 <translation id="2691653761409724435">Não está disponível off-line</translation>
+<translation id="2697530870203420261">Apelido inválido</translation>
 <translation id="269819437389494246">Você pode consultar as páginas visitadas ou excluí-las do histórico</translation>
 <translation id="2704606927547763573">Copiado</translation>
 <translation id="2708051474374549906">Proteção proativa em tempo real contra sites, extensões e downloads perigosos baseada nos dados de navegação enviados ao Google</translation>
@@ -1561,6 +1563,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6830728435402077660">Não seguro</translation>
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="6842136130964845393">Para garantir o acesso às suas senhas salvas, confirme sua identidade</translation>
+<translation id="6844773122575789617">Ative o Modo IA</translation>
 <translation id="6851516051005285358">Solicitar site para computador</translation>
 <translation id="6857446173140146664">Excluir plano de fundo</translation>
 <translation id="6858718102216837409">Adicionar idioma…</translation>

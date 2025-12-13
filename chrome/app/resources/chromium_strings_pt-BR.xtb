@@ -214,6 +214,7 @@
 <translation id="3313189106987092621">O Chromium vai enviar um aviso antes de carregar qualquer site usando uma conexão sem segurança</translation>
 <translation id="3316771292331273802">Sua conta será desconectada da maioria dos sites quando você fechar todas as janelas do Chromium, exceto sua Conta do Google, se tiver feito login no navegador. Para permitir que os sites se lembrem de você, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">Seu mecanismo de pesquisa padrão foi alterado fora do Chromium. Para sua proteção, o Chromium redefiniu essa configuração.</translation>
+<translation id="3331557257666250900">Faça login no Chromium para ver seus favoritos, senhas e muito mais em todos os dispositivos</translation>
 <translation id="3352986031709923790">canto superior direito da área de pesquisa: <ph name="RIGHT" />% à direita, <ph name="TOP" />% acima</translation>
 <translation id="3366305173356742781">Dados do Chromium na sua conta</translation>
 <translation id="3369405342922656244">Pesquise esta página com a pesquisa por imagens</translation>
@@ -265,6 +266,7 @@
 <translation id="3971865010372729242">O Chromium envia o que você digitou na barra de endereço ou na caixa de pesquisa para as ferramentas de pesquisa, IA e agente da sua organização e recebe sugestões.</translation>
 <translation id="3975724895399328945">Sobre o &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Sobre o ChromiumOS</translation>
+<translation id="4010059961270896984">Quando você acessa um site, o Chromium envia à <ph name="BEGIN_LINK" />navegação segura do Google<ph name="END_LINK" /> apenas uma parte ofuscada do URL por um servidor de privacidade que oculta seu endereço IP. Se um site fizer algo suspeito, o URL completo e partes do conteúdo da página também serão enviados.</translation>
 <translation id="4019629340646866719">A existência do ChromiumOS tornou-se possível graças a outros <ph name="BEGIN_LINK_CROS_OSS" />softwares de código aberto<ph name="END_LINK_CROS_OSS" />, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente para desenvolvedores do Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Traduzir tela</translation>
 <translation id="4023601594785368013">Idioma original: <ph name="LANGUAGE" /></translation>
@@ -580,6 +582,7 @@
 <translation id="77283119132245232">Fornece serviços de rastreamento do sistema para o <ph name="BROWSER_NAME" />. Se o serviço for desativado, os rastros de desempenho criados pelo navegador não vão incluir eventos do sistema, como troca de contexto e eventos de linha de execução pronta.</translation>
 <translation id="7745317241717453663">Essa ação excluirá seus dados de navegação deste dispositivo. Para recuperá-los mais tarde, faça login no Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">O instalador não conseguiu criar um diretório temporário. Verifique se há espaço livre em disco e se há permissão para a instalação de software.</translation>
+<translation id="7750130090210923118">Redefinir para o Chromium padrão</translation>
 <translation id="7786760609782648049">Deixe o Chromium mais rápido</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" />: Chromium Canary</translation>
 <translation id="7803986347287457849">Dificulte para as pessoas com acesso ao seu tráfego da Internet saber quais sites você visita. O Chromium usa uma conexão segura para procurar o endereço IP de um site no DNS (Sistema de Nomes de Domínio).</translation>
@@ -680,6 +683,7 @@
 <translation id="8907580949721785412">O Chromium está tentando mostrar senhas. Digite sua senha do Windows para permitir isso.</translation>
 <translation id="8941642502866065432">Não é possível atualizar o Chromium</translation>
 <translation id="897581876605952338">Logotipo do Chromium Enterprise</translation>
+<translation id="8981150672034878610">Não é possível iniciar o Chromium porque algo deu errado ao abrir seu perfil. Tente reiniciar o Chromium.</translation>
 <translation id="8988036198400390003">Gerenciar perfis do Chromium</translation>
 <translation id="9019929317751753759">Para tornar o Chromium mais seguro, desativamos a extensão a seguir, que não está listada na <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e pode ter sido adicionada sem seu conhecimento.</translation>
 <translation id="904366664621834601">O Chromium bloqueou o download porque o arquivo inclui outros arquivos que podem estar ocultando malware</translation>

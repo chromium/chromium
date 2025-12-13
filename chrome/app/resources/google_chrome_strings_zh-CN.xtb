@@ -118,6 +118,7 @@
 <translation id="2216543877350048334">若要从 Chrome 中移除您的 Google 账号，请退出账号</translation>
 <translation id="2236949375853147973">我的活动记录</translation>
 <translation id="22791603784558743">关闭 Chrome 开发者版中的 Gemini</translation>
+<translation id="2284380654876659752">当您访问某个网站时，Chrome 会通过可隐藏 IP 地址的隐私保护服务器，将经过混淆处理的网址片段发送给 <ph name="BEGIN_LINK" />Google 安全浏览服务<ph name="END_LINK" />。如果网站有可疑行为，系统也会发送完整网址和少量网页内容。</translation>
 <translation id="2290014774651636340">缺少 Google API 密钥，因此 Google Chrome 的部分功能将无法使用。</translation>
 <translation id="2290095356545025170">确定要卸载 Google Chrome 浏览器吗？</translation>
 <translation id="2301513536169703857">登录 Chrome，在您的所有设备上同步密码、书签等信息</translation>

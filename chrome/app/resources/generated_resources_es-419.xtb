@@ -6174,7 +6174,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="520576054436518354">Deja que Gemini navegue por ti</translation>
 <translation id="5207949376430453814">Destacar el símbolo de intercalación de texto</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> quiere comprobar si estás usando un dispositivo apto para ChromeOS.</translation>
-<translation id="5208722776934437424">Cambiar los permisos</translation>
 <translation id="5208926629108082192">Información sobre la red móvil del dispositivo</translation>
 <translation id="5208988882104884956">Ancho medio</translation>
 <translation id="5209320130288484488">No se encontraron dispositivos.</translation>
@@ -6740,7 +6739,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5600706100022181951">Para descargar la actualización, se usarán <ph name="UPDATE_SIZE_MB" /> MB de datos móviles. ¿Deseas continuar?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601833336918638013">No permitir que los sitios busquen dispositivos Bluetooth</translation>
-<translation id="560213628963806709">Esta app abrió <ph name="OPENINGS_COUNT" /> pestañas nuevas de Chrome. Puedes administrar este comportamiento en el permiso "Ventanas emergentes y redireccionamientos".</translation>
 <translation id="5602586420788540146">Abrir en un nuevo grupo de pestañas</translation>
 <translation id="5605758115928394442">Se envió una notificación a tu teléfono para confirmar que eres tú</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Se bloqueó esta extensión}other{Se bloquearon estas extensiones}}</translation>
@@ -7996,7 +7994,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6493991254603208962">Disminuir brillo</translation>
 <translation id="6494327278868541139">Mostrar detalles de la protección mejorada</translation>
 <translation id="6494483173119160146">El dispositivo detectó un error irrecuperable. Restablece el dispositivo (se borrarán todos los datos del usuario) y vuelve a intentarlo.</translation>
-<translation id="6495261233408033662">Cerrar pestañas abiertas</translation>
 <translation id="6495266441917713704">No se puede transferir la conexión Wi-Fi</translation>
 <translation id="6495453178162183932">Se actualizó el tema a Chrome predeterminado</translation>
 <translation id="6496641546298525838">Tu dispositivo</translation>
@@ -9351,7 +9348,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7427348830195639090">Página de fondo: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">Este perfil está administrado</translation>
 <translation id="7427798576651127129">Llamada de <ph name="DEVICE_NAME" /></translation>
-<translation id="7429004613638800673"><ph name="APP_NAME" /> abrió varias pestañas.</translation>
 <translation id="7429415133937917139">Simula el resultado de una pantalla braille que se actualiza
     en el panel de ChromeVox, en la parte superior de la pantalla</translation>
 <translation id="7429568074268678162">El archivo <ph name="FILENAME" /> puede ser peligroso. Agrega una contraseña si quieres que Chrome lo verifique, si no, puedes descargarlo directamente.</translation>

@@ -213,6 +213,7 @@
 <translation id="3313189106987092621">Chromium będzie Cię ostrzegać przed wczytywaniem stron, które korzystają z niezabezpieczonego połączenia</translation>
 <translation id="3316771292331273802">Gdy zamkniesz wszystkie okna Chromium, wylogujesz się na większości stron, ale nie z konta Google, o ile wcześniej zalogujesz się w Chromium. Aby pozwolić witrynom na zapamiętywanie Twoich danych, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">Twoja domyślna wyszukiwarka została zmieniona poza Chromium. Aby Cię chronić, przeglądarka Chromium zresetowała to ustawienie.</translation>
+<translation id="3331557257666250900">Zaloguj się w Chromium, aby mieć dostęp do haseł, zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach</translation>
 <translation id="3352986031709923790">prawy górny róg obszaru wyszukiwania: po prawej stronie <ph name="RIGHT" />%, u góry <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Dane Chromium na Twoim koncie</translation>
 <translation id="3369405342922656244">Wyszukaj na tej stronie za pomocą wyszukiwania obrazów</translation>
@@ -264,6 +265,7 @@
 <translation id="3971865010372729242">Gdy piszesz na pasku adresu lub w polu wyszukiwania, Chromium wysyła wpisany tekst do narzędzi wyszukiwania, AI i agentów Twojej organizacji, aby uzyskać sugestie.</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testing – informacje</translation>
 <translation id="3997429360543082038">System operacyjny Chromium – informacje</translation>
+<translation id="4010059961270896984">Gdy wchodzisz na stronę, Chromium wysyła zaciemniony fragment adresu URL do <ph name="BEGIN_LINK" />Bezpiecznego przeglądania Google<ph name="END_LINK" /> przez serwer prywatności, który ukrywa Twój adres IP. Jeśli strona robi coś podejrzanego, wysyłane są też pełne adresy URL i fragmenty zawartości strony.</translation>
 <translation id="4019629340646866719">Opracowanie Chromium OS było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />. To samo dotyczy <ph name="BEGIN_LINK_LINUX_OSS" />środowiska programistycznego Linuksa<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Przetłumacz ekran</translation>
 <translation id="4023601594785368013">Język oryginału: <ph name="LANGUAGE" /></translation>
@@ -583,6 +585,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="77283119132245232">Zapewnia usługi śledzenia systemu dla <ph name="BROWSER_NAME" />. Jeśli ta usługa jest wyłączona, śledzenie wydajności tworzone przez przeglądarkę nie zawiera zdarzeń dotyczących całego systemu, takich jak przełączanie kontekstu i gotowe zdarzenia wątków.</translation>
 <translation id="7745317241717453663">Spowoduje to usunięcie danych przeglądania z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Instalator nie mógł utworzyć katalogu tymczasowego. Sprawdź, czy na dysku jest dość wolnego miejsca oraz sprawdź, czy posiadasz uprawnienia do instalowania programów.</translation>
+<translation id="7750130090210923118">Przywróć domyślny motyw Chromium</translation>
 <translation id="7786760609782648049">Przyspiesz działanie Chromium</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Utrudnij osobom mającym dostęp do Twojego ruchu internetowego sprawdzanie, jakie strony odwiedzasz. Do wyszukiwania adresu IP witryny w Systemie nazw domenowych (DNS) Chromium używa bezpiecznego połączenia.</translation>
@@ -683,6 +686,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8907580949721785412">Chromium próbuje pokazać hasła. Podaj swoje hasło do Windows, by na to zezwolić.</translation>
 <translation id="8941642502866065432">Nie można zaktualizować Chromium</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
+<translation id="8981150672034878610">Nie można uruchomić Chromium – coś poszło nie tak podczas otwierania Twojego profilu. Spróbuj jeszcze raz uruchomić Chromium.</translation>
 <translation id="8988036198400390003">Zarządzaj profilami Chromium</translation>
 <translation id="9019929317751753759">Aby poprawić bezpieczeństwo Chromium, wyłączyliśmy to rozszerzenie. Nie jest ono dostępne w <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i mogło zostać dodane bez Twojej wiedzy.</translation>
 <translation id="904366664621834601">Pobieranie zostało zablokowane przez Chromium, ponieważ plik archiwum zawiera inne pliki, które mogą ukrywać złośliwe oprogramowanie</translation>

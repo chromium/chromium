@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">IBAN을 저장하시겠습니까?</translation>
 <translation id="1113869188872983271">재정렬 실행 취소(&amp;U)</translation>
 <translation id="1118429183611783760">진공청소기 및 바닥 청소 도구</translation>
+<translation id="111897705806685148">다른 기기의 패스키 사용</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab과 Enter를 차례로 눌러 Google 계정에 저장할 Chrome 정보 관리</translation>
 <translation id="1122714970786750095">전기 및 전자</translation>
 <translation id="1123753900084781868">현재 실시간 자막을 사용할 수 없습니다.</translation>
@@ -4134,6 +4135,7 @@
 <translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android 설정<ph name="END_ANDROID_SETTINGS_LINK" />에서 고급 보호를 사용 설정했기 때문에 이 사이트는 차단된 상태로 유지됩니다. <ph name="BEGIN_LEARN_MORE_LINK" />이 경고 자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">이 기기에 파일 저장</translation>
 <translation id="7649070708921625228">도움말</translation>
+<translation id="7650141368285545431">다른 기기의 패스키 사용</translation>
 <translation id="7653957176542370971">결제 핸들러 시트가 닫힘</translation>
 <translation id="7655766454902053387">구인/구직 정보</translation>
 <translation id="765676359832457558">고급 설정 숨기기</translation>

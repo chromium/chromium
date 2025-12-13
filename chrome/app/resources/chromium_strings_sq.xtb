@@ -217,6 +217,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3313189106987092621">Chromium do të të paralajmërojë para se të ngarkojë një sajt duke përdorur një lidhje të pasigurt</translation>
 <translation id="3316771292331273802">Do të dalësh nga shumica e sajteve kur të mbyllësh të gjitha dritaret e Chromium, përveçse nga "Llogaria jote e Google" nëse je identifikuar në Chromium. Për t'i lejuar sajtet që të të kujtojnë, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">Motori i parazgjedhur i kërkimit u ndryshua nga jashtë Chromium. Për të të mbrojtur, Chromium e rivendosi atë.</translation>
+<translation id="3331557257666250900">Identifikohu në Chromium për të marrë fjalëkalimet, faqeshënuesit dhe më shumë në të gjitha pajisjet e tua</translation>
 <translation id="3352986031709923790">këndi lart djathtas i zonës së kërkimit: djathtas <ph name="RIGHT" />%, lart<ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Të dhënat e Chromium në llogarinë tënde</translation>
 <translation id="3369405342922656244">Kërko në këtë faqe me "Kërkimin e imazheve"</translation>
@@ -268,6 +269,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3971865010372729242">Kur shkruan në shiritin e adresave ose kutinë e kërkimit, Chromium i dërgon ato që ti shkruan te veglat e kërkimit, IA-së dhe agjentit të organizatës sate për të marrë sugjerime.</translation>
 <translation id="3975724895399328945">Rreth &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Rreth ChromiumOS</translation>
+<translation id="4010059961270896984">Kur ti viziton një sajt, Chromium dërgon një pjesë të pakuptueshme të URL-së te <ph name="BEGIN_LINK" />"Shfletimi i sigurt" i Google<ph name="END_LINK" /> nëpërmjet një serveri të privatësisë që e fsheh adresën tënde IP. Nëse një sajt bën diçka të dyshimtë, dërgohen edhe URL-të e plota dhe pjesët e përmbajtjeve të faqeve.</translation>
 <translation id="4019629340646866719">ChromiumOS mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />, si p.sh. <ph name="BEGIN_LINK_LINUX_OSS" />mjedisi i zhvillimit të Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Përkthe ekranin</translation>
 <translation id="4023601594785368013">Gjuha origjinale: <ph name="LANGUAGE" /></translation>
@@ -587,6 +589,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="77283119132245232">Ofron shërbime të gjurmimit të sistemit për <ph name="BROWSER_NAME" />. Nëse ky shërbim është i çaktivizuar, gjurmët e performancës të krijuara nga shfletuesi nuk do të përfshijnë ngjarjet e të gjithë sistemit, si p.sh. ngjarjet e ndryshimit të kontekstit dhe të nënprocesit të gatshëm.</translation>
 <translation id="7745317241717453663">Kjo do të fshijë të dhënat e shfletimit nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chromium si <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Instaluesi nuk mund të krijonte një direktori të përkohshme. Kontrollo për hapësirë të lirë në disk dhe për lejen për të instaluar softuerin.</translation>
+<translation id="7750130090210923118">Rivendos temën e parazgjedhur të Chromium</translation>
 <translation id="7786760609782648049">Bëje Chromium më të shpejtë</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Bëj që personat që kanë qasje në trafikun tënd të internetit ta kenë më të vështirë të shikojnë sajtet që viziton ti. Chromium përdor një lidhje të sigurt për të kërkuar për adresën IP të një sajt në sistemin e emrave të domeneve (DNS).</translation>
@@ -687,6 +690,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8907580949721785412">Chromium po përpiqet të shfaqë fjalëkalime. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="8941642502866065432">Chromium nuk mund të përditësohet</translation>
 <translation id="897581876605952338">Logoja e Chromium Enterprise</translation>
+<translation id="8981150672034878610">Chromium nuk mund të niset sepse ka ndodhur një gabim gjatë hapjes së profilit tënd. Provo të rinisësh Chromium.</translation>
 <translation id="8988036198400390003">Menaxho profilet e Chromium</translation>
 <translation id="9019929317751753759">Për ta bërë më të sigurt Chromium, çaktivizuam shtesën e mëposhtme që nuk është e listuar në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe që mund të jetë shtuar pa dijeninë tënde.</translation>
 <translation id="904366664621834601">Chromium e bllokoi këtë shkarkim sepse skedari i arkivit përfshin skedarë të tjerë që mund të fshehin softuer keqdashës</translation>

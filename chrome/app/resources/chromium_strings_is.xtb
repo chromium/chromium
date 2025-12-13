@@ -218,6 +218,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3313189106987092621">Chromium varar þig við áður en vefsvæði með ótrygga tengingu er hlaðið</translation>
 <translation id="3316771292331273802">Þegar þú lokar öllum Chromium-gluggum skráistu út af flestum vefsvæðum, að undanskildum Google-reikningnum þínum ef þú ert skráð(ur) inn á Chromium. <ph name="SETTINGS_LINK" /> til að leyfa vefsvæðum að muna eftir þér.</translation>
 <translation id="3322413454779348750">Sjálfgefnu leitarvélinni þinni var breytt utan Chromium. Chromium endurstillti hana til að vernda þig.</translation>
+<translation id="3331557257666250900">Skráðu þig inn í Chrome og fáðu aðgang að aðgangsorðum, bókamerkjum og fleiru í öllum tækjunum þínum</translation>
 <translation id="3352986031709923790">efsta horn leitarsvæðis hægra megin: til hægri <ph name="RIGHT" />%, efst <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Chromium-gögn á reikningnum þínum</translation>
 <translation id="3369405342922656244">Leita á þessari síðu með Myndaleit</translation>
@@ -269,6 +270,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3971865010372729242">Þegar þú skrifar í veffangastikuna eða leitarreitinn sendir Chromium það sem þú skrifar til leitarforrits fyrirtækisins þíns, gervigreindar og verkfæra hjá fulltrúum til að fá tillögur.</translation>
 <translation id="3975724895399328945">Um &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Um ChromiumOS</translation>
+<translation id="4010059961270896984">Þegar þú opnar vefsvæði sendir Chromium ruglaðan hluta vefslóðarinnar til <ph name="BEGIN_LINK" />Öruggrar vefskoðunar Google<ph name="END_LINK" /> í gegnum traustan þjón sem felur IP-töluna þína. Ef vefsvæði gerir eitthvað grunsamlegt eru heilar vefslóðir og efnisbútar af síðu einnig sendir.</translation>
 <translation id="4019629340646866719">ChromiumOS á tilvist sína að þakka öðrum <ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" /> og það sama á við um <ph name="BEGIN_LINK_LINUX_OSS" />Linux-forritunarumhverfið <ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Þýða skjá</translation>
 <translation id="4023601594785368013">Upprunalegt tungumál: <ph name="LANGUAGE" /></translation>
@@ -588,6 +590,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="77283119132245232">Sér <ph name="BROWSER_NAME" /> fyrir kerfisrakningarþjónustu. Ef slökkt er á þessari þjónustu munu afkastaspor sem búin eru til af vafranum ekki innihalda viðburði úr öllu kerfinu eins og samhengisskipti og tilbúna þráðarviðburði.</translation>
 <translation id="7745317241717453663">Þetta mun eyða vefskoðunargögnunum þínum úr þessu tæki. Skráðu þig inn í Chromium sem <ph name="USER_EMAIL" /> til að endurheimta gögnin síðar.</translation>
 <translation id="7747138024166251722">Uppsetningarforritið gat ekki búið til tímabundna möppu. Athugaðu laust diskpláss og heimildir fyrir uppsetningu hugbúnaðar.</translation>
+<translation id="7750130090210923118">Endurstilla á sjálfgefið Chromium</translation>
 <translation id="7786760609782648049">Láttu Chromium vinna hraðar</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Gerðu fólki með aðgang að netumferðinni þinni erfiðara fyrir að sjá hvaða vefsvæði þú skoðar. Chromium notar örugga tengingu til að finna IP-tölu vefsvæðis í DNS (nafnakerfi léna).</translation>
@@ -688,6 +691,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8907580949721785412">Chromium er að reyna að sýna aðgangsorð. Sláðu inn Windows-aðgangsorðið þitt til að heimila þetta.</translation>
 <translation id="8941642502866065432">Ekki var hægt að uppfæra Chromium</translation>
 <translation id="897581876605952338">Lógó Chromium Enterprise</translation>
+<translation id="8981150672034878610">Gat ekki ræst Chromium þar sem eitthvað fór úrskeiðis við að opna prófílinn þinn Prófaðu að endurræsa Chromium.</translation>
 <translation id="8988036198400390003">Stjórna Chromium-prófílum</translation>
 <translation id="9019929317751753759">Til að gera Chromium öruggara höfum við slökkt á eftirfarandi viðbót sem ekki er á skrá hjá <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og kann að hafa verið bætt við án þinnar vitneskju.</translation>
 <translation id="904366664621834601">Chromium lokaði á þetta niðurhal vegna þess að safnskráin getur innihaldið aðrar skrár sem geta falið spilliforrit</translation>

@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Kamakailang larawan <ph name="INDEX" /> ng <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">I-collapse ang Google Tasks</translation>
 <translation id="2208323208084708176">Unified desktop mode</translation>
+<translation id="2210311543574621570">Makikita mo ang clipboard kapag pinindot mo nang matagal ang Ctrl + V. Puwede mong i-off ang shortcut na ito sa pamamagitan ng pag-disable sa flag ng #clipboard-history-longpress sa chrome://flags.</translation>
 <translation id="2215920961700443347">Walang internet. Kumonekta sa internet at subukan ulit.</translation>
 <translation id="2222841058024245321">Desk 7</translation>
 <translation id="2223384056430485343">Sa isang split screen</translation>

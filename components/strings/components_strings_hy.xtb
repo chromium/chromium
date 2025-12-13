@@ -77,6 +77,7 @@
 <translation id="1113000785583998331">Պահե՞լ IBAN-ը</translation>
 <translation id="1113869188872983271">&amp;Հետարկել վերադասավորումը</translation>
 <translation id="1118429183611783760">Փոշեկուլներ և հատակի խնամք</translation>
+<translation id="111897705806685148">Օգտագործել մեկ այլ սարքի մուտքի բանալի</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Սեղմեք Tab, ապա՝ Enter, որպեսզի ընտրեք, թե Chrome-ի ինչ տվյալներ պահել ձեր Google հաշվում</translation>
 <translation id="1122714970786750095">Էլեկտրոնիկա և էլեկտրական սարքեր</translation>
 <translation id="1123753900084781868">Կենդանի ենթագրերն այս պահին հասանելի չեն</translation>
@@ -4143,6 +4144,7 @@
 <translation id="7648527891719919697">Այս կայքն արգելափակված կմնա, քանի որ դուք <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android-ի կարգավորումներում<ph name="END_ANDROID_SETTINGS_LINK" /> միացրել եք Լրացուցիչ պաշտպանության ծրագիրը։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Պահել ֆայլերն այս սարքում</translation>
 <translation id="7649070708921625228">Օգնություն</translation>
+<translation id="7650141368285545431">Օգտագործել մեկ այլ սարքի մուտքի բանալի</translation>
 <translation id="7653957176542370971">Վճարման մշակման թերթը փակված է</translation>
 <translation id="7655766454902053387">Թափուր աշխատատեղերի հայտարարություններ</translation>
 <translation id="765676359832457558">Թաքցնել լրացուցիչ կարգավորումները…</translation>

@@ -122,6 +122,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2216543877350048334">Jei norite pašalinti „Google“ paskyrą iš „Chrome“, atsijunkite</translation>
 <translation id="2236949375853147973">Mano veikla</translation>
 <translation id="22791603784558743">Uždaryti „Gemini“ kūrėjams skirtoje „Chrome“ naršyklėje</translation>
+<translation id="2284380654876659752">Kai apsilankote svetainėje, „Chrome“ siunčia klaidinančią URL dalį <ph name="BEGIN_LINK" />„Google“ saugaus naršymo funkcijai<ph name="END_LINK" /> per privatumo serverį, slepiantį jūsų IP adresą. Jei svetainė atlieka ką nors įtartino, siunčiami ir visi URL bei puslapio turinio dalys.</translation>
 <translation id="2290014774651636340">Trūksta „Google“ API raktų. Bus išjungtos kai kurios „Google Chrome“ funkcijos.</translation>
 <translation id="2290095356545025170">Ar tikrai norite pašalinti „Google Chrome“?</translation>
 <translation id="2301513536169703857">Jei norite pasiekti slaptažodžius, žymes ir kitas funkcijas visuose įrenginiuose, prisijunkite prie „Chrome“</translation>

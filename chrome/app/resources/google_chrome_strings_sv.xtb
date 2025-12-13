@@ -122,6 +122,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2216543877350048334">Du kan ta bort Google-kontot från Chrome genom att logga ut</translation>
 <translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="22791603784558743">Stäng Gemini i Chrome Dev</translation>
+<translation id="2284380654876659752">När du besöker en webbplats skickas en obfuskerad del av webbadressen till <ph name="BEGIN_LINK" />Google Säker webbsökning<ph name="END_LINK" /> via en integritetsserver som döljer din IP-adress. Om en webbplats gör något misstänkt skickas också fullständiga webbadresser och delar av sidinnehållet.</translation>
 <translation id="2290014774651636340">Googles API-nycklar saknas. Vissa funktioner i Google Chrome kommer att vara inaktiverade.</translation>
 <translation id="2290095356545025170">Är du säker på att du vill avinstallera Google Chrome?</translation>
 <translation id="2301513536169703857">Logga in i Chrome om du vill få tillgång till dina lösenord, bokmärken med mera på alla dina enheter</translation>

@@ -216,6 +216,7 @@
 <translation id="3313189106987092621">Chromium hoiatab teid enne mis tahes saidi laadimist ebaturvalise ühenduse kaudu</translation>
 <translation id="3316771292331273802">Kõikide Chromiumi akende sulgemise korral logitakse teid välja enamikust saitidest, v.a Google’i kontolt, kui olete Chromiumis sisse logitud. Kui soovite lubada saitidel ennast meelde jätta, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">Teie vaikeotsingumootorit muudeti väljaspool Chromiumi. Chromium lähtestas selle teie kaitsmiseks.</translation>
+<translation id="3331557257666250900">Logige Chromiumis sisse, et paroole, järjehoidjaid ja muud kõigis oma seadmetes kasutada.</translation>
 <translation id="3352986031709923790">otsinguala parem ülanurk: <ph name="RIGHT" />% paremal, <ph name="TOP" />% üleval</translation>
 <translation id="3366305173356742781">Chromiumi andmed teie kontol</translation>
 <translation id="3369405342922656244">Otsige sellelt lehelt pildiotsinguga</translation>
@@ -267,6 +268,7 @@
 <translation id="3971865010372729242">Kui sisestate midagi aadressiribale või otsingukasti, saadab Chromium teie sisestuse soovituste hankimiseks teie organisatsiooni otsingu-, AI- ja agenditööriistadele.</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testingu teave</translation>
 <translation id="3997429360543082038">Teave &amp;Chromium OS-i kohta</translation>
+<translation id="4010059961270896984">Kui külastate saiti, saadab Chromium URL-i hägustatud osa <ph name="BEGIN_LINK" />Google'i ohutule sirvimisele<ph name="END_LINK" /> privaatsusserveri kaudu, mis varjab teie IP-aadressi. Kui sait teeb midagi kahtlast, saadetakse nii täielikud URL-id kui ka osa lehe sisust.</translation>
 <translation id="4019629340646866719">Chromium OS-i ja ka <ph name="BEGIN_LINK_LINUX_OSS" />Linuxi arenduskeskkonna<ph name="END_LINK_LINUX_OSS" /> aluseks on <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="4022972681110646219">Tõlgi kuva</translation>
 <translation id="4023601594785368013">Lähtekeel: <ph name="LANGUAGE" /></translation>
@@ -586,6 +588,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="77283119132245232">Pakub brauseri <ph name="BROWSER_NAME" /> jaoks süsteemijälgimisteenuseid. Kui see teenus on keelatud, ei hõlma brauseri loodud jõudlusjäljed kogu süsteemi sündmusi (nt kontekstilüliti ja valmis lõime sündmused).</translation>
 <translation id="7745317241717453663">See kustutab sellest seadmest teie sirvimisandmed. Hiljem oma andmete toomiseks logige Chromiumi sisse kasutajana <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Installija ei suutnud luua ajutist kataloogi. Palun kontrollige vaba kettaruumi ja tarkvara installimise loa olemasolu.</translation>
+<translation id="7750130090210923118">Taasta Chromiumi vaiketeema</translation>
 <translation id="7786760609782648049">Muutke Chromium kiiremaks</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Muutke teie internetiliiklusele juurdepääsu omavate inimeste jaoks keerulisemaks vaadata, milliseid saite külastate. Chromium kasutab DNS-ist (domeeninimesüsteemist) saidi IP-aadressi otsimiseks turvalist ühendust.</translation>
@@ -686,6 +689,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8907580949721785412">Chromium proovib kuvada paroole. Selle lubamiseks sisestage Windowsi parool.</translation>
 <translation id="8941642502866065432">Chromiumi ei saa värskendada</translation>
 <translation id="897581876605952338">Chromium Enterprise'i logo</translation>
+<translation id="8981150672034878610">Chromiumi ei saa käivitada, kuna teie profiili avamisel läks midagi valesti. Proovige Chromium taaskäivitada.</translation>
 <translation id="8988036198400390003">Halda Chromiumi profiile</translation>
 <translation id="9019929317751753759">Chromiumi turvalisemaks muutmiseks keelasime järgmise laienduse, mida ei leidu veebipoes <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ja mis võidi lisada teie teadmata.</translation>
 <translation id="904366664621834601">Chromium blokeeris selle allalaadimise, kuna arhiivifail sisaldab muid faile, mis võivad peita pahavara</translation>

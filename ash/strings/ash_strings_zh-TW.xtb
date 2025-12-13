@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">第 <ph name="INDEX" /> 張近期相片，共 <ph name="TOTAL_COUNT" /> 張。</translation>
 <translation id="2201687081523799384">收合 Google Tasks</translation>
 <translation id="2208323208084708176">整合桌面模式</translation>
+<translation id="2210311543574621570">按住 Ctrl + V 鍵即可查看剪貼簿。你可以在 chrome://flags 中停用 #clipboard-history-longpress 旗標，關閉這個快速鍵。</translation>
 <translation id="2215920961700443347">沒有網際網路連線。請連線到網際網路，然後再試一次。</translation>
 <translation id="2222841058024245321">桌面 7</translation>
 <translation id="2223384056430485343">在分割畫面中</translation>

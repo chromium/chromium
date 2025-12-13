@@ -215,6 +215,7 @@
 <translation id="3313189106987092621">Pārlūkā Chromium tiks parādīts brīdinājums pirms jebkuras vietnes ielādes, izmantojot nedrošu savienojumu.</translation>
 <translation id="3316771292331273802">Aizverot visus Chromium logus, automātiski izrakstīsieties no lielākās daļas vietņu, bet ne no Google konta, ja esat pierakstījies pārlūkā Chromium. Lai atļautu vietnēm jūs atcerēties, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">Jūsu noklusējuma meklētājprogramma tika mainīta ārpus pārlūka Chromium. Lai jūs aizsargātu, tā tika atiestatīta pārlūkā Chromium.</translation>
+<translation id="3331557257666250900">Pierakstieties pārlūkā Chromium, lai iegūtu savas paroles, grāmatzīmes un citu saturu visās savās ierīcēs.</translation>
 <translation id="3352986031709923790">meklēšanas apgabala augšējais labais stūris: <ph name="RIGHT" />% pa labi, <ph name="TOP" />% augšdaļā</translation>
 <translation id="3366305173356742781">Chromium dati jūsu kontā</translation>
 <translation id="3369405342922656244">Meklēt šajā lapā, izmantojot attēlu meklēšanas funkciju</translation>
@@ -266,6 +267,7 @@
 <translation id="3971865010372729242">Kad rakstāt adreses joslā vai meklēšanas lodziņā, pārlūks Chromium nosūta rakstīto tekstu jūsu organizācijas meklēšanas, MI un starpnieku rīkiem, lai iegūtu ieteikumus.</translation>
 <translation id="3975724895399328945">Par Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Par Chromium OS</translation>
+<translation id="4010059961270896984">Kad apmeklējat kādu vietni, pārlūks Chromium nosūta funkcijai <ph name="BEGIN_LINK" />Google droša pārlūkošana<ph name="END_LINK" /> pieslēptu URL daļu, izmantojot konfidencialitātes serveri, kas slēpj jūsu IP adresi. Ja vietnē tiek veiktas aizdomīgas darbības, tiek nosūtīti arī pilni URL un lapas satura fragmenti.</translation>
 <translation id="4019629340646866719">Chromium OS, kā arī <ph name="BEGIN_LINK_LINUX_OSS" />Linux izstrādes vides<ph name="END_LINK_LINUX_OSS" /> darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="4022972681110646219">Tulkot ekrāna tekstu</translation>
 <translation id="4023601594785368013">Oriģinālvaloda: <ph name="LANGUAGE" /></translation>
@@ -583,6 +585,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="77283119132245232">Nodrošina sistēmas izsekošanas pakalpojumus pārlūkā <ph name="BROWSER_NAME" />. Ja šis pakalpojums ir atspējots, pārlūka izveidotajos veiktspējas izsekošanas datos netiek ietverti sistēmas līmeņa notikumi, piemēram, konteksta maiņas un pavedienu gatavības notikumi.</translation>
 <translation id="7745317241717453663">Veicot šo darbību, no šīs ierīces tiks dzēsti pārlūkošanas dati. Lai vēlāk izgūtu datus, pierakstieties pārlūkā Chromium kā <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Instalētājam neizdevās izveidot pagaidu katalogu. Lūdzu, pārbaudiet, vai diskā pietiek vietas un vai ir atļauja instalēt programmatūru.</translation>
+<translation id="7750130090210923118">Atiestatīt Chromium noklusējuma motīvu</translation>
 <translation id="7786760609782648049">Pārlūka Chromium darbības paātrināšana</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> — Chromium Canary</translation>
 <translation id="7803986347287457849">Neļaujiet personām, kurām ir piekļuve jūsu interneta datplūsmai, viegli skatīt jūsu apmeklētās vietnes. Chromium izmanto drošu savienojumu, lai meklētu vietnes IP adresi sistēmā DNS (domēnu nosaukumu sistēmā).</translation>
@@ -683,6 +686,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8907580949721785412">Chromium mēģina rādīt paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
 <translation id="8941642502866065432">Nevar atjaunināt Chromium</translation>
 <translation id="897581876605952338">Chromium Enterprise logotips</translation>
+<translation id="8981150672034878610">Nevar palaist pārlūku Chromium, jo radās problēma, atverot jūsu profilu. Mēģiniet restartēt pārlūku Chromium.</translation>
 <translation id="8988036198400390003">Pārvaldīt Chromium profilus</translation>
 <translation id="9019929317751753759">Lai uzlabotu Chromium drošību, mēs atspējojām tālāk norādīto paplašinājumu, kas nav norādīts vietnē <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> un, iespējams, tika pievienots, jums nezinot.</translation>
 <translation id="904366664621834601">Pārlūkā Chromium šī lejupielāde tika bloķēta, jo šajā arhīva failā ir ietverti citi faili, kas, iespējams, slēpj ļaunprātīgu programmatūru</translation>

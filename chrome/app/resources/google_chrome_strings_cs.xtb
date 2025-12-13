@@ -122,6 +122,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2216543877350048334">Pokud z Chromu chcete odebrat svůj účet Google, odhlaste se</translation>
 <translation id="2236949375853147973">Moje aktivita</translation>
 <translation id="22791603784558743">Zavřít Gemini v Chromu Dev</translation>
+<translation id="2284380654876659752">Když navštívíte nějaký web, odešle Chrome obfuskovanou část adresy URL <ph name="BEGIN_LINK" />Bezpečnému prohlížení Google<ph name="END_LINK" />. K odeslání použije server pro ochranu soukromí, který skryje vaši IP adresu. Pokud web provede něco podezřelého, odešlou se také úplné adresy URL a části obsahu stránky.</translation>
 <translation id="2290014774651636340">Chybí klíče rozhraní Google API. Některé funkce Google Chrome nebudou k dispozici.</translation>
 <translation id="2290095356545025170">Opravdu chcete odinstalovat Google Chrome?</translation>
 <translation id="2301513536169703857">Pokud svá hesla, záložky a další položky chcete mít na všech svých zařízeních, přihlaste se do Chromu</translation>

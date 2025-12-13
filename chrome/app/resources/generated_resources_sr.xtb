@@ -2210,6 +2210,7 @@
 <translation id="2476901513051581836">Није могуће очистити меморијски простор док не знате величину офлајн меморијског простора.</translation>
 <translation id="2476974672882258506">Искључите Windows да бисте деинсталирали <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Пошто сте подесили више прекидача, аутоматско скенирање је искључено.</translation>
+<translation id="2477218554275525952">Не затварај Gemini бочну траку при отварању нове картице</translation>
 <translation id="2477607419416067650">Други Google подаци</translation>
 <translation id="2478176599153288112">Дозволе за медијске датотеке за „<ph name="EXTENSION" />“</translation>
 <translation id="24786041351753425">Омогућите услугу враћања података.</translation>
@@ -6180,7 +6181,6 @@
 <translation id="520576054436518354">Дозволите да Gemini прегледа за вас</translation>
 <translation id="5207949376430453814">Истакни курсор за текст</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> жели да провери да ли користите Chrome ОС уређај који испуњава услове.</translation>
-<translation id="5208722776934437424">Промени дозволе</translation>
 <translation id="5208926629108082192">Информације о мобилној мрежи за уређај</translation>
 <translation id="5208988882104884956">Пола ширине</translation>
 <translation id="5209320130288484488">Није пронађен ниједан уређај</translation>
@@ -6744,7 +6744,6 @@
 <translation id="5600706100022181951">Ажурирање ће се преузети уз употребу <ph name="UPDATE_SIZE_MB" /> MB мобилних података. Желите ли да наставите?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601833336918638013">Не дозвољавај сајтовима да траже Bluetooth уређаје</translation>
-<translation id="560213628963806709">Ова апликација је отворила нове Chrome картице (<ph name="OPENINGS_COUNT" />). Овим понашањем можете да управљате у дозволи Искачући прозори и преусмеравања.</translation>
 <translation id="5602586420788540146">Отвори у новој групи картица</translation>
 <translation id="5605758115928394442">Послали смо вам обавештење на телефон да бисте потврдили да сте то ви.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Овај додатак је блокиран}one{Ови додаци су блокирани}few{Ови додаци су блокирани}other{Ови додаци су блокирани}}</translation>
@@ -8002,7 +8001,6 @@
 <translation id="6493991254603208962">Смањи осветљеност</translation>
 <translation id="6494327278868541139">Прикажи детаље о напредној заштити</translation>
 <translation id="6494483173119160146">Уређај је наишао на непоправљиву грешку. Ресетујте уређај (биће обрисани сви подаци корисника) и пробајте поново.</translation>
-<translation id="6495261233408033662">Затвори отворене картице</translation>
 <translation id="6495266441917713704">Не можемо да пренесемо WiFi</translation>
 <translation id="6495453178162183932">Тема је ажурирана на подразумевани Chrome</translation>
 <translation id="6496641546298525838">Ваш уређај</translation>
@@ -9361,7 +9359,6 @@
 <translation id="7427348830195639090">Страница у позадини: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">Овим профилом се управља</translation>
 <translation id="7427798576651127129">Позив са уређаја <ph name="DEVICE_NAME" /></translation>
-<translation id="7429004613638800673">Апликација <ph name="APP_NAME" /> је отворила више картица.</translation>
 <translation id="7429415133937917139">Симулира приказ Брајевог екрана који може да се освежава
         у ChromeVox окну у врху екрана</translation>
 <translation id="7429568074268678162">Фајл <ph name="FILENAME" /> може да буде опасан. Додајте лозинку ако желите да га Chrome верификује или можете директно да га преузмете.</translation>

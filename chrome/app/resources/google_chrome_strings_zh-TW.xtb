@@ -118,6 +118,7 @@
 <translation id="2216543877350048334">如要從 Chrome 中移除 Google 帳戶，請登出 Chrome</translation>
 <translation id="2236949375853147973">我的活動</translation>
 <translation id="22791603784558743">關閉 Chrome 內建 Gemini (開發人員版)</translation>
+<translation id="2284380654876659752">你造訪網站時，Chrome 會透過隱私權伺服器隱藏你的 IP 位址，再將經模糊處理的部分網址傳送給 <ph name="BEGIN_LINK" />Google 安全瀏覽<ph name="END_LINK" />。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>
 <translation id="2290014774651636340">缺少 Google API 金鑰，系統將停用 Google Chrome 的部分功能。</translation>
 <translation id="2290095356545025170">你是否確定要解除安裝 Google Chrome？</translation>
 <translation id="2301513536169703857">如要在所有裝置上使用你的密碼、書籤和其他資料，請登入 Chrome</translation>

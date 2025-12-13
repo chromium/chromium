@@ -4788,7 +4788,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4231141543165771749">Luk spilstyring</translation>
 <translation id="4231231258999726714">Konfigurerer Steam til Chromebook</translation>
 <translation id="4232375817808480934">Konfigurer Kerberos</translation>
-<translation id="4232376164796433044">Adgangskoder og Autofyld</translation>
+<translation id="4232376164796433044">Adgangskoder og autofyld</translation>
 <translation id="4232484478444192782">Din Android-telefon har styr på det. Dit Wi-Fi-netværk og din adgangskode overføres.</translation>
 <translation id="423327101839111402">Fjern gruppen <ph name="NAME" /></translation>
 <translation id="4233739489690259993">Din Chromebook modtager ikke længere sikkerheds- og softwareopdateringer. Opgrader din enhed for at få de nyeste sikkerhedsfunktioner og nye funktioner. Vilkårene for tilbuddet er gældende.</translation>
@@ -6197,7 +6197,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="520576054436518354">Lad Gemini browse for dig</translation>
 <translation id="5207949376430453814">Fremhæv tekstmarkør</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> vil gerne tjekke, om du bruger en kvalificeret ChromeOS-enhed.</translation>
-<translation id="5208722776934437424">Skift tilladelser</translation>
 <translation id="5208926629108082192">Oplysninger om enhedens mobilnetværk</translation>
 <translation id="5208988882104884956">Halv bredde</translation>
 <translation id="5209320130288484488">Der blev ikke fundet nogen enheder</translation>
@@ -6763,7 +6762,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5600706100022181951">Opdateringen downloades ved brug af <ph name="UPDATE_SIZE_MB" /> MB mobildata. Vil du fortsætte?</translation>
 <translation id="5601503069213153581">Pinkode</translation>
 <translation id="5601833336918638013">Tillad ikke, at websites søger efter Bluetooth-enheder</translation>
-<translation id="560213628963806709"><ph name="OPENINGS_COUNT" /> nye Chrome-faner er blevet åbnet af denne app. Du kan administrere denne adfærd under tilladelsen "Pop op-vinduer og omdirigeringer".</translation>
 <translation id="5602586420788540146">Åbn i en ny fanegruppe</translation>
 <translation id="5605758115928394442">Der blev sendt en notifikation til din telefon til bekræftelse af din identitet.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Denne udvidelse er blokeret}one{Denne udvidelse er blokeret}other{Disse udvidelser er blokeret}}</translation>
@@ -8020,7 +8018,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6493991254603208962">Lysstyrke ned</translation>
 <translation id="6494327278868541139">Vis oplysninger om forbedret beskyttelse</translation>
 <translation id="6494483173119160146">Der opstod en uoprettelig fejl på enheden. Nulstil din enhed (dette sletter alle brugerdata), og prøv igen.</translation>
-<translation id="6495261233408033662">Luk åbne faner</translation>
 <translation id="6495266441917713704">Der kan ikke overføres via Wi-Fi</translation>
 <translation id="6495453178162183932">Temaet er opdateret til standardversionen af Chrome</translation>
 <translation id="6496641546298525838">Din enhed</translation>
@@ -9377,7 +9374,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7427348830195639090">Baggrundsside: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">Denne profil administreres</translation>
 <translation id="7427798576651127129">Ring fra <ph name="DEVICE_NAME" /></translation>
-<translation id="7429004613638800673"><ph name="APP_NAME" /> har åbnet flere faner.</translation>
 <translation id="7429415133937917139">Simulerer outputtet fra en brailleskærm, der kan opdateres,
     i ChromeVox-panelet øverst på skærmen</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> kan være skadelig. Tilføj en adgangskode, hvis du vil have Chrome til at verificere filen. Du kan også downloade den direkte.</translation>

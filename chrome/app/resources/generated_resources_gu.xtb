@@ -1589,6 +1589,7 @@
 <translation id="2062354623176996748">છૂપી વિન્ડો વડે, તમારો બ્રાઉઝિંગ ઇતિહાસ સાચવ્યા વિના વેબનો ઉપયોગ કરો</translation>
 <translation id="206308717637808771">તમે બધી વિન્ડો બંધ કરો ત્યારે ડેટા ડિલીટ કરો. ડેટા પર તમે જોઈ રહ્યા હો તે સાઇટને સમાન જ પ્રક્રિયા કરવામાં આવે છે</translation>
 <translation id="2066700471214517561">બીમફૉર્મિંગ માઇક, જેથી Chromebookનો ઉપયોગ કરનારી વ્યક્તિને સ્પષ્ટ રીતે સાંભળી શકાય.</translation>
+<translation id="2068581968816126410">તમામ ડિવાઇસ પર બુકમાર્કનો ઉપયોગ કરો</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> દ્વારા <ph name="PRINTER_NAME" /> પર પ્રિન્ટ કરવાનું સમાપ્ત કરવામાં આવ્યું</translation>
 <translation id="2071393345806050157">કોઇ સ્થાનિક લૉગ ફાઇલ નથી.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{એક્સ્ટેંશન ઇન્સ્ટૉલ કરવા માટે ક્લિક કરો}one{આ એક્સ્ટેંશન ઇન્સ્ટૉલ કરવા માટે ક્લિક કરો}other{આ એક્સ્ટેંશન ઇન્સ્ટૉલ કરવા માટે ક્લિક કરો}}</translation>
@@ -1959,6 +1960,7 @@
       <ph name="BEGIN_BOLD" />નોંધ:<ph name="END_BOLD" />  પ્રક્રિયા દરમિયાન સિસ્ટમ રીબૂટ થશે.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" એ અતિરિક્ત પરવાનગીઓની વિનંતી કરી છે.</translation>
 <translation id="2304820083631266885">ગ્રહ</translation>
+<translation id="2305202347479035002">તેની કાર્ય કરવાની રીત</translation>
 <translation id="2306794767168143227">આ ડિવાઇસ પર <ph name="BRAND" />માં સાચવો</translation>
 <translation id="2308798336967462263">નીચે જણાવેલી કી સપોર્ટ કરતી નથી: Tab, Shift, Control, Escape, Caps lock, Volume</translation>
 <translation id="2309620859903500144">આ સાઇટને તમારા મોશન અથવા લાઇટ સેન્સરને ઍક્સેસ કરવાથી બ્લૉક કરવામાં આવી છે.</translation>
@@ -1975,6 +1977,7 @@
 <translation id="2319072477089403627">તમારા Android ફોન સાથે કનેક્ટ થાય છે…</translation>
 <translation id="2319459402137712349">કીબોર્ડ ખોલવા માટે ટેક્સ્ટ ફીલ્ડ પસંદ કરો. તમે તમારી સ્ક્રીનની સૌથી નીચે કીબોર્ડ આઇકન પણ પસંદ કરી શકો છો.</translation>
 <translation id="2319993584768066746">સાઇન ઇન સ્ક્રીન ફોટા</translation>
+<translation id="2321487076181785382">ટૅબ વિભાજિત કરો</translation>
 <translation id="2322193970951063277">હેડર્સ અને ફૂટર્સ</translation>
 <translation id="2322318151094136999">જ્યારે કોઈ સાઇટ સીરિયલ પોર્ટને ઍક્સેસ કરવા માગે ત્યારે પૂછો (સુઝાવ આપેલ)</translation>
 <translation id="2322622365472107569">સમાપ્તિ સમય <ph name="TIME" /></translation>
@@ -3437,6 +3440,7 @@
 <translation id="3336855445806447827">ખાતરી નથી</translation>
 <translation id="3337568642696914359">સાઇટને પ્રોટોકૉલ હૅન્ડલ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="333863344734218290">અસુરક્ષિત સાર્વજનિક અને ખાનગી સાઇટ વિશે તમને ચેતવણી આપે છે</translation>
+<translation id="3339789735267352349">જોખમકારક તરીકે જાણ થઈ હોય એવી સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે તમારું રક્ષણ કરે છે</translation>
 <translation id="3340620525920140773">ડાઉનલોડ પૂર્ણ થયું: <ph name="FILE_NAME" />.</translation>
 <translation id="3340978935015468852">સેટિંગ</translation>
 <translation id="3341091511696469129">Chrome અહીં બતાવેલી ભાષાઓ માટે કૅપ્શન બનાવી અને તેનો અનુવાદ કરી શકે છે</translation>
@@ -3736,6 +3740,7 @@
 <translation id="354060433403403521">AC એડેપ્ટર</translation>
 <translation id="354068948465830244">તે સાઇટ ડેટા વાંચી અને તેમાં ફેરફાર કરી શકે છે</translation>
 <translation id="3541823293333232175">સોંપ્યું</translation>
+<translation id="3543296862747913985">તે શું કરે છે</translation>
 <translation id="3543298914473315872">અપડેટરની પ્રક્રિયા</translation>
 <translation id="3543393733900874979">અપડેટ નિષ્ફળ થયું (ભૂલ: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">SHA-512 સાથે X9.62 ECDSA સહી</translation>
@@ -6176,7 +6181,6 @@
 <translation id="520576054436518354">Geminiને તમારા માટે બ્રાઉઝ કરવા દો</translation>
 <translation id="5207949376430453814">ટેક્સ્ટ કૅરેટને હાઇલાઇટ કરો</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> ખાતરી કરવા માગે છે કે તમે યોગ્ય ChromeOS ડિવાઇસનો ઉપયોગ કરી રહ્યાં છો કે નહીં.</translation>
-<translation id="5208722776934437424">પરવાનગીઓમાં ફેરફાર કરો</translation>
 <translation id="5208926629108082192">ડિવાઇસના મોબાઇલ નેટવર્કની માહિતી</translation>
 <translation id="5208988882104884956">અર્ધપહોળાઈ</translation>
 <translation id="5209320130288484488">કોઈ ઉપકરણો મળ્યાં નથી</translation>
@@ -6742,7 +6746,6 @@
 <translation id="5600706100022181951">અપડેટ ડાઉનલોડ કરવામાં <ph name="UPDATE_SIZE_MB" /> MB મોબાઇલ ડેટા વપરાશે. શું તમે ચાલુ રાખવા માગો છો?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601833336918638013">બ્લૂટૂથ ડિવાઇસ શોધવા માટે સાઇટને મંજૂરી આપશો નહીં</translation>
-<translation id="560213628963806709">આ ઍપ દ્વારા <ph name="OPENINGS_COUNT" /> નવા Chrome ટૅબ ખોલવામાં આવ્યા છે. તમે "પૉપ-અપ અને રીડાયરેક્ટ"ની પરવાનગી હેઠળ આ વર્તણૂકને મેનેજ કરી શકો છો.</translation>
 <translation id="5602586420788540146">નવા ટૅબના ગ્રૂપમાં ખોલો</translation>
 <translation id="5605758115928394442">તમે જ છો તે કન્ફર્મ કરવા માટે તમારા ફોન પર નોટિફિકેશન મોકલવામાં આવ્યું હતું.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{આ એક્સ્ટેન્શનને બ્લૉક કરવામાં આવ્યું છે}one{આ એક્સ્ટેન્શનને બ્લૉક કરવામાં આવ્યું છે}other{આ એક્સ્ટેન્શનને બ્લૉક કરવામાં આવ્યા છે}}</translation>
@@ -6885,6 +6888,7 @@
 <translation id="5702161882524398150">પાછલા ટૅબ વિશે પૂછો</translation>
 <translation id="5702749864074810610">સૂચન છોડી દીધું</translation>
 <translation id="5703716265115423771">વૉલ્યૂમ ઘટાડો</translation>
+<translation id="5703998022096520811">Google Safe Browsingને વધુ માહિતી મોકલીને રિઅલ-ટાઇમ, પ્રોઍક્ટિવ સંરક્ષણ</translation>
 <translation id="5704875434923668958">આની સાથે સિંક કરી રહ્યાં છીએ</translation>
 <translation id="5705005699929844214">હમેંશાં ઍક્સેસિબિલિટીના વિકલ્પો બતાવો</translation>
 <translation id="5705882733397021510">પાછળ જાઓ</translation>
@@ -8000,7 +8004,6 @@ USB ડિવાઇસ</translation>
 <translation id="6493991254603208962">તેજસ્વીતા ઘટાડો</translation>
 <translation id="6494327278868541139">વધારાની સુરક્ષાની વિગતો બતાવો</translation>
 <translation id="6494483173119160146">ડિવાઇસમાં એવી ભૂલ આવી છે જેના કારણે રિકવરી કરવી અશક્ય છે. કૃપા કરીને તમારું ડિવાઇસ રીસેટ કરો (તેનાથી વપરાશકર્તાનો બધો ડેટા કાઢી નાખવામાં આવશે) અને ફરી પ્રયાસ કરો.</translation>
-<translation id="6495261233408033662">ખોલેલા ટૅબ બંધ કરો</translation>
 <translation id="6495266441917713704">વાઇ-ફાઇ ટ્રાન્સફર કરી શકતા નથી</translation>
 <translation id="6495453178162183932">થીમને ડિફૉલ્ટ Chrome પર અપડેટ કરી</translation>
 <translation id="6496641546298525838">તમારું ડિવાઇસ</translation>
@@ -9357,7 +9360,6 @@ USB ડિવાઇસ</translation>
 <translation id="7427348830195639090">બૅકગ્રાઉન્ડ પેજ: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">આ પ્રોફાઇલને મેનેજ કરવામાં આવે છે</translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> તરફથી કૉલ</translation>
-<translation id="7429004613638800673"><ph name="APP_NAME" /> દ્વારા એકથી વધુ ટૅબ ખોલવામાં આવ્યા છે.</translation>
 <translation id="7429415133937917139">રિફ્રેશ કરી શકાય તેવા બ્રેઇલ ડિસ્પ્લેના આઉટપુટની નકલ
     સ્ક્રીનની ટોચ પર આવેલા ChromeVox પૅનલમાં રજૂ કરે છે</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> જોખમી હોઈ શકે છે. જો તમે Chrome દ્વારા તેને ચકાસવા માગતા હો, તો પાસવર્ડ ઉમેરો અથવા તમે તેને સીધી ડાઉનલોડ કરી શકો છો.</translation>
@@ -9704,6 +9706,7 @@ USB ડિવાઇસ</translation>
 <translation id="766560638707011986">ડોમેન બતાવો</translation>
 <translation id="766635563210446220">પાસવર્ડ આયાત કરી શકાતા નથી. <ph name="FILENAME" /> ચેક કરો અને તે યોગ્ય રીતે ફૉર્મેટ કરેલું હોવાની ખાતરી કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="7666531788977935712">ચાલુ રાખો બટન ચાલુ છે</translation>
+<translation id="7666966001957552011">જોખમકારક તરીકે જાણ થઈ હોય એવી સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન વિશે તમને ચેતવણી આપે છે. તમે કોઈપણ સમયે આ ચેતવણીઓ બંધ કરી શકો છો. જો તમને કાયદેસર કન્ટેન્ટ માટે ચેતવણી દેખાય, તો તમે <ph name="BEGIN_LINK" />ભૂલની જાણ કરી શકો છો<ph name="END_LINK" />.</translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> {NUM_WEEKS} અઠવાડિયામાં પરત કરો}one{<ph name="DEVICE_TYPE" /> {NUM_WEEKS} અઠવાડિયાંમાં પરત કરો}other{<ph name="DEVICE_TYPE" /> {NUM_WEEKS} અઠવાડિયાંમાં પરત કરો}}</translation>
 <translation id="7668205084604701639">Office ફાઇલ સેટિંગ</translation>
 <translation id="7668423670802040666"><ph name="ACCOUNT" /> માટે Google પાસવર્ડ મેનેજરમાં</translation>
@@ -9728,6 +9731,7 @@ USB ડિવાઇસ</translation>
 <translation id="7676019765091965045">ચેડાં કરાયેલા પાસવર્ડની ભાળ મેળવવી</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />' માટે <ph name="NUM" /> ટૅબ મળી છે</translation>
 <translation id="7676867886086876795">કોઈપણ ટેક્સ્ટ ફીલ્ડમાં ડિક્ટેશનને મંજૂરી આપવા માટે Googleને તમારો વૉઇસ મોકલો.</translation>
+<translation id="7678198209643823714"><ph name="SHORTCUT_TITLE" /> કાઢી નાખો</translation>
 <translation id="7678588695732963732">USB ડિવાઇસની બધી પરવાનગીઓ રીસેટ કરીએ?</translation>
 <translation id="7679171213002716280">અહીં મેનેજ કરેલા <ph name="PRINTER_COUNT" /> પ્રિન્ટર ઉપલબ્ધ છે.</translation>
 <translation id="7679895819123160382">તમારા ઇન્ટરનેટ ટ્રાફિકનો ઍક્સેસ ધરાવતા લોકો માટે, તમે કઈ સાઇટની મુલાકાત લો છો તે જોવાનું વધુ મુશ્કેલ બનાવો. <ph name="PRODUCT_NAME" /> દ્વારા DNS (ડોમેન નેમ સિસ્ટમ)માં સાઇટનું IP ઍડ્રેસ જોવા માટે સુરક્ષિત કનેક્શનનો ઉપયોગ કરવામાં આવે છે. તમારા ઍડમિનિસ્ટ્રેટર દ્વારા ગોઠવવામાં આવેલા અમુક ડોમેન માટે સુરક્ષિત કનેક્શનનો ઉપયોગ કરવામાં આવતો નથી.</translation>
@@ -10221,6 +10225,7 @@ USB ડિવાઇસ</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' ખસેડ્યું.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">ઇન્સ્ટન્ટ હૉટસ્પૉટ સંબંધિત વિગતો</translation>
+<translation id="8013181884974864006">સાંદર્ભિક કાર્યો</translation>
 <translation id="8013534738634318212">આ સાઇટ <ph name="RWS_OWNER" /> દ્વારા નિર્ધારિત ગ્રૂપમાં છે. ગ્રૂપમાં શામેલ સાઇટ, ગ્રૂપમાંની તમારી ઍક્ટિવિટી જોઈ શકે છે.</translation>
 <translation id="8013993649590906847">જો છબીમાં ઉપયોગી વર્ણન ન હોય, તો Chrome તમને વર્ણન પૂરું પાડવાનો પ્રયાસ કરશે. વર્ણન બનાવવા માટે, Googleને છબીઓ મોકલવામાં આવે છે.</translation>
 <translation id="8014154204619229810">અપડેટ કરનાર હાલમાં ચાલી રહ્યું છે. ફરીથી તપાસવા માટે થોડીવારમાં રિફ્રેશ કરો.</translation>
@@ -12012,6 +12017,7 @@ USB ડિવાઇસ</translation>
 <translation id="9207434080086272167">તેજસ્વી</translation>
 <translation id="9207669213427469593">જો તમે વિભાજિત સ્ક્રીનનો ઉપયોગ કરવા માટે વિન્ડોને એક બાજુ સ્નૅપ કરો, તો તમે બીજી બાજુ માટે વિન્ડોના સૂચનો જોશો</translation>
 <translation id="9209563766569767417">Linux કન્ટેનરનું સેટઅપ ચેક કરી રહ્યાં છીએ</translation>
+<translation id="9212565256020141627">Gemini સાથે છબી શેર કરી શક્યા નથી. ફરીથી પ્રયાસ કરો અથવા કોઈ બીજી છબી અજમાવી જુઓ.</translation>
 <translation id="9214520840402538427">અરે! ઇન્સ્ટૉલેશન-સમયનો ચાલુ એટ્રિબ્યૂટનો સમય સમાપ્ત થયો. કૃપા કરીને તમારા સપોર્ટ પ્રતિનિધિનો સંપર્ક કરો.</translation>
 <translation id="9214695392875603905">કપકૅક</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" ઉમેરાયું</translation>

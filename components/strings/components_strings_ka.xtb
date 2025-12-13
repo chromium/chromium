@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">გსურთ IBAN-ის შენახვა?</translation>
 <translation id="1113869188872983271">გადალაგების &amp;მოქმედების გაუქმება</translation>
 <translation id="1118429183611783760">მტვერსასრუტები და იატაკის მოვლა</translation>
+<translation id="111897705806685148">წვდომის გასაღების გამოყენება სხვა მოწყობილობიდან</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, დააჭირეთ Tab-ს, შემდეგ — Enter-ს, რათა მართოთ, თუ რა ინფორმაციას შეინახავთ Chrome-იდან თქვენს Google ანგარიშში</translation>
 <translation id="1122714970786750095">ელექტრონიკა და ელექტროსაქონელი</translation>
 <translation id="1123753900084781868">ავტოსუბტიტრები ამჟამად მიუწვდომელია</translation>
@@ -4134,6 +4135,7 @@
 <translation id="7648527891719919697">ეს საიტი დაბლოკილი დარჩება, რადგან თქვენ დამატებითი დაცვა ჩართეთ <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android პარამეტრებიდან<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />შეიტყვეთ მეტი ამ გაფრთხილების შესახებ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">ამ მოწყობილობაში ფაილების შენახვა</translation>
 <translation id="7649070708921625228">დახმარება</translation>
+<translation id="7650141368285545431">წვდომის გასაღების გამოყენება სხვა მოწყობილობიდან</translation>
 <translation id="7653957176542370971">გადახდების დამმუშავებლის გვერდი დახურულია</translation>
 <translation id="7655766454902053387">ვაკანსიების განცხადებები</translation>
 <translation id="765676359832457558">დამალეთ გაფართოებული პარამეტრები…</translation>

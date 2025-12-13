@@ -156,6 +156,7 @@
 <translation id="1545749641540134597">QR-koodi skannimine</translation>
 <translation id="1545757265410828525">Hinna ajalugu</translation>
 <translation id="1547610699249301703">Paroolide jagamine</translation>
+<translation id="1554043146674176775">Lülita AI-režiim välja</translation>
 <translation id="1554477036522844996">Uus aken</translation>
 <translation id="1558391695376153246">Sule inkognito vahelehed</translation>
 <translation id="1565371473877914088">Uus inkognito vaheleht</translation>
@@ -457,6 +458,7 @@
 <translation id="2688535388040882469">Bännerid</translation>
 <translation id="2690858294534178585">Kaamera on kasutusel</translation>
 <translation id="2691653761409724435">Pole võrguühenduseta saadaval</translation>
+<translation id="2697530870203420261">Sobimatu hüüdnimi</translation>
 <translation id="269819437389494246">Saate vaadata külastatud lehti või need ajaloost kustutada</translation>
 <translation id="2704606927547763573">Kopeeritud</translation>
 <translation id="2708051474374549906">Reaalajas ja ennetav kaitse ohtlike saitide, allalaadimiste ja laienduste eest, mis põhineb teie sirvimisandmetel, mis saadetakse Google'ile</translation>
@@ -1561,6 +1563,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6830728435402077660">Pole turvaline</translation>
 <translation id="6831043979455480757">Tõlgi</translation>
 <translation id="6842136130964845393">Selleks, et saaksite alati oma salvesatud paroolidele juurde pääseda, kinnitage oma isik</translation>
+<translation id="6844773122575789617">Lülita AI-režiim sisse</translation>
 <translation id="6851516051005285358">Taotle arvutisaiti</translation>
 <translation id="6857446173140146664">Tausta kustutamine</translation>
 <translation id="6858718102216837409">Lisa keel …</translation>

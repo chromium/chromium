@@ -6183,7 +6183,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="520576054436518354">Nechajte Gemini prehliadať za vás</translation>
 <translation id="5207949376430453814">Zvýrazniť textový kurzor</translation>
 <translation id="520840839826327499">Služba <ph name="SERVICE_NAME" /> chce overiť, či používate vhodné zariadenie so systémom Chrome OS.</translation>
-<translation id="5208722776934437424">Zmeniť povolenia</translation>
 <translation id="5208926629108082192">Informácie o mobilnej sieti zariadenia</translation>
 <translation id="5208988882104884956">Polovičná šírka</translation>
 <translation id="5209320130288484488">Nenašli sa žiadne zariadenia</translation>
@@ -6748,7 +6747,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5600706100022181951">Aktualizácia bude stiahnutá použitím <ph name="UPDATE_SIZE_MB" /> MB mobilných dát. Chcete pokračovať?</translation>
 <translation id="5601503069213153581">Kód PIN</translation>
 <translation id="5601833336918638013">Nepovoliť webom vyhľadávať zariadenia s rozhraním Bluetooth</translation>
-<translation id="560213628963806709">Táto aplikácia otvorila nové karty Chromu (<ph name="OPENINGS_COUNT" />). Toto správanie môžete nastavovať v povolení Vyskakovacie okná a presmerovania.</translation>
 <translation id="5602586420788540146">Otvoriť v novej skupine kariet</translation>
 <translation id="5605758115928394442">Do vášho telefónu bolo odoslané upozornenie, ktorým overíte, že ste to vy.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Toto rozšírenie je blokované}few{Tieto rozšírenia sú blokované}many{Tieto rozšírenia sú blokované}other{Tieto rozšírenia sú blokované}}</translation>
@@ -8005,7 +8003,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6493991254603208962">Zníženie jasu</translation>
 <translation id="6494327278868541139">Zobraziť podrobnosti o rozšírenej ochrane</translation>
 <translation id="6494483173119160146">V zariadení sa vyskytla neopraviteľná chyba. Resetujte zariadenie (vymažú sa všetky údaje používateľa) a skúste to znova.</translation>
-<translation id="6495261233408033662">Zavrieť otvorené karty</translation>
 <translation id="6495266441917713704">Wi‐Fi sa nedá preniesť</translation>
 <translation id="6495453178162183932">Motív bol aktualizovaný na predvolený v Chrome</translation>
 <translation id="6496641546298525838">Vaše zariadenie</translation>
@@ -9364,7 +9361,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7427348830195639090">Stránka na pozadí: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">Tento profil je spravovaný</translation>
 <translation id="7427798576651127129">Volať zo zariadenia <ph name="DEVICE_NAME" /></translation>
-<translation id="7429004613638800673">Aplikácia <ph name="APP_NAME" /> otvorila viacero kariet.</translation>
 <translation id="7429415133937917139">Simuluje výstup obnoviteľného Braillovho displeja na paneli ChromeVox v hornej časti obrazovky</translation>
 <translation id="7429568074268678162">Súbor <ph name="FILENAME" /> môže byť nebezpečný. Ak chcete, aby ho Chrome overil, pridajte heslo, prípadne ho môžete priamo stiahnuť.</translation>
 <translation id="7431719494109538750">Neboli nájdené žiadne zariadenia HID</translation>

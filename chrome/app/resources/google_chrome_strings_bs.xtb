@@ -122,6 +122,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2216543877350048334">Odjavite se da uklonite Google račun iz Chromea</translation>
 <translation id="2236949375853147973">Moja aktivnost</translation>
 <translation id="22791603784558743">Zatvorite Gemini u Chrome Devu</translation>
+<translation id="2284380654876659752">Kada posjetite web lokaciju, Chrome šalje prikriveni dio URL-a <ph name="BEGIN_LINK" />Sigurnom pregledanju na Googleu<ph name="END_LINK" /> putem servera za privatnost koji sakriva vašu IP adresu. Ako web lokacija uradi nešto sumnjivo, također se šalju potpuni URL-ovi i dijelovi sadržaja stranice.</translation>
 <translation id="2290014774651636340">Nedostaju ključevi za Google API. Neke funkcionalnosti Google Chromea će biti onemogućene.</translation>
 <translation id="2290095356545025170">Jeste li sigurni da želite deinstalirati Google Chrome?</translation>
 <translation id="2301513536169703857">Da dobijate lozinke, oznake i druge stavke na svim svojim uređajima, prijavite se u Chrome</translation>

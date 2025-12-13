@@ -217,6 +217,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3313189106987092621">Před načtením jakéhokoli webu pomocí nezabezpečeného připojení vás Chromium upozorní</translation>
 <translation id="3316771292331273802">Po zavření všech oken prohlížeče Chromium budete odhlášeni z většiny webů (s výjimkou účtu Google, pokud jste do prohlížeče Chromium přihlášeni). Pokud webům chcete umožnit pamatovat si vás, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">Mimo Chromium byl změněn váš výchozí vyhledávač. Prohlížeč Chromium ho kvůli vaší ochraně resetoval.</translation>
+<translation id="3331557257666250900">Pokud chcete mít svá hesla a další obsah na všech zařízeních, přihlaste se do Chromia</translation>
 <translation id="3352986031709923790">pravý horní roh oblasti hledání: vpravo <ph name="RIGHT" /> %, nahoře <ph name="TOP" /> %</translation>
 <translation id="3366305173356742781">Data prohlížeče Chromium ve vašem účtu</translation>
 <translation id="3369405342922656244">Vyhledat tuto stránku pomocí Vyhledávání obrázků</translation>
@@ -268,6 +269,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3971865010372729242">Když píšete do adresního řádku nebo vyhledávacího pole, Chromium za účelem poskytování návrhů zadaný text odesílá do vyhledávacích, AI a agentních nástrojů vaší organizace.</translation>
 <translation id="3975724895399328945">O &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">O systému ChromiumOS</translation>
+<translation id="4010059961270896984">Když navštívíte nějaký web, odešle Chromium obfuskovanou část adresy URL <ph name="BEGIN_LINK" />Bezpečnému prohlížení Google<ph name="END_LINK" />. K odeslání použije server pro ochranu soukromí, který skryje vaši IP adresu. Pokud web provede něco podezřelého, odešlou se také úplné adresy URL a části obsahu stránky.</translation>
 <translation id="4019629340646866719">Systém ChromiumOS by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />open source softwaru<ph name="END_LINK_CROS_OSS" />, jako je <ph name="BEGIN_LINK_LINUX_OSS" />vývojové prostředí Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Přeložit obrazovku</translation>
 <translation id="4023601594785368013">Původní jazyk: <ph name="LANGUAGE" /></translation>
@@ -587,6 +589,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="77283119132245232">Poskytuje služby trasování systému pro <ph name="BROWSER_NAME" />. Pokud je tato služba zakázána, trasování výkonu vytvořené prohlížečem nebude zahrnovat celosystémové události, jako jsou přepnutí kontextu a přípravy vláken.</translation>
 <translation id="7745317241717453663">Ze zařízení budou smazány vaše údaje o prohlížení. Budete-li chtít své údaje později načíst, přihlaste se do prohlížeče Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Instalační soubor nemohl vytvořit dočasný adresář. Zkontrolujte prosím volné místo na disku a povolení instalovat software.</translation>
+<translation id="7750130090210923118">Obnovit výchozí motiv Chromia</translation>
 <translation id="7786760609782648049">Zrychlete svůj prohlížeč Chromium</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Zajistěte, aby pro lidi s přístupem k vašemu internetovému provozu bylo obtížnější zjistit, které weby navštěvujete. K vyhledání IP adresy webu v systému názvů domén (DNS) používá Chromium zabezpečené připojení.</translation>
@@ -687,6 +690,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8907580949721785412">Aplikace Chromium se pokouší zobrazit hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="8941642502866065432">Chromium nelze aktualizovat</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
+<translation id="8981150672034878610">Chromium nelze spustit, protože při otevírání vašeho profilu došlo k chybě. Zkuste Chromium restartovat.</translation>
 <translation id="8988036198400390003">Spravovat profily Chromium</translation>
 <translation id="9019929317751753759">Aby byl prohlížeč Chromium bezpečnější, deaktivovali jsme následující rozšíření, které není uvedeno na webu <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> a pravděpodobně bylo přidáno bez vašeho vědomí.</translation>
 <translation id="904366664621834601">Prohlížeč Chromium toto stahování zablokoval, protože tento soubor archivu obsahuje další soubory, které mohou skrývat malware</translation>

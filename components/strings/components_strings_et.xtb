@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Kas salvestada IBAN?</translation>
 <translation id="1113869188872983271">&amp;Võta korrastamine tagasi</translation>
 <translation id="1118429183611783760">Tolmuimejad ja põrandahooldus</translation>
+<translation id="111897705806685148">Kasuta teisest seadmest pärit pääsuvõtit</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage tabulaatorit ja seejärel sisestusklahvi, et hallata, millist Chrome’i teavet oma Google’i kontole salvestate</translation>
 <translation id="1122714970786750095">Elektroonika- ja elektrikaubad</translation>
 <translation id="1123753900084781868">Reaalajas subtiitrid ei ole praegu saadaval</translation>
@@ -4135,6 +4136,7 @@ Lisateave:
 <translation id="7648527891719919697">See sait jääb blokeerituks, kuna olete <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Androidi seadetes<ph name="END_ANDROID_SETTINGS_LINK" /> sisse lülitanud täiustatud kaitse. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave selle hoiatuse kohta<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Salvestada failid sellesse seadmesse</translation>
 <translation id="7649070708921625228">Abi</translation>
+<translation id="7650141368285545431">Kasutage teisest seadmest pärit pääsuvõtit</translation>
 <translation id="7653957176542370971">Maksetöötleja leht on suletud</translation>
 <translation id="7655766454902053387">Töökuulutused</translation>
 <translation id="765676359832457558">Peida täpsemad seaded ...</translation>

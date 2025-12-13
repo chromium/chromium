@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Vil du gemme IBAN?</translation>
 <translation id="1113869188872983271">&amp;Fortryd omarrangering</translation>
 <translation id="1118429183611783760">Støvsugere og apparater til gulvrengøring og -pleje</translation>
+<translation id="111897705806685148">Brug en adgangsnøgle fra en anden enhed</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten efterfulgt af Enter for at administrere, hvilke Chrome-oplysninger du gemmer på din Google-konto</translation>
 <translation id="1122714970786750095">El og elektronik</translation>
 <translation id="1123753900084781868">Livetekstning er ikke tilgængelig lige nu</translation>
@@ -4135,6 +4136,7 @@ Yderligere oplysninger:
 <translation id="7648527891719919697">Dette website forbliver blokeret, fordi Avanceret beskyttelse er aktiveret i <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android-indstillingerne<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger om denne advarsel<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Gemme filer på denne enhed</translation>
 <translation id="7649070708921625228">Hjælp</translation>
+<translation id="7650141368285545431">Brug en adgangsnøgle fra en anden enhed</translation>
 <translation id="7653957176542370971">Regnearket for betalingshandler er lukket</translation>
 <translation id="7655766454902053387">Jobformidling</translation>
 <translation id="765676359832457558">Skjul avancerede indstillinger...</translation>

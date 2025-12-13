@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Foto <ph name="INDEX" /> av <ph name="TOTAL_COUNT" /> nya foton.</translation>
 <translation id="2201687081523799384">Komprimera Google Tasks</translation>
 <translation id="2208323208084708176">Enhetligt skrivbordsläge</translation>
+<translation id="2210311543574621570">Urklipp visas när du trycker länge på Ctrl + V. Du kan inaktivera kortkommandot genom att inaktivera flaggan #clipboard-history-longpress i chrome://flags.</translation>
 <translation id="2215920961700443347">Inget internet. Anslut till internet och försök igen.</translation>
 <translation id="2222841058024245321">Skrivbord 7</translation>
 <translation id="2223384056430485343">På delad skärm</translation>

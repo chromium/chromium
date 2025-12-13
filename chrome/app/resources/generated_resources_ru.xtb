@@ -2214,6 +2214,7 @@
 <translation id="2476901513051581836">Невозможно очистить хранилище, пока не будет известен его размер</translation>
 <translation id="2476974672882258506">Чтобы удалить <ph name="PARALLELS_DESKTOP" />, завершите работу Windows.</translation>
 <translation id="2477065602824695373">Автосканирование отключено, поскольку настроено несколько переключателей.</translation>
+<translation id="2477218554275525952">Боковая панель Gemini будет оставаться открытой при открытии новой вкладки</translation>
 <translation id="2477607419416067650">Другие данные в аккаунте Google</translation>
 <translation id="2478176599153288112"><ph name="EXTENSION" />: доступ к медиафайлам</translation>
 <translation id="24786041351753425">Включение сервиса восстановления данных</translation>
@@ -6183,7 +6184,6 @@
 <translation id="520576054436518354">Разрешите Gemini искать информацию в интернете</translation>
 <translation id="5207949376430453814">Выделять курсор при вводе текста</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> запрашивает информацию об устройстве Chrome OS.</translation>
-<translation id="5208722776934437424">Изменить разрешения</translation>
 <translation id="5208926629108082192">Информация о мобильной сети устройства</translation>
 <translation id="5208988882104884956">Половинная ширина</translation>
 <translation id="5209320130288484488">Устройства не найдены</translation>
@@ -6749,7 +6749,6 @@
 <translation id="5600706100022181951">Чтобы скачать обновление, потребуется <ph name="UPDATE_SIZE_MB" /> МБ мобильного трафика. Продолжить?</translation>
 <translation id="5601503069213153581">PIN-код</translation>
 <translation id="5601833336918638013">Запретить сайтам поиск устройств Bluetooth</translation>
-<translation id="560213628963806709">Приложение открыло несколько (<ph name="OPENINGS_COUNT" />) вкладок Chrome. Запретить или разрешить приложениям это делать можно в разделе "Всплывающие окна и переадресация".</translation>
 <translation id="5602586420788540146">Открыть в новой группе вкладок</translation>
 <translation id="5605758115928394442">На ваш телефон отправлено уведомление для подтверждения личности.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Это расширение заблокировано}one{Эти расширения заблокированы}few{Эти расширения заблокированы}many{Эти расширения заблокированы}other{Эти расширения заблокированы}}</translation>
@@ -8006,7 +8005,6 @@
 <translation id="6493991254603208962">Уменьшить яркость</translation>
 <translation id="6494327278868541139">Открыть описание улучшенной защиты</translation>
 <translation id="6494483173119160146">Произошла неустранимая ошибка. Сбросьте настройки устройства (все пользовательские данные при этом будут удалены) и повторите попытку.</translation>
-<translation id="6495261233408033662">Закрыть вкладки</translation>
 <translation id="6495266441917713704">Не удалось перенести данные Wi-Fi</translation>
 <translation id="6495453178162183932">Установлена тема Chrome по умолчанию</translation>
 <translation id="6496641546298525838">Ваше устройство</translation>
@@ -9367,7 +9365,6 @@
 <translation id="7427348830195639090">Фоновая страница: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">Это управляемый профиль</translation>
 <translation id="7427798576651127129">Позвонить с устройства "<ph name="DEVICE_NAME" />"</translation>
-<translation id="7429004613638800673">Приложение "<ph name="APP_NAME" />" открыло несколько вкладок</translation>
 <translation id="7429415133937917139">Имитация вывода дисплея Брайля на панели ChromeVox в верхней части экрана</translation>
 <translation id="7429568074268678162">Файл "<ph name="FILENAME" />" может представлять опасность. Если вы хотите, чтобы Chrome проверил его, добавьте пароль. Вы также можете скачать этот файл напрямую.</translation>
 <translation id="7431719494109538750">HID-устройства не найдены.</translation>

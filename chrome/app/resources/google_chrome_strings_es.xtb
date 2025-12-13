@@ -122,6 +122,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2216543877350048334">Para eliminar de Chrome tu cuenta de Google, cierra sesión</translation>
 <translation id="2236949375853147973">Mi Actividad</translation>
 <translation id="22791603784558743">Cerrar Gemini en Chrome Dev</translation>
+<translation id="2284380654876659752">Cuando visitas un sitio, Chrome envía una parte ofuscada de la URL a <ph name="BEGIN_LINK" />Navegación segura de Google<ph name="END_LINK" /> a través de un servidor de privacidad que oculta tu dirección IP. Si un sitio hace algo sospechoso, también se envían URLs completas y fragmentos de contenido de la página.</translation>
 <translation id="2290014774651636340">Faltan las claves de la API de Google. Se inhabilitarán algunas funciones de Google Chrome.</translation>
 <translation id="2290095356545025170">¿Seguro que quieres desinstalar Google Chrome?</translation>
 <translation id="2301513536169703857">Inicia sesión en Chrome para acceder a tus contraseñas, marcadores y otros en todos tus dispositivos</translation>

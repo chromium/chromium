@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Αποθήκευση IBAN;</translation>
 <translation id="1113869188872983271">&amp;Αναίρεση αναδιάταξης</translation>
 <translation id="1118429183611783760">Ηλεκτρικές σκούπες και φροντίδα δαπέδων</translation>
+<translation id="111897705806685148">Χρήση κλειδιού πρόσβασης από άλλη συσκευή</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και μετά Enter, για να διαχειριστείτε τις πληροφορίες του Chrome που αποθηκεύετε στον Λογαριασμό σας Google</translation>
 <translation id="1122714970786750095">Ηλεκτρονικά &amp; ηλεκτρικά</translation>
 <translation id="1123753900084781868">Οι Ζωντανοί υπότιτλοι δεν είναι διαθέσιμοι αυτήν τη στιγμή.</translation>
@@ -4138,6 +4139,7 @@
 <translation id="7648527891719919697">Αυτός ο ιστότοπος θα παραμείνει αποκλεισμένος, επειδή έχετε ενεργοποιήσει την Ενισχυμένη προστασία στις <ph name="BEGIN_ANDROID_SETTINGS_LINK" />ρυθμίσεις Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Μάθετε περισσότερα σχετικά με αυτή την ειδοποίηση<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Αποθήκευση αρχείων σε αυτήν τη συσκευή</translation>
 <translation id="7649070708921625228">Βοήθεια</translation>
+<translation id="7650141368285545431">Χρήση κλειδιού πρόσβασης από άλλη συσκευή</translation>
 <translation id="7653957176542370971">Το φύλλο του δείκτη χειρισμού πληρωμής είναι κλειστό.</translation>
 <translation id="7655766454902053387">Καταχωρίσεις θέσεων εργασίας</translation>
 <translation id="765676359832457558">Απόκρυψη σύνθετων ρυθμίσεων…</translation>

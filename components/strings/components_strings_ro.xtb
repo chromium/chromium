@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Salvezi codul IBAN?</translation>
 <translation id="1113869188872983271">&amp;Anulați reordonarea</translation>
 <translation id="1118429183611783760">Aspiratoare și produse de îngrijire a podelelor</translation>
+<translation id="111897705806685148">Folosește o cheie de acces de pe alt dispozitiv</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona informațiile din Chrome pe care le salvezi în Contul Google</translation>
 <translation id="1122714970786750095">Electronice și electrice</translation>
 <translation id="1123753900084781868">Funcția Subtitrări live nu este disponibilă în acest moment</translation>
@@ -4135,6 +4136,7 @@ Detalii suplimentare:
 <translation id="7648527891719919697">Site-ul va rămâne blocat deoarece ai activat Protecția avansată în <ph name="BEGIN_ANDROID_SETTINGS_LINK" />setările Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe despre acest mesaj de avertisment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Stocheze fișiere pe acest dispozitiv</translation>
 <translation id="7649070708921625228">Ajutor</translation>
+<translation id="7650141368285545431">Folosește o cheie de acces de pe alt dispozitiv</translation>
 <translation id="7653957176542370971">Foaia handlerului pentru plăți este închisă</translation>
 <translation id="7655766454902053387">Anunțuri de joburi</translation>
 <translation id="765676359832457558">Ascundeți setările avansate...</translation>

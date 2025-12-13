@@ -218,6 +218,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="3313189106987092621">Bydd Chromium yn eich rhybuddio cyn llwytho unrhyw wefan gan ddefnyddio cysylltiad anniogel</translation>
 <translation id="3316771292331273802">Byddwch yn cael eich allgofnodi o'r rhan fwyaf o wefannau pan fyddwch yn cau holl ffenestri Chromium, ac eithrio eich Cyfrif Google os ydych wedi mewngofnodi i Chromium. I adael i wefannau eich cofio, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">Newidiwyd eich peiriant chwilio diofyn o'r tu allan i Chromium. Er mwyn eich amddiffyn, gwnaeth Chromium ei ailosod.</translation>
+<translation id="3331557257666250900">Mewngofnodwch i Chromium i gael eich cyfrineiriau, nodau tudalen a rhagor ar eich holl ddyfeisiau</translation>
 <translation id="3352986031709923790">cornel dde uchaf yr ardal chwilio: <ph name="RIGHT" />% i'r dde, <ph name="TOP" />% ar y brig</translation>
 <translation id="3366305173356742781">Data Chromium yn eich cyfrif</translation>
 <translation id="3369405342922656244">Chwilio'r dudalen hon gyda Chwilio Lluniau</translation>
@@ -269,6 +270,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="3971865010372729242">Pan fyddwch chi'n teipio yn y bar cyfeiriad neu'r blwch chwilio, mae Chromium yn anfon yr hyn rydych chi'n ei deipio i offer chwilio, AI ac asiant eich sefydliad i gael awgrymiadau.</translation>
 <translation id="3975724895399328945">Ynglŷn â &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Ynghylch ChromiumOS</translation>
+<translation id="4010059961270896984">Pan fyddwch yn ymweld â gwefan, mae Chromium yn anfon rhan o'r URL sydd wedi'i dywyllu at <ph name="BEGIN_LINK" />Bori'n Ddiogel gyda Google<ph name="END_LINK" /> trwy weinydd preifatrwydd sy'n cuddio'ch cyfeiriad IP. Os yw gwefan yn gwneud rhywbeth amheus, bydd URL llawn a darnau o gynnwys tudalen hefyd yn cael eu hanfon.</translation>
 <translation id="4019629340646866719">Mae ChromiumOS yn bosib oherwydd <ph name="BEGIN_LINK_CROS_OSS" />meddalwedd ffynhonnell agored<ph name="END_LINK_CROS_OSS" /> ychwanegol, fel y mae <ph name="BEGIN_LINK_LINUX_OSS" />amgylchedd datblygu Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Cyfieithu'r sgrîn</translation>
 <translation id="4023601594785368013">Iaith wreiddiol: <ph name="LANGUAGE" /></translation>
@@ -588,6 +590,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="77283119132245232">Yn darparu gwasanaethau olrhain system ar gyfer <ph name="BROWSER_NAME" />. Os yw'r gwasanaeth hwn wedi'i analluogi, ni fydd olion perfformiad a grëir gan y porwr yn cynnwys digwyddiadau system gyfan megis switsh cyd-destun a digwyddiadau trywydd parod.</translation>
 <translation id="7745317241717453663">Bydd hyn yn dileu eich data pori o'r ddyfais hon. I adfer eich data yn nes ymlaen, mewngofnodwch i Chromium fel <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Ni allai'r gosodwr greu cyfeiriadur dros dro. Gwnewch yn siŵr bod gennych ddigon o le storio ar gael a bod gennych y caniatâd i osod meddalwedd.</translation>
+<translation id="7750130090210923118">Ailosod i Chromium Diofyn</translation>
 <translation id="7786760609782648049">Gwneud Chromium yn gyflymach</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Gwnewch hi'n anoddach i bobl sydd â mynediad at eich traffig rhyngrwyd weld pa wefannau rydych yn ymweld â nhw. Mae Chromium yn defnyddio cysylltiad diogel i chwilio am gyfeiriad IP safle yn y DNS (System Enw Parth).</translation>
@@ -688,6 +691,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8907580949721785412">Mae Chromium yn ceisio dangos cyfrineiriau. Rhowch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="8941642502866065432">Methu â diweddaru Chromium</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
+<translation id="8981150672034878610">Methu â dechrau Chromium oherwydd aeth rhywbeth o'i le wrth agor eich proffil. Rhowch gynnig ar ailgychwyn Chromium.</translation>
 <translation id="8988036198400390003">Rheoli proffiliau Chromium</translation>
 <translation id="9019929317751753759">I wneud Chromium yn fwy diogel, gwnaethom analluogi'r estyniad canlynol nad yw wedi'i restru yn y <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ac a allai fod wedi'i ychwanegu heb i chi wybod.</translation>
 <translation id="904366664621834601">Gwnaeth Chromium rwystro'r lawrlwythiad hwn oherwydd bod y ffeil archif yn cynnwys ffeiliau eraill a allai guddio drwgwedd</translation>

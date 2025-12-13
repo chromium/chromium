@@ -216,6 +216,7 @@
 <translation id="3313189106987092621">‏سيحذرك Chromium قبل تحميل أي موقع إلكتروني يستخدم اتصالاً غير آمن.</translation>
 <translation id="3316771292331273802">‏سيتم تسجيل خروجك من معظم المواقع الإلكترونية عند إغلاق جميع نوافذ Chromium، باستثناء حسابك على Google إذا كنت مسجلاً الدخول إلى Chromium. للسماح للمواقع الإلكترونية بتذكُّر بياناتك، <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">‏تم تغيير محرك البحث التلقائي من مصدر خارج Chromium. ولحمايتك، أعاد Chromium ضبطه.</translation>
+<translation id="3331557257666250900">‏يُرجى تسجيل الدخول إلى Chromium للوصول إلى كلمات المرور والإشارات المرجعية وغيرها على جميع أجهزتك</translation>
 <translation id="3352986031709923790">أعلى يسار مساحة البحث: %<ph name="RIGHT" /> من الجهة اليسرى و%<ph name="TOP" /> من الأعلى</translation>
 <translation id="3366305173356742781">‏بيانات Chromium في حسابك</translation>
 <translation id="3369405342922656244">البحث في محتوى هذه الصفحة باستخدام ميزة "البحث بالصور"</translation>
@@ -267,6 +268,7 @@
 <translation id="3971865010372729242">‏عند الكتابة في شريط العناوين أو مربّع البحث، يرسل Chromium ما تمّت كتابته إلى أدوات البحث والذكاء الاصطناعي والوكلاء في مؤسستك للحصول على اقتراحات.</translation>
 <translation id="3975724895399328945">‏لمحة عن الإصدار Google Chrome for Testing</translation>
 <translation id="3997429360543082038">‏لمحة عن نظام التشغيل Chromium</translation>
+<translation id="4010059961270896984">‏عند الانتقال إلى موقع إلكتروني، يرسل متصفِّح Chromium جزءًا مشفّرًا من عنوان URL إلى <ph name="BEGIN_LINK" />ميزة "التصفّح الآمن من Google"<ph name="END_LINK" /> من خلال خادم لحماية الخصوصية يُخفي عنوان IP الخاص بجهازك. وفي حال رصد سلوك مريب على موقع إلكتروني، يتم أيضًا إرسال عناوين URL الكاملة وأجزاء من محتوى الصفحة.</translation>
 <translation id="4019629340646866719">‏أصبح نظام التشغيل Chromium متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />، كما هو الحال في <ph name="BEGIN_LINK_LINUX_OSS" />بيئة تطوير Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">ترجمة محتوى الشاشة</translation>
 <translation id="4023601594785368013">اللغة الأصلية: <ph name="LANGUAGE" /></translation>
@@ -586,6 +588,7 @@
 <translation id="77283119132245232">تقدِّم هذه الخدمة خدمات تتبُّع النظام لـ <ph name="BROWSER_NAME" />. وفي حال إيقاف هذه الخدمة، لن تتضمّن بيانات تتبُّع الأداء التي ينشئها المتصفّح الأحداث على مستوى النظام، مثل أحداث تبديل السياق وأحداث سلسلة التعليمات الجاهزة.</translation>
 <translation id="7745317241717453663">‏سيؤدي هذا إلى حذف بيانات التصفح من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chromium كـ <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">تعذر على أداة المثبِّت إنشاء دليل مؤقت. يُرجى التحقق من وجود مساحة خالية على القرص وتوفر الإذن اللازم لتثبيت البرنامج.</translation>
+<translation id="7750130090210923118">‏إعادة ضبط Chromium على المظهر التلقائي</translation>
 <translation id="7786760609782648049">‏زيادة سرعة متصفِّح Chromium</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">‏يمكنك جعل الاطّلاع على المواقع الإلكترونية التي تزورها أكثر صعوبة على الجهات التي يمكنها الوصول إلى حركة مرور بياناتك على الإنترنت. يستخدم Chromium اتصالاً آمنًا للبحث عن عنوان IP الخاص بأي موقع إلكتروني في نظام أسماء النطاقات (DNS).</translation>
@@ -686,6 +689,7 @@
 <translation id="8907580949721785412">‏يحاول Chromium عرض كلمات المرور. اكتب كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="8941642502866065432">‏تعذّرت إعادة التحميل Chromium</translation>
 <translation id="897581876605952338">‏شعار Chromium Enterprise</translation>
+<translation id="8981150672034878610">‏يتعذّر بدء تشغيل Chromium بسبب حدوث خطأ أثناء فتح ملفك الشخصي. يُرجى تجربة إعادة تشغيله.</translation>
 <translation id="8988036198400390003">‏إدارة الملفات الشخصية على Chromium</translation>
 <translation id="9019929317751753759">‏لجعل Chromium أكثر أمنًا، أوقفنا الإضافة التالية التي لم تُدرج في <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> وربما تكون قد أضيفت بدون علمك.</translation>
 <translation id="904366664621834601">‏حَظَر Chromium عملية التنزيل هذه لأنّ ملف الأرشيف يتضمّن ملفات أخرى قد تخفي برامج ضارة</translation>

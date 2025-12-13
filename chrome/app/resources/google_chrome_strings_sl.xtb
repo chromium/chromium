@@ -122,6 +122,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2216543877350048334">Če želite račun Google odstraniti iz Chroma, se odjavite</translation>
 <translation id="2236949375853147973">Moja dejavnost</translation>
 <translation id="22791603784558743">Zapiranje Geminija v Chromu Dev</translation>
+<translation id="2284380654876659752">Ko obišete spletno mesto, Chrome prek strežnika za zasebnost, ki skrije vaš naslov IP, <ph name="BEGIN_LINK" />Google Varnemu brskanju<ph name="END_LINK" /> pošlje zakriti del URL-jev. Če spletno mesto naredi kaj sumljivega, se pošljejo tudi celotni URL-ji in delčki vsebine strani.</translation>
 <translation id="2290014774651636340">Manjkajo ključi za Google API. Nekatere funkcije Google Chroma bodo onemogočene.</translation>
 <translation id="2290095356545025170">Ali ste prepričani, da želite odstraniti Google Chrome?</translation>
 <translation id="2301513536169703857">Če želite dostopati do gesel, zaznamkov in drugega v vseh napravah, se prijavite v Chrome</translation>

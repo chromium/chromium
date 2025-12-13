@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">အိုင်ဘီအေအန် (IBAN) သိမ်းမလား။</translation>
 <translation id="1113869188872983271">&amp;ပြန်စီစဉ်ကို ပြန်လုပ်ရန်</translation>
 <translation id="1118429183611783760">ဖုန်စုပ်စက်နှင့် ကြမ်းခင်းသန့်ရှင်းရေး</translation>
+<translation id="111897705806685148">အခြားစက်မှ လျှို့ဝှက်ကီးသုံးရန်</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ သင်၏ Google Account တွင် သိမ်းသော Chrome အချက်အလက်ကို စီမံရန်အတွက် ‘တဘ်’ ကို နှိပ်ပြီးနောက် Enter ခလုတ်နှိပ်ပါ</translation>
 <translation id="1122714970786750095">အီလက်ထရွန်းနစ်နှင့် လျှပ်စစ်</translation>
 <translation id="1123753900084781868">'တိုက်ရိုက်စာတန်း' ကို ယခုမရနိုင်ပါ</translation>
@@ -4135,6 +4136,7 @@
 <translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android ဆက်တင်များ<ph name="END_ANDROID_SETTINGS_LINK" /> တွင် ‘အဆင့်မြင့်ကာကွယ်ရေး’ ကို ဖွင့်ထားသောကြောင့် ဤဝဘ်ဆိုက်ကို ဆက်ပိတ်ထားပါမည်။ <ph name="BEGIN_LEARN_MORE_LINK" />ဤသတိပေးချက်အကြောင်း ပိုလေ့လာရန်<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">ဤစက်ကိရိယာတွင် ဖိုင်များ သိမ်းပါ</translation>
 <translation id="7649070708921625228">အကူအညီ</translation>
+<translation id="7650141368285545431">အခြားစက်မှ လျှို့ဝှက်ကီးသုံးရန်</translation>
 <translation id="7653957176542370971">ငွေပေးချေမှု ကိုင်တွယ်သည့်စနစ်စာမျက်နှာကို ပိတ်ထားသည်</translation>
 <translation id="7655766454902053387">အလုပ်အကိုင် စာရင်း</translation>
 <translation id="765676359832457558">အဆင့်မြင့် ဆက်တင်များကို ဝှက်ထားရန်...</translation>

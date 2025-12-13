@@ -6191,7 +6191,6 @@
 <translation id="520576054436518354">Gemini-কে আপনার হয়ে ব্রাউজ করতে দিন</translation>
 <translation id="5207949376430453814">পাঠ্যের কার্সার হাইলাইট করুন</translation>
 <translation id="520840839826327499">আপনি একটি উপযুক্ত ChromeOS ডিভাইস ব্যবহার করছেন কিনা তা <ph name="SERVICE_NAME" /> দেখতে চায়।</translation>
-<translation id="5208722776934437424">অনুমতি পরিবর্তন করুন</translation>
 <translation id="5208926629108082192">ডিভাইস মোবাইল নেটওয়ার্ক তথ্য</translation>
 <translation id="5208988882104884956">অর্ধচওড়া</translation>
 <translation id="5209320130288484488">কোনো ডিভাইস খুঁজে পাওয়া যায়নি</translation>
@@ -6757,7 +6756,6 @@
 <translation id="5600706100022181951">আপডেটটি ডাউনলোড করতে <ph name="UPDATE_SIZE_MB" /> এমবি মোবাইল ডেটা খরচ হবে। ডাউনলোড করতে চান?</translation>
 <translation id="5601503069213153581">পিন</translation>
 <translation id="5601833336918638013">সাইটকে ব্লুটুথ ডিভাইস খোঁজার জন্য অনুমতি দেবেন না</translation>
-<translation id="560213628963806709">এই অ্যাপ <ph name="OPENINGS_COUNT" />টি নতুন Chrome ট্যাব খুলেছে। আপনি এই অ্যাকশন "পপ-আপ ও রিডাইরেক্ট" সম্পর্কিত অনুমতি থেকে ম্যানেজ করতে পারবেন।</translation>
 <translation id="5602586420788540146">নতুন ট্যাব গ্রুপে খুলুন</translation>
 <translation id="5605758115928394442">এটি যে আপনি তা কনফার্ম করতে আপনার ফোনে একটি বিজ্ঞপ্তি পাঠানো হয়েছে।</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{এই এক্সটেনশন ব্লক করা আছে}one{এই এক্সটেনশন ব্লক করা আছে}other{এই এক্সটেনশন ব্লক করা আছে}}</translation>
@@ -8014,7 +8012,6 @@
 <translation id="6493991254603208962">উজ্জ্বলতা কমান</translation>
 <translation id="6494327278868541139">উন্নত সুরক্ষা সংক্রান্ত বিবরণ দেখুন</translation>
 <translation id="6494483173119160146">ডিভাইসে ডেটা ফিরিয়ে আনা যাবে না এমন সমস্যা হয়েছে। আপনার ডিভাইস রিসেট (এটি ব্যবহারকারীর সব ডেটা মুছে দেবে) করে আবার চেষ্টা করুন।</translation>
-<translation id="6495261233408033662">খোলা থাকা ট্যাব বন্ধ করুন</translation>
 <translation id="6495266441917713704">ওয়াই-ফাই ট্রান্সফার করা যাচ্ছে না</translation>
 <translation id="6495453178162183932">ডিফল্ট Chrome-এ থিম আপডেট করা হয়েছে</translation>
 <translation id="6496641546298525838">আপনার ডিভাইস</translation>
@@ -9371,7 +9368,6 @@
 <translation id="7427348830195639090">ব্যাকগ্রাউন্ড পৃষ্ঠা:<ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">এই প্রোফাইল ম্যানেজ করা হয়</translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> থেকে কল করুন</translation>
-<translation id="7429004613638800673"><ph name="APP_NAME" /> একাধিক ট্যাব খুলেছে।</translation>
 <translation id="7429415133937917139">স্ক্রিনের উপরের অংশে, ChromeVox প্যানেলে,
          ব্রেইল ডিসপ্লের রিফ্রেশ করা যাবে এমন কোনও আউটপুট অনুকরণ করা হয়</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> বিপজ্জনক হতে পারে। আপনি যদি চান যে, Chrome-এর মাধ্যমে যাচাই করা হোক, সেক্ষেত্রে কোনও পাসওয়ার্ড যোগ করুন বা আপনি এটি সরাসরি ডাউনলোড করতে পারবেন।</translation>

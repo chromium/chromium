@@ -156,6 +156,7 @@
 <translation id="1545749641540134597">Skanna QR-kóða</translation>
 <translation id="1545757265410828525">Verðferill</translation>
 <translation id="1547610699249301703">Deila aðgangsorðum</translation>
+<translation id="1554043146674176775">Slökkva á gervigreindarstillingu</translation>
 <translation id="1554477036522844996">Nýr gluggi</translation>
 <translation id="1558391695376153246">Loka huliðsflipum</translation>
 <translation id="1565371473877914088">Nýr huliðsflipi</translation>
@@ -457,6 +458,7 @@
 <translation id="2688535388040882469">Borðar</translation>
 <translation id="2690858294534178585">Myndavélin er í notkun</translation>
 <translation id="2691653761409724435">Ekki í boði án nettengingar</translation>
+<translation id="2697530870203420261">Ógilt gælunafn</translation>
 <translation id="269819437389494246">Þú getur skoðað síður sem þú hefur opnað eða eytt þeim úr ferlinum þínum</translation>
 <translation id="2704606927547763573">Afritað</translation>
 <translation id="2708051474374549906">Forvirk vörn í rauntíma gegn hættulegum vefsvæðum, niðurhali og viðbótum sem byggir á vefskoðunargögnunum þínum sem eru send til Google</translation>
@@ -1561,6 +1563,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6830728435402077660">Ekki öruggt</translation>
 <translation id="6831043979455480757">Þýða</translation>
 <translation id="6842136130964845393">Staðfestu að þetta sért þú til að tryggja aðgang þinn að vistuðum aðgangsorðum</translation>
+<translation id="6844773122575789617">Kveikja á gervigreindarstillingu</translation>
 <translation id="6851516051005285358">Biðja um tölvuvefsvæði</translation>
 <translation id="6857446173140146664">Eyða bakgrunni</translation>
 <translation id="6858718102216837409">Bæta tungumáli við…</translation>

@@ -156,6 +156,7 @@
 <translation id="1545749641540134597">Escanea el código QR</translation>
 <translation id="1545757265410828525">Historial de precios</translation>
 <translation id="1547610699249301703">Comparte contraseñas</translation>
+<translation id="1554043146674176775">Desactivar Modo IA</translation>
 <translation id="1554477036522844996">Nueva ventana</translation>
 <translation id="1558391695376153246">Cerrar pestañas incógnito</translation>
 <translation id="1565371473877914088">Nueva pestaña de Incógnito</translation>
@@ -457,6 +458,7 @@
 <translation id="2688535388040882469">Avisos</translation>
 <translation id="2690858294534178585">La cámara se está utilizando</translation>
 <translation id="2691653761409724435">No disponible sin conexión</translation>
+<translation id="2697530870203420261">Nombre no válido</translation>
 <translation id="269819437389494246">Puedes ver las páginas que has visitado o eliminarlas de tu historial</translation>
 <translation id="2704606927547763573">Copiado</translation>
 <translation id="2708051474374549906">Protección proactiva en tiempo real (frente a descargas, extensiones y sitios peligrosos) que se basa en el envío de tus datos de navegación a Google.</translation>
@@ -1450,7 +1452,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6435236283694032571">Añadir a lista de lectura</translation>
 <translation id="6435307030888827407">Mantener sesión cerrada</translation>
 <translation id="6436318499800111867">Compartido conmigo el <ph name="SHARED_WITH_ME_DATE" /></translation>
-<translation id="6442697326824312960">No fijar pestaña</translation>
+<translation id="6442697326824312960">Desfijar pestaña</translation>
 <translation id="6443118737398455446">La fecha de caducidad no es válida</translation>
 <translation id="6444435711855078002">Más opciones</translation>
 <translation id="6445051938772793705">País</translation>
@@ -1561,6 +1563,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6830728435402077660">No es seguro</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6842136130964845393">Verifica tu identidad para asegurarte de que siempre tengas acceso a tus contraseñas guardadas</translation>
+<translation id="6844773122575789617">Activar Modo IA</translation>
 <translation id="6851516051005285358">Solicitar sitio para ordenadores</translation>
 <translation id="6857446173140146664">Eliminar fondo</translation>
 <translation id="6858718102216837409">Añadir idioma…</translation>

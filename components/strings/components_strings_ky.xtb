@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">IBAN кодун сактайсызбы?</translation>
 <translation id="1113869188872983271">Иреттештирүүнү &amp;жасабоо</translation>
 <translation id="1118429183611783760">Чаң соргучтар жана полго кам көрүү</translation>
+<translation id="111897705806685148">Башка түзмөктөгү киргизүүчү ачкычты колдонуу</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome Google аккаунтуңузда сактай турган маалыматты тескеш үчүн Tab, андан соң Enter баскычын басыңыз</translation>
 <translation id="1122714970786750095">Электроника жана электр</translation>
 <translation id="1123753900084781868">Ыкчам коштомо жазуулар учурда жеткиликтүү эмес</translation>
@@ -4133,6 +4134,7 @@
 <translation id="7648527891719919697">Бул сайт бөгөттөлгөн бойдон калат, анткени <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android'дин параметрлеринде<ph name="END_ANDROID_SETTINGS_LINK" /> Күчөтүлгөн коргоо күйүк. <ph name="BEGIN_LEARN_MORE_LINK" />Бул эскертүү жөнүндө кеңири маалымат алыңыз<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Ушул түзмөккө файлдарды сактайт</translation>
 <translation id="7649070708921625228">Жардам</translation>
+<translation id="7650141368285545431">Башка түзмөктөгү киргизүүчү ачкычты колдонуу</translation>
 <translation id="7653957176542370971">Төлөм иштетүүчү барак жабылды</translation>
 <translation id="7655766454902053387">Жумуш тизмелери</translation>
 <translation id="765676359832457558">Өркүндөтүлгөн параметрлерди жашыруу…</translation>

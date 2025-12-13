@@ -427,6 +427,7 @@
 <translation id="2854916915045135148">Натисніть і утримуйте, щоб перейти в анонімний режим</translation>
 <translation id="2860954141821109167">Переконайтеся, що на цьому пристрої ввімкнено додаток Телефон</translation>
 <translation id="2861923151411510142">Деякі функції Chrome більше не будуть доступними</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> і ще одна вкладка}one{<ph name="URL" /> і ще <ph name="TAB_COUNT_MANY" /> вкладка}few{<ph name="URL" /> і ще <ph name="TAB_COUNT_MANY" /> вкладки}many{<ph name="URL" /> і ще <ph name="TAB_COUNT_MANY" /> вкладок}other{<ph name="URL" /> і ще <ph name="TAB_COUNT_MANY" /> вкладки}}</translation>
 <translation id="2869430948265924908">Щоб захистити конфіденційний контент в автомобілі, необхідно налаштувати блокування профілю за допомогою PIN-коду, коду або пароля.</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2871733351037274014">Попередньо завантажувати сторінки</translation>

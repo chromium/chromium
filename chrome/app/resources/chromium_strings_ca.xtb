@@ -216,6 +216,7 @@
 <translation id="3313189106987092621">Chromium t'avisarà abans de carregar qualsevol lloc web amb una connexió no segura</translation>
 <translation id="3316771292331273802">Quan tanquis totes les finestres de Chromium, se't tancarà la sessió de la majoria de llocs web, tret del teu Compte de Google si tens la sessió iniciada a Chromium. Perquè els llocs web et recordin, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">El motor de cerca predeterminat s'ha canviat des de fora de Chromium. Per protegir-te, Chromium l'ha restablert.</translation>
+<translation id="3331557257666250900">Inicia la sessió a Chrome per accedir a les contrasenyes, les adreces d'interès i més en tots els dispositius</translation>
 <translation id="3352986031709923790">extrem superior dret de l'àrea de cerca: <ph name="RIGHT" /> % per la dreta i <ph name="TOP" /> % per dalt</translation>
 <translation id="3366305173356742781">Dades de Chromium al teu compte</translation>
 <translation id="3369405342922656244">Cerca en aquesta pàgina amb la cerca d'imatges</translation>
@@ -267,6 +268,7 @@
 <translation id="3971865010372729242">Quan escrius a la barra d'adreces o al quadre de cerca, Chromium envia el que escrius a les eines de cerca, d'IA i d'agent de la teva organització per obtenir suggeriments.</translation>
 <translation id="3975724895399328945">Sobre &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Sobre Chromium OS</translation>
+<translation id="4010059961270896984">Quan visites un lloc web, Chromium envia una part ofuscada de l'URL a <ph name="BEGIN_LINK" />Navegació segura de Google<ph name="END_LINK" /> mitjançant un servidor de privadesa que amaga la teva adreça IP. Si un lloc web fa alguna acció sospitosa, també s'envien URL complets i fragments de contingut de la pàgina.</translation>
 <translation id="4019629340646866719">Chromium OS és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure<ph name="END_LINK_CROS_OSS" /> addicional, igual que l‘<ph name="BEGIN_LINK_LINUX_OSS" />entorn de desenvolupament de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Tradueix la pantalla</translation>
 <translation id="4023601594785368013">Idioma original: <ph name="LANGUAGE" /></translation>
@@ -586,6 +588,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="77283119132245232">Proporciona serveis de traçabilitat del sistema per a <ph name="BROWSER_NAME" />. Si aquest servei es desactiva, les traces de rendiment creades pel navegador no inclouran esdeveniments de tot el sistema, com ara els esdeveniments de canvi de context i de fils preparats.</translation>
 <translation id="7745317241717453663">Amb aquesta acció, se suprimiran les teves dades de navegació d'aquest dispositiu. Per recuperar les teves dades més endavant, inicia la sessió a Chromium com a <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">L'instal·lador no ha pogut crear un directori temporal. Comprova que hi ha espai lliure al disc i que tens permís per instal·lar el programari.</translation>
+<translation id="7750130090210923118">Restableix el tema predeterminat de Chromium</translation>
 <translation id="7786760609782648049">Fes que Chromium sigui més ràpid</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Dificulta que les persones amb accés al teu trànsit d'Internet vegin els llocs web que visites. Chromium utilitza una connexió segura per cercar l'adreça IP d'un lloc web al sistema de noms de domini (DNS).</translation>
@@ -686,6 +689,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8907580949721785412">Chromium està provant de mostrar contrasenyes. Escriviu la vostra contrasenya de Windows per permetre-ho.</translation>
 <translation id="8941642502866065432">Chromium no es pot actualitzar</translation>
 <translation id="897581876605952338">Logotip de Chromium Enterprise</translation>
+<translation id="8981150672034878610">No es pot iniciar Chromium perquè hi ha hagut un error en obrir el teu perfil. Prova de reiniciar Chromium.</translation>
 <translation id="8988036198400390003">Gestiona els perfils de Chromium</translation>
 <translation id="9019929317751753759">Per tal que Chromium sigui més segur, hem desactivat algunes de les extensions que no figuren a <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i que és possible que s'hagin afegit sense que ho sapigueu.</translation>
 <translation id="904366664621834601">Chromium ha bloquejat aquesta baixada perquè el fitxer d'arxiu inclou altres fitxers que poden amagar programari maliciós</translation>

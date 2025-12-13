@@ -218,6 +218,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3313189106987092621">Chromium itakutahadharisha kabla ya kupakia tovuti yoyote kwa kutumia muunganisho usio salama</translation>
 <translation id="3316771292331273802">Utaondolewa kwenye tovuti nyingi ukifunga madirisha yote ya Chromium, isipokuwa katika Akaunti yako ya Google ikiwa umeingia katika Chromium. Ili uruhusu tovuti zikukumbuke, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">Mtambo wako chaguomsingi wa kutafuta ulibadilishwa kutoka nje ya Chromium. Ili kukulinda, Chromium imeuweka upya.</translation>
+<translation id="3331557257666250900">Ingia katika Chromium ili upate alamisho, manenosiri yako na zaidi kwenye vifaa vyako vyote</translation>
 <translation id="3352986031709923790">kona ya juu kulia ya eneo la utafutaji: kulia asilimia <ph name="RIGHT" />, juu asilimia <ph name="TOP" /></translation>
 <translation id="3366305173356742781">Data ya Chromium kwenye akaunti yako</translation>
 <translation id="3369405342922656244">Tafuta ukurasa huu ukitumia kipengele cha Kutafuta kwa Picha</translation>
@@ -269,6 +270,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3971865010372729242">Unapoandika kwenye sehemu ya anwani au katika kisanduku cha kutafutia, Chromium hutuma unachokiandika kwenye zana za utafutaji zinazotumiwa na shirika lako, za mifumo tekelezi na za AI ili kupata mapendekezo.</translation>
 <translation id="3975724895399328945">Kuhusu &amp;Google Chrome ya Majaribio</translation>
 <translation id="3997429360543082038">Kuhusu Mfumo wa Uendeshaji wa Chromium</translation>
+<translation id="4010059961270896984">Unapotembelea tovuti, Chromium hutuma sehemu ya URL iliyofumbwa kwa <ph name="BEGIN_LINK" />Kipengele cha Kuvinjari Salama na Google<ph name="END_LINK" /> kupitia seva ya faragha inayoficha anwani yako ya IP. Iwapo tovuti itafanya kitu cha kutiliwa shaka, URL kamili na sehemu za maudhui ya ukurasa pia zitatumwa.</translation>
 <translation id="4019629340646866719">Mfumo wa Uendeshaji wa Chromium unawezeshwa na <ph name="BEGIN_LINK_CROS_OSS" />programu huria<ph name="END_LINK_CROS_OSS" /> za ziada, kama vile <ph name="BEGIN_LINK_LINUX_OSS" />mazingira ya wasanidi programu wa Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Tafsiri skrini</translation>
 <translation id="4023601594785368013">Lugha chanzo: <ph name="LANGUAGE" /></translation>
@@ -588,6 +590,7 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="77283119132245232">Hutoa huduma za ufuatiliaji wa mfumo kwa <ph name="BROWSER_NAME" />. Ikiwa huduma hii itazimwa, shughuli za ufuatiliaji wa utendaji zilizobuniwa na kivinjari hazitajumuisha matukio ya mfumo mzima kama vile kubadilisha muktadha na matukio yaliyopo ya mazungumzo.</translation>
 <translation id="7745317241717453663">Hatua hii itafuta data yako ya kuvinjari kwenye kifaa hiki. Ili urejeshe data yako baadaye, ingia katika Chromium ukitumia <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Kisakinishi hakikuweza kuunda saraka la muda. Tafadhali chunguza nafasi iliyo wazi kwenye diski na ruhusa ya kusakinisha programu.</translation>
+<translation id="7750130090210923118">Badilisha utumie Chromium kwa Chaguomsingi</translation>
 <translation id="7786760609782648049">Ifanye Chromium iwe na kasi</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Toleo la Jaribio la Chromium</translation>
 <translation id="7803986347287457849">Fanya iwe vigumu watu wanaoweza kufikia shughuli yako kwenye intaneti kuona tovuti unazotembelea. Chromium hutumia muunganisho salama kutafuta anwani ya IP ya tovuti katika DNS (Mfumo wa Majina ya Vikoa).</translation>
@@ -688,6 +691,7 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="8907580949721785412">Chromium inajaribu kuonyesha manenosiri. Chapa nenosiri lako la Windows ili uruhusu hili.</translation>
 <translation id="8941642502866065432">Imeshindwa kusasisha Chromium</translation>
 <translation id="897581876605952338">Nembo ya Chromium Enterprise</translation>
+<translation id="8981150672034878610">Imeshindwa kuwasha Chromium kwa sababu hitilafu fulani imetokea wakati wa kufungua wasifu wako. Jaribu kuzima kisha uwashe Chromium.</translation>
 <translation id="8988036198400390003">Dhibiti wasifu wa Chromium</translation>
 <translation id="9019929317751753759">Ili kufanya Chromium salama zaidi, tumezima kiendelezi kinachofuata ambacho hakijaorodheshwa katika <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> na huenda kimeongezwa bila ridhaa yako.</translation>
 <translation id="904366664621834601">Chromium imezuia upakuaji huu kwa sababu faili iliyo kwenye kumbukumbu inajumuisha faili nyingine ambazo huenda zimeficha programu hasidi</translation>

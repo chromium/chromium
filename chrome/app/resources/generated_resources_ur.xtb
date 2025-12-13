@@ -2214,6 +2214,7 @@
 <translation id="2476901513051581836">آف لائن اسٹوریج کا سائز معلوم ہونے تک اسٹوریج کو صاف نہیں کیا جا سکتا۔</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> کو اَن انسٹال کرنے کیلئے ونڈوز شٹ ڈاؤن کریں۔</translation>
 <translation id="2477065602824695373">چونکہ آپ نے ایک سے زیادہ سوئچز مرتب کیے ہیں، لہذا خودکار اسکین کو آف کر دیا گیا ہے۔</translation>
+<translation id="2477218554275525952">‏نیا ٹیب کھولنے پر Gemini سائیڈ بار کو کھلا رکھیں</translation>
 <translation id="2477607419416067650">‏دیگر Google ڈیٹا</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" کیلئے میڈیا فائل کی اجازتیں</translation>
 <translation id="24786041351753425">ڈیٹا بازیابی کی سروس کو فعال کریں۔</translation>
@@ -6181,7 +6182,6 @@
 <translation id="520576054436518354">‏‫Gemini کو آپ کے لیے براؤز کرنے دیں</translation>
 <translation id="5207949376430453814">متن کیرٹ کو نمایاں کریں</translation>
 <translation id="520840839826327499">‏<ph name="SERVICE_NAME" /> چیک کرنا چاہتا ہے کہ آیا آپ اہل ChromeOS آلہ استعمال کررہے ہیں۔</translation>
-<translation id="5208722776934437424">اجازتیں تبدیل کریں</translation>
 <translation id="5208926629108082192">آلہ کے موبائل نیٹ ورک کی معلومات</translation>
 <translation id="5208988882104884956">نصف چوڑائی</translation>
 <translation id="5209320130288484488">کوئی آلات نہیں ملے</translation>
@@ -6745,7 +6745,6 @@
 <translation id="5600706100022181951">‏موبائل ڈیٹا <ph name="UPDATE_SIZE_MB" /> MB استعمال کرتے ہوۓ اپڈیٹ ڈاؤن لوڈ ہو جائے گا۔ کیا آپ اسے جاری رکھنا چاہتے ہيں؟</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601833336918638013">سائٹس کو بلوٹوتھ آلات تلاش کرنے کی اجازت نہ دیں</translation>
-<translation id="560213628963806709">‏اس ایپ کے ذریعے <ph name="OPENINGS_COUNT" /> نئے Chrome ٹیبز کھولے گئے ہیں۔ آپ "پوپ - اپس اور ری ڈائریکٹس" کی اجازت کے تحت اس رویے کا نظم کر سکتے ہیں۔</translation>
 <translation id="5602586420788540146">نئے ٹیب گروپ میں کھولیں</translation>
 <translation id="5605758115928394442">اس بات کی تصدیق کرنے کیلئے کہ یہ آپ ہی ہیں، آپ کے فون پر ایک اطلاع بھیجی گئی۔</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{یہ ایکسٹینشن مسدود ہے}other{یہ ایکسٹینشنز مسدود ہیں}}</translation>
@@ -8002,7 +8001,6 @@
 <translation id="6493991254603208962">چمک کم کریں</translation>
 <translation id="6494327278868541139">بہتر کردہ تحفظ کی تفصیلات دکھائیں</translation>
 <translation id="6494483173119160146">آلے میں ایک ناقابل بازیابی کی خرابی پیش آگئی۔ براہ کرم اپنا آلہ ری سیٹ کریں (اس سے صارف کا تمام ڈیٹا مٹ جائے گا) اور دوبارہ کوشش کریں۔</translation>
-<translation id="6495261233408033662">کھلے ہوئے ٹیبز کو بند کریں</translation>
 <translation id="6495266441917713704">‏Wi-Fi کو منتقل نہیں کیا جا سکتا</translation>
 <translation id="6495453178162183932">‏تھیم کو ڈیفالٹ Chrome میں اپ ڈیٹ کر دیا گیا</translation>
 <translation id="6496641546298525838">آپ کا آلہ</translation>
@@ -9356,7 +9354,6 @@
 <translation id="7427348830195639090">پس منظر کا صفحہ: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">یہ پروفائل نظم کردہ ہے</translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> سے کال کریں</translation>
-<translation id="7429004613638800673">‫<ph name="APP_NAME" /> میں متعدد ٹیبز کھلے ہیں۔</translation>
 <translation id="7429415133937917139">‏ریفریش کے قابل بریل ڈسپلے کے آؤٹ پٹ کو
         ChromeVox پینل میں اسکرین کے اوپر نقل کرتا ہے</translation>
 <translation id="7429568074268678162">‏<ph name="FILENAME" /> خطرناک ہو سکتا ہے۔ اگر آپ چاہتے ہیں کہ Chrome اس کی تصدیق کرے تو ایک پاس ورڈ شامل کریں یا اسے براہ راست ڈاؤن لوڈ کریں۔</translation>
@@ -12017,6 +12014,7 @@
 <translation id="9207434080086272167">دھوپ</translation>
 <translation id="9207669213427469593">اگر آپ اسپلٹ اسکرین استعمال کرنے کے لیے ونڈو کو ایک طرف کھینچتے ہیں تو آپ کو دوسری طرف کے لیے ونڈو کی تجاویز نظر آئیں گی</translation>
 <translation id="9209563766569767417">‏Linux کنٹینر کا سیٹ اپ چیک کیا جا رہا ہے</translation>
+<translation id="9212565256020141627">‏‫Gemini کے ساتھ تصویر کا اشتراک نہیں کیا جا سکا۔ دوبارہ کوشش کریں یا دوسری تصویر آزمائیں۔</translation>
 <translation id="9214520840402538427">افوہ!  انسٹالیشن کے وقت کے انتسابات کے آغاز کا وقت ختم ہوگیا ہے۔ براہ کرم اپنے امدادی نمائندہ سے رابطہ کریں۔</translation>
 <translation id="9214695392875603905">کپ کیک</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" شامل کر دیا گیا</translation>

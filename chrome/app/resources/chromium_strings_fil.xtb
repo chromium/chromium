@@ -218,6 +218,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3313189106987092621">Bibigyan ka ng babala ng Chromium bago nito i-load ang anumang site na gumagamit ng hindi secure na koneksyon</translation>
 <translation id="3316771292331273802">Masa-sign out ka sa karamihan ng mga site kapag isinara mo ang lahat ng window ng Chromium, maliban sa iyong Google Account kung naka-sign in ka sa Chromium. Para payagan ang mga site na matandaan ka, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">Binago ang iyong default na search engine mula sa labas ng Chromium. Para protektahan ka, ni-reset ito ng Chromium.</translation>
+<translation id="3331557257666250900">Mag-sign in sa Chromium para makuha ang iyong mga password, bookmark, at higit pa sa lahat ng device mo</translation>
 <translation id="3352986031709923790">kanang sulok sa itaas ng lugar para sa paghahanap: kanan <ph name="RIGHT" />%, itaas <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Data sa Chromium sa iyong account</translation>
 <translation id="3369405342922656244">Maghanap sa page na ito gamit ang Paghahanap ng Larawan</translation>
@@ -269,6 +270,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3971865010372729242">Kapag nag-type ka sa address bar o box para sa paghahanap, ipinapadala ng Chromium kung ano ang tina-type mo sa tool sa paghahanap, AI tool, at tool ng ahente ng iyong organisasyon para makakuha ng mga suhestyon.</translation>
 <translation id="3975724895399328945">Tungkol sa &amp;Google Chrome na Pang-test</translation>
 <translation id="3997429360543082038">Tungkol sa ChromiumOS</translation>
+<translation id="4010059961270896984">Kapag bumisita ka sa isang site, magpapadala ang Chromium ng na-obfuscate na bahagi ng URL sa <ph name="BEGIN_LINK" />Ligtas na Pag-browse sa Google<ph name="END_LINK" /> sa pamamagitan ng server ng privacy na nagha-hide ng iyong IP address. Kung may gagawing kahina-hinala ang isang site, ipapadala rin ang mga buong URL at bahagi ng content ng page.</translation>
 <translation id="4019629340646866719">Pinapagana ng karagdagang <ph name="BEGIN_LINK_CROS_OSS" />open source na software<ph name="END_LINK_CROS_OSS" /> ang ChromiumOS, pati na rin ang <ph name="BEGIN_LINK_LINUX_OSS" />environment sa pag-develop ng Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Isalin ang screen</translation>
 <translation id="4023601594785368013">Orihinal na wika: <ph name="LANGUAGE" /></translation>
@@ -588,6 +590,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="77283119132245232">Nagbibigay ng mga serbisyo ng pag-trace ng system para sa <ph name="BROWSER_NAME" />. Kung naka-disable ang serbisyong ito, hindi isasama sa mga trace ng performance na ginawa ng browser ang mga system-wide na event gaya ng mga event na context switch at ready thread.</translation>
 <translation id="7745317241717453663">Ide-delete nito ang iyong data sa pag-browse sa device na ito. Upang makuha ang iyong data sa ibang pagkakataon, mag-sign in sa Chromium bilang <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Hindi makalikha ng pansamantalang direktoryo ang installer. Paki-suri para sa puwang sa disk na walang laman at pahintulot upang i-install ang software.</translation>
+<translation id="7750130090210923118">I-reset sa Default na Chromium</translation>
 <translation id="7786760609782648049">Gawing mas mabilis ang Chromium</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Gawing mas mahirap para sa mga taong may access sa iyong internet traffic na makita kung aling mga site ang binibisita mo. Gumagamit ang Chromium ng secure na koneksyon para hanapin ang IP address ng isang site sa DNS (Domain Name System).</translation>
@@ -688,6 +691,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8907580949721785412">Sinusubukan ng Chromium na ipakita ang mga password. I-type ang password sa Windows upang payagan ito.</translation>
 <translation id="8941642502866065432">Hindi ma-update ang Chromium</translation>
 <translation id="897581876605952338">Logo ng Chromium Enterprise</translation>
+<translation id="8981150672034878610">Hindi masimulan ang Chromium dahil nagkaproblema noong binubuksan ang iyong profile. Subukang i-restart ang Chromium.</translation>
 <translation id="8988036198400390003">Pamahalaan ang mga profile sa Chromium</translation>
 <translation id="9019929317751753759">Upang mas gawing ligtas ang Chromium, na-disable namin ang sumusunod na extension na hindi nakalista sa <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> na maaaring naidagdag nang hindi mo nalalalaman.</translation>
 <translation id="904366664621834601">Na-block ng Chromium ang pag-download na ito dahil naglalaman ang naka-archive na file ng iba pang file na posibleng nagtatago ng malware</translation>

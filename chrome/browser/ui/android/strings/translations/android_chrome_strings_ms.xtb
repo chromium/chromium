@@ -427,6 +427,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2854916915045135148">Sentuh dan tahan untuk bertukar kepada Inkognito</translation>
 <translation id="2860954141821109167">Pastikan apl telefon didayakan pada peranti ini</translation>
 <translation id="2861923151411510142">Sesetengah ciri Chrome tidak akan tersedia lagi</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> dan 1 tab lain}other{<ph name="URL" /> dan <ph name="TAB_COUNT_MANY" /> tab lain}}</translation>
 <translation id="2869430948265924908">Untuk melindungi kandungan sensitif anda di dalam kereta, anda mestilah membuat kunci profil kereta.  Anda boleh melakukan tindakan itu dengan PIN, kod atau kata laluan.</translation>
 <translation id="2870560284913253234">Tapak</translation>
 <translation id="2871733351037274014">Halaman pramuat</translation>

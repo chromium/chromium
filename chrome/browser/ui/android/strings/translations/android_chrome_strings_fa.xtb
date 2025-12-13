@@ -427,6 +427,7 @@
 <translation id="2854916915045135148">برای رفتن به حالت «ناشناس»، لمس کنید و نگه دارید</translation>
 <translation id="2860954141821109167">مطمئن شوید برنامه تلفن در این دستگاه فعال باشد</translation>
 <translation id="2861923151411510142">‏برخی‌از ویژگی‌های Chrome دیگر دردسترس نخواهد بود</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{‫<ph name="URL" /> و ۱ زبانه دیگر}one{‫<ph name="URL" /> و <ph name="TAB_COUNT_MANY" /> زبانه دیگر}other{‫<ph name="URL" /> و <ph name="TAB_COUNT_MANY" /> زبانه دیگر}}</translation>
 <translation id="2869430948265924908">برای محافظت از محتوای حساستان در خودرو، باید قفل نمایه خودرو ایجاد کنید.  می‌توانید این کار را با پین، کد، یا گذرواژه انجام دهید.</translation>
 <translation id="2870560284913253234">سایت</translation>
 <translation id="2871733351037274014">پیش‌بارگیری صفحات</translation>

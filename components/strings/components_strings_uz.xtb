@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">IBAN raqami saqlansinmi?</translation>
 <translation id="1113869188872983271">&amp;Qayta tartiblashni qaytarish</translation>
 <translation id="1118429183611783760">Chang tozalash va pol parvarishi</translation>
+<translation id="111897705806685148">Boshqa qurilmada kirish kalitini ishlating</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google hisobingizga saqlangan Chrome maʼlumotlarini boshqarish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="1122714970786750095">Elektronika va elektrika</translation>
 <translation id="1123753900084781868">Jonli izoh hozirda mavjud emas</translation>
@@ -4128,6 +4129,7 @@ Batafsil axborot:
 <translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android sozlamalarida<ph name="END_ANDROID_SETTINGS_LINK" /> Google Kuchaytirilgan himoya yoqilgani uchun bu sayt bloklangan holatda qoladi. <ph name="BEGIN_LEARN_MORE_LINK" />Bu ogohlantirish haqida batafsil<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Fayllarni bu qurilmada saqlash</translation>
 <translation id="7649070708921625228">Yordam</translation>
+<translation id="7650141368285545431">Boshqa qurilmada kirish kalitini ishlating</translation>
 <translation id="7653957176542370971">Toʻlovlarni qayta ishlash vositasi yopildi</translation>
 <translation id="7655766454902053387">Boʻsh ish oʻrni</translation>
 <translation id="765676359832457558">Qo‘shimcha sozlamalarni yashirish</translation>

@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Vista IBAN-númer?</translation>
 <translation id="1113869188872983271">Aft&amp;urkalla nýja röðun</translation>
 <translation id="1118429183611783760">Ryksugur og gólfumhirða</translation>
+<translation id="111897705806685148">Nota aðgangslykil úr öðru tæki</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að stjórna því hvaða Chrome-upplýsingar þú vistar á Google-reikningnum þínum</translation>
 <translation id="1122714970786750095">Raftæki og rafbúnaður</translation>
 <translation id="1123753900084781868">Skjátextar í rauntíma eru ekki tiltækir núna</translation>
@@ -4134,6 +4135,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7648527891719919697">Þetta vefsvæði verður áfram á bannlista vegna þess að kveikt er á Áætlun um ítarlega vernd í <ph name="BEGIN_ANDROID_SETTINGS_LINK" />stillingum Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar um þessa viðvörun<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Geyma skrár í þessu tæki</translation>
 <translation id="7649070708921625228">Hjálp</translation>
+<translation id="7650141368285545431">Nota aðgangslykil úr öðru tæki</translation>
 <translation id="7653957176542370971">Greiðsluhjálparforritið er lokað</translation>
 <translation id="7655766454902053387">Atvinnuauglýsingar</translation>
 <translation id="765676359832457558">Fela ítarlegar stillingar...</translation>

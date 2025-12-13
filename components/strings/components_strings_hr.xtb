@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Želite li spremiti IBAN?</translation>
 <translation id="1113869188872983271">&amp;Poništi promjenu rasporeda</translation>
 <translation id="1118429183611783760">Usisivači i održavanje podova</translation>
+<translation id="111897705806685148">Upotrijebi pristupni ključ s drugog uređaja</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste upravljali time koje podatke iz Chromea spremate na svoj Google račun</translation>
 <translation id="1122714970786750095">Elektronika i električni uređaji</translation>
 <translation id="1123753900084781868">Automatski titlovi trenutačno nisu dostupni</translation>
@@ -4134,6 +4135,7 @@ Dodatne pojedinosti:
 <translation id="7648527891719919697">Web-lokacija će ostati blokirana jer ste u <ph name="BEGIN_ANDROID_SETTINGS_LINK" />postavkama Androida<ph name="END_ANDROID_SETTINGS_LINK" /> uključili Naprednu zaštitu. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o tom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">spremati datoteke na uređaj</translation>
 <translation id="7649070708921625228">Pomoć</translation>
+<translation id="7650141368285545431">Upotrijebi pristupni ključ s drugog uređaja</translation>
 <translation id="7653957176542370971">List rukovatelja plaćanjima je zatvoren.</translation>
 <translation id="7655766454902053387">Oglasi za posao</translation>
 <translation id="765676359832457558">Skrivanje naprednih postavki...</translation>

@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Foto recente <ph name="INDEX" /> di <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Comprimi Google Tasks</translation>
 <translation id="2208323208084708176">Modalità desktop unificato</translation>
+<translation id="2210311543574621570">Vedrai gli appunti quando tieni premuto Ctrl + V. Puoi disabilitare questa scorciatoia disattivando il flag #clipboard-history-longpress in chrome://flags.</translation>
 <translation id="2215920961700443347">Nessuna connessione a internet. Connettiti a internet e riprova.</translation>
 <translation id="2222841058024245321">Scrivania 7</translation>
 <translation id="2223384056430485343">In uno schermo diviso</translation>

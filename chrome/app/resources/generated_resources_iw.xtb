@@ -2221,6 +2221,7 @@
 <translation id="2476901513051581836">אי אפשר לפנות מקום כל עוד הגודל של נפח האחסון אופליין לא ידוע.</translation>
 <translation id="2476974672882258506">‏יש לכבות את Windows כדי להסיר את <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">הסריקה האוטומטית מושבתת כי הגדרת כמה מתגים.</translation>
+<translation id="2477218554275525952">‏כשפותחים כרטיסייה חדשה, אפשר להשאיר את סרגל הצד של Gemini פתוח</translation>
 <translation id="2477607419416067650">‏נתונים אחרים של Google</translation>
 <translation id="2478176599153288112">הרשאות של קובץ מדיה עבור "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">הפעלה של שירות שחזור הנתונים</translation>
@@ -6190,7 +6191,6 @@
 <translation id="520576054436518354">‏רוצה ש-Gemini יחפש בשבילך?</translation>
 <translation id="5207949376430453814">הדגשה של סמן הטקסט</translation>
 <translation id="520840839826327499">‏<ph name="SERVICE_NAME" /> רוצה לוודא שמכשיר ה-ChromeOS שלך כשיר.</translation>
-<translation id="5208722776934437424">איך משנים את ההרשאות</translation>
 <translation id="5208926629108082192">פרטי הרשת הסלולרית של המכשיר</translation>
 <translation id="5208988882104884956">חצי רוחב</translation>
 <translation id="5209320130288484488">לא נמצאו מכשירים</translation>
@@ -6756,7 +6756,6 @@
 <translation id="5600706100022181951">‏ההורדה של העדכון תנצל MB <ph name="UPDATE_SIZE_MB" /> מחבילת הגלישה. להמשיך?</translation>
 <translation id="5601503069213153581">קוד אימות</translation>
 <translation id="5601833336918638013">‏לא לאפשר לאתרים לאתר מכשירי Bluetooth</translation>
-<translation id="560213628963806709">‏האפליקציה הזו פתחה <ph name="OPENINGS_COUNT" /> כרטיסיות חדשות של Chrome. אפשר לשנות את ההתנהגות הזו בהרשאה "חלונות קופצים והפניות אוטומטיות".</translation>
 <translation id="5602586420788540146">פתיחה בקבוצת כרטיסיות חדשה</translation>
 <translation id="5605758115928394442">הודעה נשלחה לטלפון שלך כדי לאשר את זהותך.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{התוסף הזה נחסם}one{התוספים האלה נחסמו}two{התוספים האלה נחסמו}other{התוספים האלה נחסמו}}</translation>
@@ -8012,7 +8011,6 @@
 <translation id="6493991254603208962">הפחתת הבהירות</translation>
 <translation id="6494327278868541139">הצגה של פרטי האבטחה המשופרת</translation>
 <translation id="6494483173119160146">אירעה במכשיר שגיאה שבעקבותיה אי אפשר לשחזר אותו. עליך לאפס את המכשיר (בעקבות זאת יימחקו כל נתוני המשתמש) ולנסות שוב.</translation>
-<translation id="6495261233408033662">סגירת הכרטיסיות שנפתחו</translation>
 <translation id="6495266441917713704">‏לא ניתן להעביר Wi-Fi</translation>
 <translation id="6495453178162183932">‏העיצוב עודכן לברירת המחדל של Chrome</translation>
 <translation id="6496641546298525838">המכשיר שלך</translation>
@@ -9371,7 +9369,6 @@
 <translation id="7427348830195639090">דף רקע: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">הפרופיל הזה מנוהל</translation>
 <translation id="7427798576651127129">שיחה מ-<ph name="DEVICE_NAME" /></translation>
-<translation id="7429004613638800673">האפליקציה <ph name="APP_NAME" /> פתחה כמה כרטיסיות.</translation>
 <translation id="7429415133937917139">‏מדמה את הפלט של צג ברייל ניתן לרענון
     בחלונית ChromeVox שנמצאת בחלק העליון של המסך</translation>
 <translation id="7429568074268678162">‏הקובץ <ph name="FILENAME" /> עלול להיות מסוכן. מוסיפים סיסמה אם רוצים ש-Chrome יאמת אותה, או שאפשר להוריד אותה ישירות.</translation>

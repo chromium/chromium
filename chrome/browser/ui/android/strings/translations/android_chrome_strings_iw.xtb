@@ -427,6 +427,7 @@
 <translation id="2854916915045135148">כדי לעבור למצב פרטי, לוחצים לחיצה ארוכה</translation>
 <translation id="2860954141821109167">יש לוודא שמופעלת במכשיר הזה אפליקציית טלפון</translation>
 <translation id="2861923151411510142">‏חלק מהתכונות של Chrome לא יהיו זמינות יותר</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{‫<ph name="URL" /> וכרטיסייה נוספת אחת}one{‫<ph name="URL" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות}two{‫<ph name="URL" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות}other{‫<ph name="URL" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות}}</translation>
 <translation id="2869430948265924908">כדי להגן על תוכן רגיש ברכב, עליך ליצור נעילת פרופיל ברכב.  אפשר לעשות זאת באמצעות קוד אימות, קוד או סיסמה.</translation>
 <translation id="2870560284913253234">אתר</translation>
 <translation id="2871733351037274014">טעינה מראש של דפים</translation>

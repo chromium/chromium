@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Išsaugoti IBAN?</translation>
 <translation id="1113869188872983271">&amp;Anuliuoti pertvarkymą</translation>
 <translation id="1118429183611783760">Dulkių siurbliai ir grindų priežiūra</translation>
+<translation id="111897705806685148">Prieigos rakto iš kito įrenginio naudojimas</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada „Enter“, jei norite tvarkyti, kokią „Chrome“ informaciją išsaugote „Google“ paskyroje</translation>
 <translation id="1122714970786750095">Elektronikos ir elektros prekės</translation>
 <translation id="1123753900084781868">Subtitrų realiuoju laiku funkcija dabar nepasiekiama</translation>
@@ -4136,6 +4137,7 @@ Papildoma išsami informacija:
 <translation id="7648527891719919697">Ši svetainė liks užblokuota, nes <ph name="BEGIN_ANDROID_SETTINGS_LINK" />„Android“ nustatymuose<ph name="END_ANDROID_SETTINGS_LINK" /> įjungėte Papildomą apsaugą. <ph name="BEGIN_LEARN_MORE_LINK" />Sužinokite daugiau apie šį perspėjimą<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Saugoti failus šiame įrenginyje</translation>
 <translation id="7649070708921625228">Pagalba</translation>
+<translation id="7650141368285545431">Naudoti prieigos raktą iš kito įrenginio</translation>
 <translation id="7653957176542370971">Mokėjimo doroklės lapas uždarytas</translation>
 <translation id="7655766454902053387">Darbų sąrašai</translation>
 <translation id="765676359832457558">Slėpti išplėstinius nustatymus...</translation>

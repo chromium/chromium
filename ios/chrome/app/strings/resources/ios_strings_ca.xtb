@@ -156,6 +156,7 @@
 <translation id="1545749641540134597">Escaneja el codi QR</translation>
 <translation id="1545757265410828525">Historial de preus</translation>
 <translation id="1547610699249301703">Comparteix contrasenyes</translation>
+<translation id="1554043146674176775">Desactiva el mode IA</translation>
 <translation id="1554477036522844996">Finestra nova</translation>
 <translation id="1558391695376153246">Tanca pestanyes d'incògnit</translation>
 <translation id="1565371473877914088">Pestanya d'incògnit nova</translation>
@@ -457,6 +458,7 @@
 <translation id="2688535388040882469">Bàners</translation>
 <translation id="2690858294534178585">La càmera s'està utilitzant</translation>
 <translation id="2691653761409724435">No disponible sense connexió</translation>
+<translation id="2697530870203420261">Àlies no vàlid</translation>
 <translation id="269819437389494246">Pots veure les pàgines que has visitat o suprimir-les de l'historial</translation>
 <translation id="2704606927547763573">Copiada</translation>
 <translation id="2708051474374549906">Protecció proactiva en temps real contra baixades, extensions i llocs web perillosos basada en les teves dades de navegació enviades a Google</translation>
@@ -1561,6 +1563,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6830728435402077660">No segura</translation>
 <translation id="6831043979455480757">Tradueix</translation>
 <translation id="6842136130964845393">Per assegurar-te de poder accedir a les contrasenyes desades en qualsevol moment, verifica la teva identitat</translation>
+<translation id="6844773122575789617">Activa el mode IA</translation>
 <translation id="6851516051005285358">Sol·licita el lloc web per a ordinadors</translation>
 <translation id="6857446173140146664">Suprimeix el fons</translation>
 <translation id="6858718102216837409">Afegeix un idioma…</translation>

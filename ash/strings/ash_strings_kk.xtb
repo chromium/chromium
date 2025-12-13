@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Соңғы фото: <ph name="INDEX" />/<ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Google Tasks интерфейсін жию</translation>
 <translation id="2208323208084708176">Бірыңғай жұмыс үстелі режимі</translation>
+<translation id="2210311543574621570">Ctrl + V тіркесімін басып тұрған кезде буферді көресіз. chrome://flags ішінде #clipboard-history-longpress жалаушасын өшіру арқылы осы пернелер тіркесімін өшіруге болады.</translation>
 <translation id="2215920961700443347">Интернет жоқ. Интернетке қосылып, әрекетті қайталап көріңіз.</translation>
 <translation id="2222841058024245321">7-ші жұмыс үстелі</translation>
 <translation id="2223384056430485343">Бөлінген экранда</translation>

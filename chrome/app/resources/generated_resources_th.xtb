@@ -6179,7 +6179,6 @@
 <translation id="520576054436518354">ให้ Gemini ท่องเว็บแทนคุณ</translation>
 <translation id="5207949376430453814">ไฮไลต์เครื่องหมาย Caret ของข้อความ</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> ต้องการตรวจสอบว่าคุณกำลังใช้อุปกรณ์ Chrome OS ที่มีสิทธิ์อยู่หรือไม่</translation>
-<translation id="5208722776934437424">เปลี่ยนแปลงสิทธิ์</translation>
 <translation id="5208926629108082192">ข้อมูลเครือข่ายมือถือของอุปกรณ์</translation>
 <translation id="5208988882104884956">ตัวย่อ</translation>
 <translation id="5209320130288484488">ไม่พบอุปกรณ์</translation>
@@ -6744,7 +6743,6 @@
 <translation id="5600706100022181951">ระบบจะดาวน์โหลดอัปเดตโดยใช้อินเทอร์เน็ตมือถือ <ph name="UPDATE_SIZE_MB" /> MB คุณต้องการดำเนินการต่อไหม</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601833336918638013">ไม่อนุญาตให้เว็บไซต์ค้นหาอุปกรณ์บลูทูธ</translation>
-<translation id="560213628963806709">แอปนี้ได้เปิดแท็บ Chrome ใหม่ <ph name="OPENINGS_COUNT" /> แท็บ คุณจัดการลักษณะการทำงานนี้ได้ในสิทธิ์ "ป๊อปอัปและการเปลี่ยนเส้นทาง"</translation>
 <translation id="5602586420788540146">เปิดในกลุ่มแท็บใหม่</translation>
 <translation id="5605758115928394442">เราส่งการแจ้งเตือนให้คุณทางโทรศัพท์แล้วเพื่อยืนยันตัวตน</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ส่วนขยายนี้ถูกบล็อก}other{ส่วนขยายเหล่านี้ถูกบล็อก}}</translation>
@@ -7998,7 +7996,6 @@
 <translation id="6493991254603208962">ลดความสว่าง</translation>
 <translation id="6494327278868541139">แสดงรายละเอียดการปกป้องที่ปรับปรุงแล้ว</translation>
 <translation id="6494483173119160146">อุปกรณ์พบข้อผิดพลาดที่กู้คืนไม่ได้ โปรดรีเซ็ตอุปกรณ์ (ระบบจะลบข้อมูลผู้ใช้ทั้งหมด) แล้วลองอีกครั้ง</translation>
-<translation id="6495261233408033662">ปิดแท็บที่เปิดอยู่</translation>
 <translation id="6495266441917713704">โอน Wi-Fi ไม่ได้</translation>
 <translation id="6495453178162183932">อัปเดตธีมเป็น Chrome ซึ่งเป็นค่าเริ่มต้นแล้ว</translation>
 <translation id="6496641546298525838">อุปกรณ์</translation>
@@ -9353,7 +9350,6 @@
 <translation id="7427348830195639090">หน้าเว็บพื้นหลัง: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">โปรไฟล์นี้ได้รับการจัดการ</translation>
 <translation id="7427798576651127129">โทรจาก <ph name="DEVICE_NAME" /></translation>
-<translation id="7429004613638800673"><ph name="APP_NAME" /> เปิดหลายแท็บอยู่</translation>
 <translation id="7429415133937917139">จำลองผลลัพธ์ของจอแสดงผลอักษรเบรลล์แบบรีเฟรชได้ในแผง ChromeVox ที่ด้านบนของหน้าจอ</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> อาจเป็นอันตราย เพิ่มรหัสผ่าน หากต้องการให้ Chrome ยืนยันหรือคุณจะดาวน์โหลดโดยตรงก็ได้</translation>
 <translation id="7431719494109538750">ไม่พบอุปกรณ์ HID</translation>

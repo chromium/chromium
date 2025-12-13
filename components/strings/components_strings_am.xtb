@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">አይቢኤኤን ይቀመጥ?</translation>
 <translation id="1113869188872983271">&amp;እንደገና ደርድርን ቀልብስ</translation>
 <translation id="1118429183611783760">ቫኪዩሞች እና የወለል እንክብካቤ</translation>
+<translation id="111897705806685148">የይለፍ ቁልፍን ከሌላ መሣሪያ ይጠቀሙ</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ Google መለያዎ ውስጥ ምን የChrome መረጃ እንደሚያስቀምጡ ለማስተዳደር ትርን ከዚያም አስገባን ይጫኑ</translation>
 <translation id="1122714970786750095">ኤሌክትሮኒክስ እና ኤሌክትሪካዊ</translation>
 <translation id="1123753900084781868">የቀጥታ መግለጫ ጽሁፍ አሁን ላይ አይገኝም</translation>
@@ -4077,7 +4078,7 @@
 <translation id="7564049878696755256">የ<ph name="ORG_NAME" /> መለያዎን መዳረሻ ሊያጡ ወይም የማንነት ስርቆት ሊያጋጥመዎት ይችላሉ። Chrome የይለፍ ቃልዎን አሁን እንዲቀይሩ ይመክራል።</translation>
 <translation id="7564667064360547717">ሸሚዞች እና ከላይ የሚለበሱ</translation>
 <translation id="7567204685887185387">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው በተጭበረበረ ሁኔታ ተሰጥቶ ሊሆን ይችላል። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
-<translation id="7568616151991626879">Google Chrome <ph name="APP_NAME" /> ላይ የይለፍ ቃልዎን ለመሙላት እየሞከረ ነው።</translation>
+<translation id="7568616151991626879">Google Chrome <ph name="APP_NAME" /> ላይ የይለፍ ቃልህን ለመሙላት እየሞከረ ነው።</translation>
 <translation id="7569072768465750771">{COUNT,plural, =0{ምንም}=1{በዚህ መሣሪያ ላይ 1 ትር}one{በዚህ መሣሪያ ላይ # ትር}other{በዚህ መሣሪያ ላይ # ትሮች}}</translation>
 <translation id="7569490014721427265">ጎልፍ</translation>
 <translation id="7569952961197462199">ክሬዲት ካርድ ከChrome ይወገድ?</translation>
@@ -4134,6 +4135,7 @@
 <translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />የAndroid ቅንብሮች<ph name="END_ANDROID_SETTINGS_LINK" /> ውስጥ የላቀ ጥበቃን ስላበሩ ይህ ጣቢያ እንደታገደ ይቆያል። <ph name="BEGIN_LEARN_MORE_LINK" />ስለዚህ ማስጠንቀቂያ የበለጠ ይወቁ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">በዚህ መሣሪያ ላይ ፋይሎችን አከማች</translation>
 <translation id="7649070708921625228">እገዛ</translation>
+<translation id="7650141368285545431">የይለፍ ቁልፍን ከሌላ መሣሪያ ይጠቀሙ</translation>
 <translation id="7653957176542370971">የክፍያ ተቆጣጣሪ ሉህ ተዘግቷል</translation>
 <translation id="7655766454902053387">የስራ ዝርዝሮች</translation>
 <translation id="765676359832457558">የላቁ ቅንብሮችን ደብቅ...</translation>

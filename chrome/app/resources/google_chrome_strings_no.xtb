@@ -118,6 +118,7 @@
 <translation id="2216543877350048334">For å fjerne Google-kontoen din fra Chrome, logg av</translation>
 <translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="22791603784558743">Lukk Gemini i Chrome Dev</translation>
+<translation id="2284380654876659752">Når du besøker nettsteder, sender Chrome en obfuskert del av nettadressen til <ph name="BEGIN_LINK" />Google Safe Browsing<ph name="END_LINK" /> via en personverntjener som skjuler IP-adressen din. Hvis nettsteder gjør noe mistenkelig, sendes også fullstendige nettadresser og deler av sideinnholdet.</translation>
 <translation id="2290014774651636340">API-nøkler for Google mangler. Noe funksjonalitet i Google Chrome blir deaktivert.</translation>
 <translation id="2290095356545025170">Er du sikker på at du vil avinstallere Google Chrome?</translation>
 <translation id="2301513536169703857">For å få passordene og bokmerkene dine med mer på alle enhetene dine, logg på Chrome</translation>

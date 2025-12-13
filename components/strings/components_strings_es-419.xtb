@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">¿Quieres guardar el IBAN?</translation>
 <translation id="1113869188872983271">&amp;Deshacer Reorganizar</translation>
 <translation id="1118429183611783760">Aspiradoras y cuidado de pisos</translation>
+<translation id="111897705806685148">Usar una llave de acceso de otro dispositivo</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar qué información de Chrome guardas en tu Cuenta de Google</translation>
 <translation id="1122714970786750095">Electrónica y electricidad</translation>
 <translation id="1123753900084781868">El Subtitulado instantáneo no está disponible en este momento</translation>
@@ -4136,6 +4137,7 @@ Detalles adicionales:
 <translation id="7648527891719919697">Este sitio permanecerá bloqueado porque tienes activada la Protección avanzada en la <ph name="BEGIN_ANDROID_SETTINGS_LINK" />configuración de Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Obtén más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Almacenar archivos en el dispositivo</translation>
 <translation id="7649070708921625228">Ayuda</translation>
+<translation id="7650141368285545431">Usar una llave de acceso de otro dispositivo</translation>
 <translation id="7653957176542370971">La hoja del controlador de pagos está cerrada</translation>
 <translation id="7655766454902053387">Publicaciones de empleo</translation>
 <translation id="765676359832457558">Ocultar configuración avanzada...</translation>

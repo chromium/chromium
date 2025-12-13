@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">IBANa gorde nahi duzu?</translation>
 <translation id="1113869188872983271">&amp;Desegin berrantolatzea</translation>
 <translation id="1118429183611783760">Xurgagailuak eta zorua garbitzeko tresnak</translation>
+<translation id="111897705806685148">Erabili beste gailu bateko sarbide-kodea</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Sakatu tabuladorea eta, ondoren, sakatu "Sartu" Google-ko kontuan Chrome-ko zein informazio gordetzen duzun kudeatzeko.</translation>
 <translation id="1122714970786750095">Sistema elektrikoak eta elektronikoak</translation>
 <translation id="1123753900084781868">Istanteko azpitituluak ez daude erabilgarri</translation>
@@ -4129,6 +4130,7 @@ Xehetasun gehiago:
 <translation id="7648527891719919697">Webgune hau blokeatuta geldituko da, <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android-en ezarpenetan<ph name="END_ANDROID_SETTINGS_LINK" /> Babes aurreratua aktibatuta daukazulako. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu abisu honi buruzko informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Gorde fitxategiak gailu honetan</translation>
 <translation id="7649070708921625228">Laguntza</translation>
+<translation id="7650141368285545431">Erabili beste gailu bateko sarbide-kodea</translation>
 <translation id="7653957176542370971">Ordainketa kudeatzeko orria itxita dago</translation>
 <translation id="7655766454902053387">Lan-poltsak</translation>
 <translation id="765676359832457558">Ezkutatu ezarpen aurreratuak…</translation>

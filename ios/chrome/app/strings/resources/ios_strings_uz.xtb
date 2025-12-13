@@ -1459,6 +1459,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6445981559479772097">Xabar yuborildi.</translation>
 <translation id="6449554712554071184">Bunda guruh qurilmadan butunlay oʻchirib tashlanadi.</translation>
 <translation id="6452534462676960500">Yangi harakat</translation>
+<translation id="6454311990702999318">Maʼlumotlar yaroqsiz</translation>
 <translation id="6459411599807878608">Axborot yopilgan</translation>
 <translation id="646394917185284261">Fayllar</translation>
 <translation id="6472069383518492189">Yuklanmalar shu yerda chiqadi</translation>
@@ -1492,6 +1493,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6579867704846662339">Boshqa ilovalardan kelgan URL manzillar Inkognitoda ochilishini tanlash mumkin.</translation>
 <translation id="6583087784430677195">Faolsizlantirish uchun avval <ph name="BEGIN_LINK" />Sozlamalar<ph name="END_LINK" />, keyin Parollarni avtomatik kiritish sahifasini oching.</translation>
 <translation id="6585618849026997638">Siz uchun muhim sahifalarga bukmark kiritish orqali qaytish mumkin</translation>
+<translation id="6589001036857939353">Takroriy kontaktlarni birlashtirish</translation>
 <translation id="659407965921887085">Bu kartochkada internetda siz kuzatayotgan mahsulotlarning narx pasayishi chiqadi</translation>
 <translation id="6596481460663245319">Google orqali rasm qidirish</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 ta parol}other{# ta parol}}</translation>

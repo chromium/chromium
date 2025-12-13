@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Сохранить код IBAN?</translation>
 <translation id="1113869188872983271">&amp;Отменить изменение порядка</translation>
 <translation id="1118429183611783760">Пылесосы и уборка полов</translation>
+<translation id="111897705806685148">Использовать ключ доступа с другого устройства</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы указать, какую информацию Chrome можно сохранять в вашем аккаунте Google.</translation>
 <translation id="1122714970786750095">Электроника и электротехника</translation>
 <translation id="1123753900084781868">Автоматические субтитры сейчас недоступны.</translation>
@@ -4134,6 +4135,7 @@
 <translation id="7648527891719919697">Сайт останется заблокированным, поскольку вы включили Дополнительную защиту в <ph name="BEGIN_ANDROID_SETTINGS_LINK" />настройках Android<ph name="END_ANDROID_SETTINGS_LINK" />. Подробнее <ph name="BEGIN_LEARN_MORE_LINK" />об этом уведомлении<ph name="END_LEARN_MORE_LINK" />…</translation>
 <translation id="7648992873808071793">сохранение файлов на этом устройстве</translation>
 <translation id="7649070708921625228">Справка</translation>
+<translation id="7650141368285545431">Использовать ключ доступа с другого устройства</translation>
 <translation id="7653957176542370971">Лист с обработчиком платежа закрыт</translation>
 <translation id="7655766454902053387">Вакансии</translation>
 <translation id="765676359832457558">Скрыть дополнительные настройки</translation>

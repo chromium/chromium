@@ -218,6 +218,7 @@
 <translation id="3313189106987092621">Chromium mostrarache unha advertencia antes de cargar un sitio cunha conexión pouco segura</translation>
 <translation id="3316771292331273802">Pecharase a túa sesión na maioría dos sitios cando peches todas as ventás de Chromium, excepto a túa Conta de Google se tes a sesión iniciada en Chromium. Permitir que os sitios te lembren, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">O teu buscador predeterminado cambiouse desde fóra de Chromium. Para protexerte, Chromium restableceuno.</translation>
+<translation id="3331557257666250900">Inicia sesión en Chromium para ter os contrasinais, marcadores e outros datos en todos os teus dispositivos</translation>
 <translation id="3352986031709923790">esquina superior dereita da área de busca: <ph name="RIGHT" /> % á dereita, <ph name="TOP" /> % arriba</translation>
 <translation id="3366305173356742781">Datos de Chromium na túa conta</translation>
 <translation id="3369405342922656244">Procurar contido nesta páxina coa busca de imaxes</translation>
@@ -269,6 +270,7 @@
 <translation id="3971865010372729242">Cando escribas na barra de enderezos ou na caixa de busca, Chromium enviará o que escribas ás ferramentas de busca, de IA e de axente da túa organización para ofrecerche suxestións.</translation>
 <translation id="3975724895399328945">Sobre &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Acerca de Chromium OS</translation>
+<translation id="4010059961270896984">Cando visitas un sitio, Chromium envíalle unha parte confusa do URL a <ph name="BEGIN_LINK" />Navegación segura de Google<ph name="END_LINK" /> mediante un servidor de privacidade que oculta o teu enderezo IP. Se un sitio ten un comportamento sospeitoso, tamén se enviarán os URL completos e fragmentos do contido das páxinas.</translation>
 <translation id="4019629340646866719">Chromium OS é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, igual que o <ph name="BEGIN_LINK_LINUX_OSS" />contorno de programación de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Traducir pantalla</translation>
 <translation id="4023601594785368013">Idioma orixinal: <ph name="LANGUAGE" /></translation>
@@ -588,6 +590,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="77283119132245232">Fornece servizos de seguimento do sistema para <ph name="BROWSER_NAME" />. Se este servizo está desactivado, os rastros de rendemento creados polo navegador non incluirán eventos de todo o sistema (como os eventos de subprocesos ou de cambio de contexto).</translation>
 <translation id="7745317241717453663">Esta acción eliminará os teus datos de navegación deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">O programa de instalación non puido crear un directorio temporal. Comproba se hai espazo libre no disco e se tes autorización para instalar o software.</translation>
+<translation id="7750130090210923118">Restablecer Chromium predeterminado</translation>
 <translation id="7786760609782648049">Fai que Chromium sexa máis rápido</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> (versión experimental de Chromium)</translation>
 <translation id="7803986347287457849">Fai que ás persoas que teñan acceso ao teu tráfico de Internet lles resulte máis difícil ver os sitios que visitas. Chromium usa unha conexión segura para buscar o enderezo IP dos sitios no DNS (Sistema de nomes de dominios).</translation>
@@ -688,6 +691,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8907580949721785412">Chromium está tentando mostrar contrasinais. Escribe os teus contrasinais de Windows para permitir esta acción.</translation>
 <translation id="8941642502866065432">Non se puido actualizar Chromium</translation>
 <translation id="897581876605952338">Logotipo de Chromium Enterprise</translation>
+<translation id="8981150672034878610">Non se puido iniciar Chromium porque se produciu un erro ao abrir o perfil. Proba a reiniciar Chromium.</translation>
 <translation id="8988036198400390003">Xestionar perfís de Chromium</translation>
 <translation id="9019929317751753759">Para conseguir que Chromium resulte máis seguro, desactivamos a seguinte extensión que non aparece en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e que quizais se engadise sen o teu coñecemento.</translation>
 <translation id="904366664621834601">Chromium bloqueou esta descarga porque o ficheiro de arquivo inclúe outros ficheiros que é posible que conteñan software malicioso</translation>

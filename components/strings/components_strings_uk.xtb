@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Зберегти номер IBAN?</translation>
 <translation id="1113869188872983271">&amp;Відмінити перевпорядкування</translation>
 <translation id="1118429183611783760">Пилососи й засоби для догляду за підлогою</translation>
+<translation id="111897705806685148">Використовувати ключ доступу з іншого пристрою</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб вибрати, які дані Chrome зберігати в обліковому записі Google.</translation>
 <translation id="1122714970786750095">Електроніка й електротехнічне обладнання</translation>
 <translation id="1123753900084781868">Живі субтитри зараз недоступні</translation>
@@ -4135,6 +4136,7 @@
 <translation id="7648527891719919697">Цей сайт залишатиметься заблокованим, оскільки в <ph name="BEGIN_ANDROID_SETTINGS_LINK" />налаштуваннях Android<ph name="END_ANDROID_SETTINGS_LINK" /> увімкнено Додатковий захист. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Зберігати файли на цьому пристрої</translation>
 <translation id="7649070708921625228">Довідка</translation>
+<translation id="7650141368285545431">Використовувати ключ доступу з іншого пристрою</translation>
 <translation id="7653957176542370971">Аркуш обробника платежу закрито</translation>
 <translation id="7655766454902053387">Списки вакансій</translation>
 <translation id="765676359832457558">Сховати розширені налаштування...</translation>

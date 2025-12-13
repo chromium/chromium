@@ -2210,6 +2210,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2476901513051581836">Nije moguće očistiti memorijski prostor dok ne znate veličinu oflajn memorijskog prostora.</translation>
 <translation id="2476974672882258506">Isključite Windows da biste deinstalirali <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Pošto ste podesili više prekidača, automatsko skeniranje je isključeno.</translation>
+<translation id="2477218554275525952">Ne zatvaraj Gemini bočnu traku pri otvaranju nove kartice</translation>
 <translation id="2477607419416067650">Drugi Google podaci</translation>
 <translation id="2478176599153288112">Dozvole za medijske datoteke za „<ph name="EXTENSION" />“</translation>
 <translation id="24786041351753425">Omogućite uslugu vraćanja podataka.</translation>
@@ -6180,7 +6181,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="520576054436518354">Dozvolite da Gemini pregleda za vas</translation>
 <translation id="5207949376430453814">Istakni kursor za tekst</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> želi da proveri da li koristite Chrome OS uređaj koji ispunjava uslove.</translation>
-<translation id="5208722776934437424">Promeni dozvole</translation>
 <translation id="5208926629108082192">Informacije o mobilnoj mreži za uređaj</translation>
 <translation id="5208988882104884956">Pola širine</translation>
 <translation id="5209320130288484488">Nije pronađen nijedan uređaj</translation>
@@ -6744,7 +6744,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5600706100022181951">Ažuriranje će se preuzeti uz upotrebu <ph name="UPDATE_SIZE_MB" /> MB mobilnih podataka. Želite li da nastavite?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601833336918638013">Ne dozvoljavaj sajtovima da traže Bluetooth uređaje</translation>
-<translation id="560213628963806709">Ova aplikacija je otvorila nove Chrome kartice (<ph name="OPENINGS_COUNT" />). Ovim ponašanjem možete da upravljate u dozvoli Iskačući prozori i preusmeravanja.</translation>
 <translation id="5602586420788540146">Otvori u novoj grupi kartica</translation>
 <translation id="5605758115928394442">Poslali smo vam obaveštenje na telefon da biste potvrdili da ste to vi.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Ovaj dodatak je blokiran}one{Ovi dodaci su blokirani}few{Ovi dodaci su blokirani}other{Ovi dodaci su blokirani}}</translation>
@@ -8002,7 +8001,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6493991254603208962">Smanji osvetljenost</translation>
 <translation id="6494327278868541139">Prikaži detalje o naprednoj zaštiti</translation>
 <translation id="6494483173119160146">Uređaj je naišao na nepopravljivu grešku. Resetujte uređaj (biće obrisani svi podaci korisnika) i probajte ponovo.</translation>
-<translation id="6495261233408033662">Zatvori otvorene kartice</translation>
 <translation id="6495266441917713704">Ne možemo da prenesemo WiFi</translation>
 <translation id="6495453178162183932">Tema je ažurirana na podrazumevani Chrome</translation>
 <translation id="6496641546298525838">Vaš uređaj</translation>
@@ -9361,7 +9359,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7427348830195639090">Stranica u pozadini: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">Ovim profilom se upravlja</translation>
 <translation id="7427798576651127129">Poziv sa uređaja <ph name="DEVICE_NAME" /></translation>
-<translation id="7429004613638800673">Aplikacija <ph name="APP_NAME" /> je otvorila više kartica.</translation>
 <translation id="7429415133937917139">Simulira prikaz Brajevog ekrana koji može da se osvežava
         u ChromeVox oknu u vrhu ekrana</translation>
 <translation id="7429568074268678162">Fajl <ph name="FILENAME" /> može da bude opasan. Dodajte lozinku ako želite da ga Chrome verifikuje ili možete direktno da ga preuzmete.</translation>

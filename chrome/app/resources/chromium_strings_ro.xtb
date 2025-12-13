@@ -216,6 +216,7 @@
 <translation id="3313189106987092621">Chromium te va avertiza înainte de a încărca un site folosind o conexiune nesecurizată</translation>
 <translation id="3316771292331273802">Dacă te-ai conectat la Chromium, când închizi toate ferestrele Chromium fără să te deconectezi de la Contul Google, te vei deconecta de pe majoritatea site-urilor. Pentru ca site-urile să te rețină, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">Motorul de căutare prestabilit a fost schimbat din afara browserului Chromium. Pentru a te proteja, Chromium l-a resetat.</translation>
+<translation id="3331557257666250900">Conectează-te la Chromium pentru a accesa parolele, marcajele și alte date pe toate dispozitivele tale</translation>
 <translation id="3352986031709923790">colțul din dreapta sus al zonei de căutare: dreapta <ph name="RIGHT" /> %, sus <ph name="TOP" /> %</translation>
 <translation id="3366305173356742781">Datele Chromium din cont</translation>
 <translation id="3369405342922656244">Caută această pagină cu Căutarea de imagini</translation>
@@ -267,6 +268,7 @@
 <translation id="3971865010372729242">Când introduci text în bara de adrese sau în caseta de căutare, Chromium trimite ceea ce introduci către instrumentele de căutare, AI și de agent ale organizației tale pentru a primi sugestii.</translation>
 <translation id="3975724895399328945">Despre Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Despre sistemul de operare Chromium</translation>
+<translation id="4010059961270896984">Când accesezi un site, Chromium trimite la <ph name="BEGIN_LINK" />Navigarea sigură Google<ph name="END_LINK" /> o parte obscurizată a adresei URL printr-un server pentru confidențialitate care îți ascunde adresa IP. Dacă un site are un comportament suspect, sunt trimise și adresele URL complete și fragmente din conținutul paginilor.</translation>
 <translation id="4019629340646866719">Sistemul de operare Chromium este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar, la fel cum este și <ph name="BEGIN_LINK_LINUX_OSS" />mediul de dezvoltare Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Tradu ecranul</translation>
 <translation id="4023601594785368013">Limba originală: <ph name="LANGUAGE" /></translation>
@@ -586,6 +588,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="77283119132245232">Oferă servicii de urmărire a sistemului pentru <ph name="BROWSER_NAME" />. Dacă acest serviciu este dezactivat, monitorizările performanței create de browser nu vor include evenimente la nivel de sistem, cum ar fi evenimentele de schimbare a contextului și de fire pregătite.</translation>
 <translation id="7745317241717453663">Astfel, se vor șterge datele de navigare de pe acest dispozitiv. Pentru a recupera datele mai târziu, conectează-te la Chromium ca <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Programul de instalare nu a putut crea un director temporar. Verifică dacă există suficient spațiu liber și dacă ai drepturile necesare pentru a instala software-ul.</translation>
+<translation id="7750130090210923118">Revino la tema Chromium prestabilită</translation>
 <translation id="7786760609782648049">Crește eficiența în Chromium</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Împiedică persoanele care au acces la traficul tău de internet să vadă ce site-uri accesezi. Chromium folosește o conexiune securizată pentru a căuta adresa IP a unui site în DNS (Sistemul denumirilor de domenii).</translation>
@@ -686,6 +689,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8907580949721785412">Chromium încearcă să afișeze parolele. Pentru a permite acest lucru, introduceți parola pentru Windows.</translation>
 <translation id="8941642502866065432">Chromium nu se poate actualiza</translation>
 <translation id="897581876605952338">Sigla Chromium Enterprise</translation>
+<translation id="8981150672034878610">Nu se poate porni Chromium, deoarece a apărut o eroare la deschiderea profilului. Repornește Chromium.</translation>
 <translation id="8988036198400390003">Gestionează profilurile Chromium</translation>
 <translation id="9019929317751753759">Pentru mai multă siguranță în Chromium, am dezactivat următoarea extensie care nu este inclusă în <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> și care este posibil să fi fost adăugată fără știrea ta.</translation>
 <translation id="904366664621834601">Chromium a blocat descărcarea deoarece fișierul arhivă include alte fișiere care pot ascunde programe malware</translation>

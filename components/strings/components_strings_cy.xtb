@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Cadw IBAN?</translation>
 <translation id="1113869188872983271">&amp;Ailwneud aildrefnu</translation>
 <translation id="1118429183611783760">Sugnwr Llwch a Gofal Llawr</translation>
+<translation id="111897705806685148">Defnyddio Cod Pas o Ddyfais Arall</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i reoli pa wybodaeth Chrome rydych yn ei chadw yn eich Cyfrif Google</translation>
 <translation id="1122714970786750095">Electroneg a Thrydanol</translation>
 <translation id="1123753900084781868">Nid yw Capsiynau Byw ar gael ar hyn o bryd</translation>
@@ -4134,6 +4135,7 @@ Manylion ychwanegol:
 <translation id="7648527891719919697">Bydd y wefan hon yn parhau i fod wedi'i rhwystro oherwydd bod gennych Ddiogelwch Uwch wedi'i droi ymlaen yng <ph name="BEGIN_ANDROID_SETTINGS_LINK" />ngosodiadau Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Dysgu rhagor am y rhybudd hwn<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Storio ffeiliau ar y ddyfais hon</translation>
 <translation id="7649070708921625228">Cymorth</translation>
+<translation id="7650141368285545431">Defnyddio cod pas o ddyfais arall</translation>
 <translation id="7653957176542370971">Mae'r ddalen trinyddion taliadau ar gau</translation>
 <translation id="7655766454902053387">Rhestrau Swyddi</translation>
 <translation id="765676359832457558">Cuddio'r gosodiadau uwch...</translation>

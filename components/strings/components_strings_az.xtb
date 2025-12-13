@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">IBAN yadda saxlanılsın?</translation>
 <translation id="1113869188872983271">&amp;Yerbəyer etməyi ləğv edin</translation>
 <translation id="1118429183611783760">Tozsoranlar və döşəməyə qulluq</translation>
+<translation id="111897705806685148">Başqa cihazın giriş açarından istifadə edin</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab, sonra Enter düyməsinə basaraq Google Hesabında yadda saxladığınız Chrome məlumatlarını idarə edin</translation>
 <translation id="1122714970786750095">Elektronika və elektrik cihazları</translation>
 <translation id="1123753900084781868">Canlı Altyazı hazırda əlçatan deyil</translation>
@@ -4130,6 +4131,7 @@
 <translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android ayarlarında<ph name="END_ANDROID_SETTINGS_LINK" /> Qabaqcıl Qorumanı aktiv etdiyiniz üçün bu sayt blokda qalacaq. <ph name="BEGIN_LEARN_MORE_LINK" />Bu xəbərdarlıq haqqında ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Faylları bu cihazda saxlayın</translation>
 <translation id="7649070708921625228">Yardım</translation>
+<translation id="7650141368285545431">Başqa cihazın giriş açarından istifadə edin</translation>
 <translation id="7653957176542370971">Ödəniş səhifəsi bağlıdır</translation>
 <translation id="7655766454902053387">İş Siyahısı</translation>
 <translation id="765676359832457558">Qabaqcıl ayarları gizlədin...</translation>

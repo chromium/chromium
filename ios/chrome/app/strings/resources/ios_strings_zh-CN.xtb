@@ -156,6 +156,7 @@
 <translation id="1545749641540134597">扫描二维码</translation>
 <translation id="1545757265410828525">既往价格</translation>
 <translation id="1547610699249301703">分享密码</translation>
+<translation id="1554043146674176775">关闭 AI 模式</translation>
 <translation id="1554477036522844996">打开新的窗口</translation>
 <translation id="1558391695376153246">关闭无痕式标签页</translation>
 <translation id="1565371473877914088">打开新的无痕式标签页</translation>
@@ -457,6 +458,7 @@
 <translation id="2688535388040882469">横幅</translation>
 <translation id="2690858294534178585">相机正在使用中</translation>
 <translation id="2691653761409724435">无法离线查看</translation>
+<translation id="2697530870203420261">昵称无效</translation>
 <translation id="269819437389494246">您可以查看自己访问过的网页，也可将它们从历史记录中删除</translation>
 <translation id="2704606927547763573">已复制</translation>
 <translation id="2708051474374549906">根据系统向 Google 发送的浏览数据，实时地主动防范危险的网站、下载内容和扩展程序</translation>
@@ -1561,6 +1563,7 @@
 <translation id="6830728435402077660">不安全</translation>
 <translation id="6831043979455480757">翻译</translation>
 <translation id="6842136130964845393">若要确保您能随时访问自己的已保存密码，请验证是您本人在操作</translation>
+<translation id="6844773122575789617">开启 AI 模式</translation>
 <translation id="6851516051005285358">请求切换到桌面版网站</translation>
 <translation id="6857446173140146664">删除背景</translation>
 <translation id="6858718102216837409">添加语言…</translation>

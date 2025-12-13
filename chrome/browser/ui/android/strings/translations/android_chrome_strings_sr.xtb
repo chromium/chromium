@@ -427,6 +427,7 @@
 <translation id="2854916915045135148">Додирните и задржите да бисте прешли у режим без архивирања</translation>
 <translation id="2860954141821109167">Уверите се да је нека апликација за телефон омогућена на овом уређају</translation>
 <translation id="2861923151411510142">Неке Chrome функције више неће бити доступне</translation>
+<translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> и још 1 картица}one{<ph name="URL" /> и још <ph name="TAB_COUNT_MANY" /> картица}few{<ph name="URL" /> и још <ph name="TAB_COUNT_MANY" /> картице}other{<ph name="URL" /> и још <ph name="TAB_COUNT_MANY" /> картица}}</translation>
 <translation id="2869430948265924908">Да бисте заштитили осетљив садржај у аутомобилу, морате да примените закључавање профила аутомобила.  То можете да урадите помоћу PIN-а, кода или лозинке.</translation>
 <translation id="2870560284913253234">Сајт</translation>
 <translation id="2871733351037274014">Предучитавајте странице</translation>

@@ -118,6 +118,7 @@
 <translation id="2216543877350048334">Chrome から Google アカウントを削除するには、ログアウトしてください</translation>
 <translation id="2236949375853147973">マイ アクティビティ</translation>
 <translation id="22791603784558743">Gemini in Chrome Dev を閉じる</translation>
+<translation id="2284380654876659752">ユーザーがサイトにアクセスすると、Chrome はユーザーの IP アドレスを隠すプライバシー サーバーを経由して、URL の一部を難読化してから <ph name="BEGIN_LINK" />Google セーフ ブラウジング<ph name="END_LINK" />に送信します。サイトで不審な動作が検出された場合は、URL 全体とページ コンテンツの一部も送信されます。</translation>
 <translation id="2290014774651636340">Google API キーが欠落しています。Google Chrome の一部の機能は無効になります。</translation>
 <translation id="2290095356545025170">Google Chrome をアンインストールしてもよろしいですか？</translation>
 <translation id="2301513536169703857">すべてのデバイスで同じパスワード、ブックマーク、その他の設定を使用するには、Chrome にログインしてください</translation>

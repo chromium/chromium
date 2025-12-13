@@ -118,6 +118,7 @@
 <translation id="2216543877350048334">Ha szeretné eltávolítani Google-fiókját a Chrome-ból, jelentkezzen ki</translation>
 <translation id="2236949375853147973">Saját tevékenységek</translation>
 <translation id="22791603784558743">A Gemini bezárása a Chrome Devben</translation>
+<translation id="2284380654876659752">Amikor Ön felkeres egy webhelyet, a Chrome az URL egy obfuszkált (érthetetlenné tett) részét elküldi a <ph name="BEGIN_LINK" />Google Biztonságos Böngészésnek<ph name="END_LINK" /> egy olyan adatvédelmi szerveren keresztül, amely elrejti az Ön IP-címét. Ha valamelyik oldalon gyanús műveletet észlel, akkor a böngésző a teljes URL-eket és az oldal tartalmának egyes részeit is elküldi.</translation>
 <translation id="2290014774651636340">Hiányoznak Google API-kulcsok. A Google Chrome egyes funkciói kikapcsolnak.</translation>
 <translation id="2290095356545025170">Biztos benne, hogy eltávolítja a Google Chrome-ot?</translation>
 <translation id="2301513536169703857">Ha az összes eszközén szeretne hozzáférni jelszavaihoz, könyvjelzőihez és egyebekhez, jelentkezzen be a Chrome-ba</translation>

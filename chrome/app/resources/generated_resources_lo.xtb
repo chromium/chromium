@@ -6194,7 +6194,6 @@
 <translation id="520576054436518354">ໃຫ້ Gemini ເລືອກເບິ່ງໃຫ້ທ່ານ</translation>
 <translation id="5207949376430453814">ໝາຍເຄື່ອງໝາຍກຸບຂໍ້ຄວາມ</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> ຕ້ອງການກວດເບິ່ງວ່າທ່ານກຳລັງໃຊ້ອຸປະກອນ ChromeOS ທີ່ມີສິດຫຼືບໍ່.</translation>
-<translation id="5208722776934437424">ປ່ຽນແປງການອະນຸຍາດ</translation>
 <translation id="5208926629108082192">ຂໍ້ມູນເຄືອຂ່າຍມືຖືອຸປະກອນ</translation>
 <translation id="5208988882104884956">ເຄິ່ງຄວາມກ້ວາງ</translation>
 <translation id="5209320130288484488">ບໍ່ພົບອຸ​ປະ​ກອນ​</translation>
@@ -6759,7 +6758,6 @@
 <translation id="5600706100022181951">ການອັບເດດຈະຖືກດາວໂຫຼດໂດຍໃຊ້ຂໍ້ມູນມືຖື <ph name="UPDATE_SIZE_MB" /> MB. ທ່ານຕ້ອງການສືບຕໍ່ບໍ?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601833336918638013">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊຕ່າງໆຊອກຫາອຸປະກອນ Bluetooth</translation>
-<translation id="560213628963806709">ແອັບນີ້ໄດ້ເປີດແຖບ Chrome ໃໝ່ <ph name="OPENINGS_COUNT" /> ແຖບ. ທ່ານສາມາດຈັດການລັກສະນະການເຮັດວຽກນີ້ໄດ້ພາຍໃຕ້ການອະນຸຍາດ "ປັອບອັບ ແລະ ການປ່ຽນເສັ້ນທາງ".</translation>
 <translation id="5602586420788540146">ເປີດໃນກຸ່ມແຖບໃໝ່</translation>
 <translation id="5605758115928394442">ລະບົບໄດ້ສົ່ງການແຈ້ງເຕືອນຫາໂທລະສັບຂອງທ່ານແລ້ວເພື່ອຢືນຢັນວ່າແມ່ນທ່ານ.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ສ່ວນຂະຫຍາຍນີ້ຖືກບລັອກໄວ້}other{ສ່ວນຂະຫຍາຍເຫຼົ່ານີ້ຖືກບລັອກໄວ້}}</translation>
@@ -8016,7 +8014,6 @@
 <translation id="6493991254603208962">ຄວາມສະຫວ່າງ​ລົງ</translation>
 <translation id="6494327278868541139">ສະແດງລາຍລະອຽດການປົກປ້ອງທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ</translation>
 <translation id="6494483173119160146">ອຸປະກອນພົບຂໍ້ຜິດພາດທີ່ບໍ່ສາມາດກູ້ຄືນມາໄດ້. ກະລຸນາຣີເຊັດອຸປະກອນຂອງທ່ານ (ຂໍ້ມູນຜູ້ໃຊ້ທັງໝົດຈະຖືກລຶບອອກ) ແລ້ວລອງໃໝ່.</translation>
-<translation id="6495261233408033662">ປິດແຖບທີ່ເປີດຢູ່</translation>
 <translation id="6495266441917713704">ບໍ່ສາມາດໂອນຍ້າຍ Wi-Fi ໄດ້</translation>
 <translation id="6495453178162183932">ອັບເດດຮູບແບບສີສັນເປັນ Chrome ເຊິ່ງເປັນຄ່າເລີ່ມຕົ້ນແລ້ວ</translation>
 <translation id="6496641546298525838">ອຸປະກອນຂອງທ່ານ</translation>
@@ -9370,7 +9367,6 @@
 <translation id="7427348830195639090">ໜ້າພື້ນຫຼັງ: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">ໂປຣໄຟລ໌ນີ້ໄດ້ຮັບການຈັດການແລ້ວ</translation>
 <translation id="7427798576651127129">ການໂທຈາກ <ph name="DEVICE_NAME" /></translation>
-<translation id="7429004613638800673"><ph name="APP_NAME" /> ໄດ້ເປີດຫຼາຍແຖບ.</translation>
 <translation id="7429415133937917139">ຈຳລອງຜົນຮັບຂອງການສະແດງຜົນຕົວອັກສອນນູນສຳລັບຄົນຕາບອດທີ່ໂຫຼດຄືນໃໝ່ໄດ້ໃນແຜງ ChromeVox ຢູ່ເທິງສຸດຂອງໜ້າຈໍ</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> ອາດເປັນອັນຕະລາຍ. ເພີ່ມລະຫັດຜ່ານຫາກທ່ານຕ້ອງການໃຫ້ Chrome ຢັ້ງຢືນ ຫຼື ທ່ານສາມາດດາວໂຫຼດໂດຍກົງກໍໄດ້.</translation>
 <translation id="7431719494109538750">ບໍ່ພົບອຸປະກອນ HID ໃດ</translation>

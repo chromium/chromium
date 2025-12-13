@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Фото <ph name="INDEX" /> з <ph name="TOTAL_COUNT" /> останніх.</translation>
 <translation id="2201687081523799384">Згорнути Google Завдання</translation>
 <translation id="2208323208084708176">Режим уніфікованого комп’ютера</translation>
+<translation id="2210311543574621570">Утримуйте комбінацію клавіш Ctrl + V, щоб з’явився буфер обміну. Щоб відключити цю комбінацію клавіш, вимкніть експериментальний параметр #clipboard-history-longpress на сторінці chrome://flags.</translation>
 <translation id="2215920961700443347">Немає з’єднання з Інтернетом. Підключіться до Інтернету й повторіть спробу.</translation>
 <translation id="2222841058024245321">Робочий стіл 7</translation>
 <translation id="2223384056430485343">У режимі розділення екрана</translation>

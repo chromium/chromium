@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Vor Kurzem aufgenommenes Foto <ph name="INDEX" /> von <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Google Tasks minimieren</translation>
 <translation id="2208323208084708176">Unified Desktop-Modus</translation>
+<translation id="2210311543574621570">Die Zwischenablage wird angezeigt, wenn du Strg + V gedrückt hältst. Du kannst diese Tastenkombination deaktivieren, indem du unter „chrome://flags“ das Flag „#clipboard-history-longpress“ deaktivierst.</translation>
 <translation id="2215920961700443347">Kein Internet. Stell eine Internetverbindung her und versuche es noch einmal.</translation>
 <translation id="2222841058024245321">Desktop 7</translation>
 <translation id="2223384056430485343">In einem Splitscreen</translation>

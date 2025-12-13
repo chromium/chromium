@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">क्या आपको IBAN सेव करना है?</translation>
 <translation id="1113869188872983271">&amp;पुन: क्रमित करना वापस लाएं</translation>
 <translation id="1118429183611783760">वैक्यूम क्लीनर और फ़्लोर की देखभाल का अन्य सामान</translation>
+<translation id="111897705806685148">किसी दूसरे डिवाइस की पासकी इस्तेमाल करें</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, यह मैनेज करें कि आपके Google खाते में, Chrome के इस्तेमाल से जुड़ी कौनसी जानकारी सेव की जाएगी. इसके लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="1122714970786750095">इलेक्ट्रॉनिक्स और इलेक्ट्रिकल</translation>
 <translation id="1123753900084781868">अभी लाइव कैप्शन की सुविधा उपलब्ध नहीं है</translation>
@@ -2698,7 +2699,7 @@
 <translation id="5349543692327946794">लेबल (इंकजेट)</translation>
 <translation id="5351548097010183514">बिल्डिंग मटीरियल और उनकी सप्लाई</translation>
 <translation id="5354143049423063163">हेज फ़ंड</translation>
-<translation id="5355557959165512791">आप इस समय <ph name="SITE" /> पर नहीं जा सकते हैं क्योंकि उसका प्रमाणपत्र रद्द कर दिया गया है. नेटवर्क की गड़बड़ी और हमले आमतौर पर कुछ देर के लिए होते हैं, इसलिए मुमकिन है कि यह पेज बाद में काम करे.</translation>
+<translation id="5355557959165512791">आप इस समय <ph name="SITE" /> पर नहीं जा सकते हैं क्योंकि उसका प्रमाणपत्र रद्द कर दिया गया है. नेटवर्क की गड़बड़ी और हमले आम तौर पर कुछ देर के लिए होते हैं, इसलिए मुमकिन है कि यह पेज बाद में काम करे.</translation>
 <translation id="5360706051680403227">लैंप और लाइटिंग</translation>
 <translation id="536296301121032821">नीति सेटिंग संग्रहित करने में विफल</translation>
 <translation id="5363148545938487338">Salesforce</translation>
@@ -4135,6 +4136,7 @@
 <translation id="7648527891719919697">यह साइट ब्लॉक ही रहेगी, क्योंकि आपने <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android की सेटिंग<ph name="END_ANDROID_SETTINGS_LINK" /> में, ऐडवांस सुरक्षा की सेटिंग चालू की है. <ph name="BEGIN_LEARN_MORE_LINK" />इस चेतावनी के बारे में ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">फ़ाइलों को इस डिवाइस पर संग्रहित करें</translation>
 <translation id="7649070708921625228">सहायता</translation>
+<translation id="7650141368285545431">किसी दूसरे डिवाइस की पासकी इस्तेमाल करें</translation>
 <translation id="7653957176542370971">पैसे चुकाने की हैंडलर शीट बंद है</translation>
 <translation id="7655766454902053387">नौकरी के विज्ञापन</translation>
 <translation id="765676359832457558">बेहतर सेटिंग छिपाएं...</translation>

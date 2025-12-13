@@ -216,6 +216,7 @@
 <translation id="3313189106987092621">Chromium advarer deg før all innlasting av nettsteder via usikre tilkoblinger</translation>
 <translation id="3316771292331273802">Du logges av de fleste nettsteder når du lukker alle Chromium-vinduer, men du blir ikke logget av Google-kontoen din hvis du er logget på Chromium. For å la nettsteder huske deg, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">Standardsøkemotoren din er endret utenfor Chromium. For å beskytte deg har Chromium tilbakestilt den.</translation>
+<translation id="3331557257666250900">Logg på Chromium for å hente passordene og bokmerkene dine og mer på alle enheter</translation>
 <translation id="3352986031709923790">øverst til høyre i søkefeltet: høyre <ph name="RIGHT" /> %, øverst <ph name="TOP" /> %</translation>
 <translation id="3366305173356742781">Chromium-data i kontoen din</translation>
 <translation id="3369405342922656244">Søk på denne siden med Bildesøk</translation>
@@ -267,6 +268,7 @@
 <translation id="3971865010372729242">Når du skriver i adressefeltet eller søkefeltet, sender Chromium det du skriver, til organisasjonens søke-, AI- og agentverktøy for å få forslag.</translation>
 <translation id="3975724895399328945">Om &amp;Google Chrome for testing</translation>
 <translation id="3997429360543082038">Om ChromiumOS</translation>
+<translation id="4010059961270896984">Når du besøker nettsteder, sender Chromium en obfuskert del av nettadressen til <ph name="BEGIN_LINK" />Google Safe Browsing<ph name="END_LINK" /> via en personverntjener som skjuler IP-adressen din. Hvis nettsteder gjør noe mistenkelig, sendes også fullstendige nettadresser og deler av sideinnholdet.</translation>
 <translation id="4019629340646866719">ChromiumOS er basert på <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />, i likhet med <ph name="BEGIN_LINK_LINUX_OSS" />Linux-utviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Oversett skjermen</translation>
 <translation id="4023601594785368013">Originalspråk: <ph name="LANGUAGE" /></translation>
@@ -586,6 +588,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="77283119132245232">Leverer tjenester for systemsporing for <ph name="BROWSER_NAME" />. Hvis denne tjenesten er deaktivert, inkluderer ikke ytelsessporingene som nettleseren oppretter, systemomfattende hendelser som kontekstbytte og hendelser for trådklarhet.</translation>
 <translation id="7745317241717453663">Dette sletter nettlesingsdataene dine fra denne enheten. For å hente dataene dine igjen senere må du logge på Chromium som <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Installasjonsprogrammet kunne ikke opprette en midlertidig katalog. Kontroller at du har nok ledig diskplass og tillatelse til å installere programvare.</translation>
+<translation id="7750130090210923118">Tilbakestill til standardversjonen av Chromium</translation>
 <translation id="7786760609782648049">Gjør Chromium raskere</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Gjør det vanskeligere for folk med tilgang til internettrafikken din å se hvilke nettsteder du besøker. Chromium bruker en sikker tilkobling for å finne IP-adressen til nettsteder i DNS (Domain Name System).</translation>
@@ -686,6 +689,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8907580949721785412">Chromium forsøker å vise passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="8941642502866065432">Kan ikke oppdatere Chromium</translation>
 <translation id="897581876605952338">Chromium Enterprise-logo</translation>
+<translation id="8981150672034878610">Chromium kunne ikke starte, fordi det oppsto en feil ved åpning av profilen din. Prøv å starte Chromium på nytt.</translation>
 <translation id="8988036198400390003">Administrer Chromium-profiler</translation>
 <translation id="9019929317751753759">For å gjøre Chromium tryggere har vi slått av følgende utvidelse som ikke finnes i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, og som kan ha blitt lagt til uten at du vet det.</translation>
 <translation id="904366664621834601">Chromium har blokkert denne nedlastingen fordi arkivfilen inneholder andre filer som kan skjule skadelig programvare</translation>

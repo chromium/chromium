@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Да се запази ли IBAN?</translation>
 <translation id="1113869188872983271">&amp;Отмяна на пренареждането</translation>
 <translation id="1118429183611783760">Прахосмукачки и поддържане на подове</translation>
+<translation id="111897705806685148">Използване на ключ за достъп от друго устройство</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да управлявате каква информация от Chrome да се запазва в профила ви в Google</translation>
 <translation id="1122714970786750095">Електроника и електрически уреди</translation>
 <translation id="1123753900084781868">Понастоящем функцията „Надписи на живо“ не е налице</translation>
@@ -4135,6 +4136,7 @@
 <translation id="7648527891719919697">Този сайт ще остане блокиран, защото сте включили „Разширена защита“ от <ph name="BEGIN_ANDROID_SETTINGS_LINK" />настройките на Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече за това предупреждение<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Да съхранява файлове на това устройство.</translation>
 <translation id="7649070708921625228">Помощ</translation>
+<translation id="7650141368285545431">Използване на ключ за достъп от друго устройство</translation>
 <translation id="7653957176542370971">Листът на инструмента за обработване на плащания е затворен</translation>
 <translation id="7655766454902053387">Обяви за работа</translation>
 <translation id="765676359832457558">Скриване на разширените настройки...</translation>

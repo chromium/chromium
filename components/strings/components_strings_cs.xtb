@@ -73,6 +73,7 @@
 <translation id="1113000785583998331">Uložit kód IBAN?</translation>
 <translation id="1113869188872983271">&amp;Vrátit změnu uspořádání zpět</translation>
 <translation id="1118429183611783760">Vysavače a péče o podlahy</translation>
+<translation id="111897705806685148">Použít přístupový klíč z jiného zařízení</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter můžete spravovat, jaké informace z Chromu se ukládají do vašeho účtu Google</translation>
 <translation id="1122714970786750095">Elektronika a elektrotechnika</translation>
 <translation id="1123753900084781868">Okamžité titulky teď nejsou k dispozici</translation>
@@ -4129,6 +4130,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7648527891719919697">Tento web zůstane zablokován, protože máte v <ph name="BEGIN_ANDROID_SETTINGS_LINK" />nastavení systému Android <ph name="END_ANDROID_SETTINGS_LINK" />zapnutou pokročilou ochranu. <ph name="BEGIN_LEARN_MORE_LINK" />Další informace o tomto upozornění<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Ukládat soubory v tomto zařízení</translation>
 <translation id="7649070708921625228">Nápověda</translation>
+<translation id="7650141368285545431">Použít přístupový klíč z jiného zařízení</translation>
 <translation id="7653957176542370971">List obslužného nástroje pro platby je zavřený</translation>
 <translation id="7655766454902053387">Nabídky práce</translation>
 <translation id="765676359832457558">Skrýt rozšířená nastavení...</translation>
