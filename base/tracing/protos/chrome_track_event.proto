@@ -932,9 +932,16 @@ message EventLatency {
     repeated MissedVsyncsForJankReason missed_vsyncs_per_jank_reason = 2;
 
     // Deprecated in favor of `updates.real.abs_total_raw_delta_pixels`.
+    //
+    // The absolute total raw (unpredicted) delta of all scroll updates included
+    // in this frame (in pixels).
     optional float abs_total_raw_delta_pixels = 3;
 
     // Deprecated in favor of `updates.real.max_abs_inertial_raw_delta_pixels`.
+    //
+    // The maximum absolute raw (unpredicted) delta out of all inertial (fling)
+    // scroll updates included in this frame (in pixels). Zero if there were no
+    // inertial scroll updates in this frame.
     optional float max_abs_inertial_raw_delta_pixels = 4;
 
     // How many VSyncs were between (A) this frame and (B) the previous frame.
@@ -969,6 +976,18 @@ message EventLatency {
     optional int64 current_delivery_cutoff_us = 8;
 
     // Deprecated in favor of `damage_type`.
+    //
+    // Whether this frame is damaging. This frame is non-damaging if the
+    // following conditions are BOTH true:
+    //
+    //   1. All scroll updates in this frame are non-damaging. A scroll update
+    //      is non-damaging if it didn't cause a frame update and/or didn't
+    //      change the scroll offset.
+    //
+    //   2. All frames between (both ends exclusive):
+    //        a. the last frame presented by Chrome before this frame and
+    //        b. this frame
+    //      are non-damaging.
     optional bool is_damaging_frame = 9;
 
     // Information about the scroll updates that were included in this frame.
