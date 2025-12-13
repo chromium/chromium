@@ -1845,9 +1845,9 @@ _CONFIG = [
             'third_party/blink/renderer/modules/imagecapture/',
         ],
         'allowed': [
-            'cc::SkiaPaintCanvas',
             'libyuv::.+',
             'media::.+',
+            'viz::SkColorTypeToSinglePlaneSharedImageFormat',
         ]
     },
     {
