@@ -162,3 +162,36 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest, RequestOAuthTokenManual) {
   // Verify that the token is set in the mocked page.
   run_loop.Run();
 }
+
+// Verify that the OAuth token is refreshed after it expires.
+IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
+                       RequestOAuthTokenRefreshes) {
+  testing::NiceMock<MockContextualTasksPage> mock_page;
+  base::RunLoop run_loop;
+
+  // Expect SetOAuthToken to be called twice.
+  EXPECT_CALL(mock_page, SetOAuthToken(_))
+      .WillOnce([&](const std::string& token) {
+        EXPECT_EQ(kTestToken, token);
+        // Enable auto-issue for the next request. This will cause the token
+        // next token to be issued as "account_token".
+        identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
+      })
+      .WillOnce([&](const std::string& token) {
+        // Verify that the token is refreshed. It should be different from the
+        // first token.
+        EXPECT_NE(kTestToken, token);
+        run_loop.Quit();
+      });
+
+  mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> handler_receiver;
+  controller_->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                 std::move(handler_receiver));
+
+  // Respond to the first request with a short expiration.
+  base::Time expiration = base::Time::Now() + base::Seconds(1);
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kTestToken, expiration);
+
+  run_loop.Run();
+}
