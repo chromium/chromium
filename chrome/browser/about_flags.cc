@@ -878,7 +878,6 @@ const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonBelowResults[] = {
         {"AddContextButtonVariant", "below_results"},
         {"ShowCreateImageTool", "true"},
-        {"ShowRecentTabChip", "true"},
         {"ShowToolsAndModels", "true"},
         {"ShowVoiceSearchInSteadyComposebox","true"},
         {"ShowVoiceSearchInExpandedComposebox","true"},
@@ -887,7 +886,6 @@ const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonAboveResults[] = {
         {"AddContextButtonVariant", "above_results"},
         {"ShowCreateImageTool", "true"},
-        {"ShowRecentTabChip", "true"},
         {"ShowToolsAndModels", "true"},
         {"ShowVoiceSearchInSteadyComposebox","true"},
         {"ShowVoiceSearchInExpandedComposebox","true"},
@@ -896,7 +894,6 @@ const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonInline[] =
     {
         {"AddContextButtonVariant", "inline"},
         {"ShowCreateImageTool", "true"},
-        {"ShowRecentTabChip", "true"},
         {"ShowToolsAndModels", "true"},
         {"ShowVoiceSearchInSteadyComposebox","true"},
         {"ShowVoiceSearchInExpandedComposebox","true"},
@@ -905,9 +902,17 @@ const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonMultiFile[] = {
         {"AddContextButtonVariant", "below_results"},
         {"ShowCreateImageTool", "true"},
-        {"ShowRecentTabChip", "true"},
         {"ShowToolsAndModels", "true"},
         {"MaxNumFiles", "5"},
+};
+const FeatureEntry::FeatureParam
+    kWebUIOmniboxAimPopupAddContextButtonBelowResultsRecentTabChip[] = {
+        {"AddContextButtonVariant", "below_results"},
+        {"ShowCreateImageTool", "true"},
+        {"ShowToolsAndModels", "true"},
+        {"ShowVoiceSearchInSteadyComposebox", "true"},
+        {"ShowVoiceSearchInExpandedComposebox", "true"},
+        {"ShowRecentTabChip", "true"},
 };
 
 const FeatureEntry::FeatureVariation kWebUIOmniboxAimPopupVariations[] = {
@@ -924,7 +929,11 @@ const FeatureEntry::FeatureVariation kWebUIOmniboxAimPopupVariations[] = {
      std::size(kWebUIOmniboxAimPopupAddContextButtonInline), nullptr},
     {"- \"Add Context\" Button below results, 5 File Limit",
      kWebUIOmniboxAimPopupAddContextButtonMultiFile,
-     std::size(kWebUIOmniboxAimPopupAddContextButtonMultiFile), nullptr}};
+     std::size(kWebUIOmniboxAimPopupAddContextButtonMultiFile), nullptr},
+    {"- \"Add Context\" Button below results, Recent Tab Chip",
+     kWebUIOmniboxAimPopupAddContextButtonBelowResultsRecentTabChip,
+     std::size(kWebUIOmniboxAimPopupAddContextButtonBelowResultsRecentTabChip),
+     nullptr}};
 
 const FeatureEntry::FeatureParam kWebUIOmniboxPopupDebugSxS[] = {
     {"SxS", "true"}};
