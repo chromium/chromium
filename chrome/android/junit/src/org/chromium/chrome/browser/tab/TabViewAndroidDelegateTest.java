@@ -36,7 +36,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
-import org.chromium.ui.base.ApplicationViewportInsetSupplier;
+import org.chromium.ui.base.ApplicationViewportInsetTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 
@@ -58,7 +58,8 @@ public class TabViewAndroidDelegateTest {
 
     @Mock private ContentView mContentView;
 
-    private ApplicationViewportInsetSupplier mApplicationInsetSupplier;
+    private final ApplicationViewportInsetTracker mApplicationInsetSupplier =
+            ApplicationViewportInsetTracker.createForTests();
     private ObservableSupplierImpl<Integer> mVisualViewportInsetSupplier;
     private TabViewAndroidDelegate mViewAndroidDelegate;
 
@@ -67,13 +68,11 @@ public class TabViewAndroidDelegateTest {
 
         mVisualViewportInsetSupplier = new ObservableSupplierImpl<>();
 
-        mApplicationInsetSupplier = ApplicationViewportInsetSupplier.createForTests();
-
         // The the keyboard only insets the visual viewport while in RESIZES_VISUAL mode.
         mApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);
         mApplicationInsetSupplier.setKeyboardInsetSupplier(mVisualViewportInsetSupplier);
 
-        when(mWindowAndroid.getApplicationBottomInsetSupplier())
+        when(mWindowAndroid.getApplicationBottomInsetTracker())
                 .thenReturn(mApplicationInsetSupplier);
         when(mTab.getWindowAndroidChecked()).thenReturn(mWindowAndroid);
         when(mTab.getWebContents()).thenReturn(mWebContents);

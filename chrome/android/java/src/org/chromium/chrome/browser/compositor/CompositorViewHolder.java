@@ -89,7 +89,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.UiUtils;
-import org.chromium.ui.base.ApplicationViewportInsetSupplier;
+import org.chromium.ui.base.ApplicationViewportInsetTracker;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.EventOffsetHandler;
 import org.chromium.ui.base.SPenSupport;
@@ -215,7 +215,7 @@ public class CompositorViewHolder extends FrameLayout
     // TODO(crbug.com/265479149): We will remove |mInGesture| if we enable the
     // SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END feature.
     private int mNumGestureActiveTouches;
-    private @Nullable ApplicationViewportInsetSupplier mApplicationBottomInsetSupplier;
+    private @Nullable ApplicationViewportInsetTracker mApplicationBottomInsetSupplier;
 
     // Handler for changes to viewport insets.
     private @Nullable Callback<ViewportInsets> mOnViewportInsetsChanged;
@@ -631,12 +631,12 @@ public class CompositorViewHolder extends FrameLayout
      * Sets the ApplicationViewportInsetSupplier that will notify CompositorViewHolder when the
      * WebContent must be resized by viewport insets.
      */
-    public void setApplicationViewportInsetSupplier(ApplicationViewportInsetSupplier supplier) {
+    public void setApplicationViewportInsetSupplier(ApplicationViewportInsetTracker supplier) {
         assert mApplicationBottomInsetSupplier == null;
         mApplicationBottomInsetSupplier = supplier;
         mApplicationBottomInsetSupplier.setVirtualKeyboardMode(mVirtualKeyboardMode);
         mOnViewportInsetsChanged = (unused) -> handleWindowInsetChanged();
-        mApplicationBottomInsetSupplier.addObserver(mOnViewportInsetsChanged);
+        mApplicationBottomInsetSupplier.getSupplier().addObserver(mOnViewportInsetsChanged);
     }
 
     // This method is called when any viewport insets change but is needed to watch for keyboard
@@ -659,7 +659,7 @@ public class CompositorViewHolder extends FrameLayout
         setTab(null);
         if (mApplicationBottomInsetSupplier != null) {
             assert mOnViewportInsetsChanged != null;
-            mApplicationBottomInsetSupplier.removeObserver(mOnViewportInsetsChanged);
+            mApplicationBottomInsetSupplier.getSupplier().removeObserver(mOnViewportInsetsChanged);
         }
 
         mCompositorView.shutDown();
@@ -962,7 +962,7 @@ public class CompositorViewHolder extends FrameLayout
 
         int keyboardInset =
                 mApplicationBottomInsetSupplier != null
-                        ? assumeNonNull(mApplicationBottomInsetSupplier.get())
+                        ? assumeNonNull(mApplicationBottomInsetSupplier.getInsets())
                                 .webContentsHeightInset
                         : 0;
 
@@ -1256,7 +1256,8 @@ public class CompositorViewHolder extends FrameLayout
 
         if (mApplicationBottomInsetSupplier != null) {
             outRect.bottom -=
-                    assumeNonNull(mApplicationBottomInsetSupplier.get()).viewVisibleHeightInset;
+                    assumeNonNull(mApplicationBottomInsetSupplier.getInsets())
+                            .viewVisibleHeightInset;
         }
 
         // mApplicationBottomInsetSupplier doesn't include browser controls.
@@ -1274,7 +1275,8 @@ public class CompositorViewHolder extends FrameLayout
 
         if (mApplicationBottomInsetSupplier != null) {
             outRect.bottom -=
-                    assumeNonNull(mApplicationBottomInsetSupplier.get()).viewVisibleHeightInset;
+                    assumeNonNull(mApplicationBottomInsetSupplier.getInsets())
+                            .viewVisibleHeightInset;
         }
 
         // mApplicationBottomInsetSupplier doesn't include browser controls.

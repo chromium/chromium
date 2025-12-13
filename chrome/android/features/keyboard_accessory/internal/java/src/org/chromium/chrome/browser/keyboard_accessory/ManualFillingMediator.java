@@ -78,7 +78,6 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
-import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.ViewportInsets;
@@ -113,7 +112,7 @@ class ManualFillingMediator
     private final SparseArray<AccessorySheetTabCoordinator> mSheets = new SparseArray<>();
     private final PropertyModel mModel = ManualFillingProperties.createFillingModel();
     private WindowAndroid mWindowAndroid;
-    private ApplicationViewportInsetSupplier mApplicationViewportInsetSupplier;
+    private NonNullObservableSupplier<ViewportInsets> mApplicationViewportInsetTracker;
     private final ObservableSupplierImpl<Integer> mBottomInsetSupplier =
             new ObservableSupplierImpl<>();
     private final ManualFillingStateCache mStateCache = new ManualFillingStateCache();
@@ -229,8 +228,9 @@ class ManualFillingMediator
         mAccessorySheetVisualStateSupplier.set(mAccessorySheet);
         mAccessorySheet.setOnPageChangeListener(mKeyboardAccessory.getOnPageChangeListener());
         mAccessorySheet.setHeight(getIdealSheetHeight());
-        mApplicationViewportInsetSupplier = mWindowAndroid.getApplicationBottomInsetSupplier();
-        mApplicationViewportInsetSupplier.addObserver(mViewportInsetsObserver);
+        mApplicationViewportInsetTracker =
+                mWindowAndroid.getApplicationBottomInsetTracker().getSupplier();
+        mApplicationViewportInsetTracker.addObserver(mViewportInsetsObserver);
         mActivity.findViewById(android.R.id.content).addOnLayoutChangeListener(this);
         mBackPressManager = backPressManager;
         mBackPressChangedSupplier.set(shouldHideOnBackPress());
@@ -381,7 +381,7 @@ class ManualFillingMediator
         for (Tab tab : mObservedTabs) tab.removeObserver(mTabObserver);
         mObservedTabs.clear();
         mActivity.getFullscreenManager().removeObserver(mFullscreenObserver);
-        mApplicationViewportInsetSupplier.removeObserver(mViewportInsetsObserver);
+        mApplicationViewportInsetTracker.removeObserver(mViewportInsetsObserver);
         mBottomSheetController.removeObserver(mBottomSheetObserver);
         mBackPressChangedSupplier.set(false);
         mBackPressManager.removeHandler(this);
@@ -488,7 +488,7 @@ class ManualFillingMediator
         // bigger than an open keyboard — so if an open sheet affects the inset, we can safely
         // ignore it, too.
         height +=
-                mApplicationViewportInsetSupplier.get().webContentsHeightInset
+                mApplicationViewportInsetTracker.get().webContentsHeightInset
                         / mWindowAndroid.getDisplay().getDipScale();
 
         return height >= MINIMAL_AVAILABLE_VERTICAL_SPACE // Allows for a bar if not shown yet.
@@ -1022,7 +1022,7 @@ class ManualFillingMediator
         // viewport height (minus browser controls). This will correctly account for the virtual
         // keyboard mode which is baked into webContents' height. The CompositorViewHolder is
         // resized by the soft keyboard.
-        visibleViewportHeightPx += mApplicationViewportInsetSupplier.get().webContentsHeightInset;
+        visibleViewportHeightPx += mApplicationViewportInsetTracker.get().webContentsHeightInset;
 
         // Now remove the insets coming from this class. This will already include the sheet height.
         visibleViewportHeightPx -= mBottomInsetSupplier.get();

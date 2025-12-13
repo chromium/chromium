@@ -135,7 +135,7 @@ public class CustomTabBottomBarDelegate
 
         Callback<ViewportInsets> insetObserver = this::onViewportInsetChange;
         // TODO(REVIEW): Is it ok this doesn't remove itself?
-        mWindowAndroid.getApplicationBottomInsetSupplier().addObserver(insetObserver);
+        mWindowAndroid.getApplicationBottomInsetTracker().getSupplier().addObserver(insetObserver);
         mShadowHeightPx =
                 activity.getResources()
                         .getDimensionPixelSize(R.dimen.custom_tabs_bottom_bar_shadow_height);

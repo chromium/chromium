@@ -124,8 +124,8 @@ public class WindowAndroid
     private @Nullable View mAnimationPlaceholderView;
 
     /** A mechanism for observing and updating the application window's bottom inset. */
-    private final ApplicationViewportInsetSupplier mApplicationBottomInsetSupplier =
-            new ApplicationViewportInsetSupplier();
+    private final ApplicationViewportInsetTracker mApplicationBottomInsetSupplier =
+            new ApplicationViewportInsetTracker();
 
     private @Nullable AndroidPermissionDelegate mPermissionDelegate;
 
@@ -1000,7 +1000,7 @@ public class WindowAndroid
     /**
      * @return A mechanism for updating and observing the bottom inset of the browser window.
      */
-    public ApplicationViewportInsetSupplier getApplicationBottomInsetSupplier() {
+    public ApplicationViewportInsetTracker getApplicationBottomInsetTracker() {
         return mApplicationBottomInsetSupplier;
     }
 

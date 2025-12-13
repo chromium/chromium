@@ -86,7 +86,7 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-import org.chromium.ui.base.ApplicationViewportInsetSupplier;
+import org.chromium.ui.base.ApplicationViewportInsetTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
@@ -193,7 +193,7 @@ public class CompositorViewHolderUnitTest {
     private Tab mTab;
     private CompositorViewHolder mCompositorViewHolder;
     private BrowserControlsManager mBrowserControlsManager;
-    private ApplicationViewportInsetSupplier mViewportInsets;
+    private ApplicationViewportInsetTracker mViewportInsets;
     private ObservableSupplierImpl<Integer> mKeyboardInsetSupplier;
     private ObservableSupplierImpl<Integer> mKeyboardAccessoryInsetSupplier;
     private final UserDataHost mUserDataHost = new UserDataHost();
@@ -209,7 +209,7 @@ public class CompositorViewHolderUnitTest {
         // Setup the mock keyboard.
         KeyboardVisibilityDelegate.setInstance(mMockKeyboard);
 
-        mViewportInsets = ApplicationViewportInsetSupplier.createForTests();
+        mViewportInsets = ApplicationViewportInsetTracker.createForTests();
         when(mInsetObserver.isKeyboardInOverlayMode()).thenReturn(false);
         mViewportInsets.setInsetObserver(mInsetObserver);
 

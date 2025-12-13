@@ -8,7 +8,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.insets.InsetObserver;
@@ -34,20 +35,19 @@ import org.chromium.ui.mojom.VirtualKeyboardMode;
  * (https://crbug.com/1211066).
  *
  * <p>Features needing to know if anything is obscuring part of the screen listen to this class via
- * {@link #addObserver(Callback)} which observes changes to a {@link ViewportInsets} object which
- * has various inset types clients can use. See that class for more detials about the inset types.
+ * {@link #getSupplier()} which observes changes to a {@link ViewportInsets} object which has
+ * various inset types clients can use. See that class for more details about the inset types.
  *
  * <pre>
  * In general:
  *  - Features that want to modify the inset should pass around the {@link
- *    ApplicationViewportInsetSupplier} object.
+ *    ApplicationViewportInsetTracker} object.
  *  - Features only interested in what the current inset is should pass around an {@link
  *    ObservableSupplier<ViewportInsets>} object.
  * </pre>
  */
 @NullMarked
-public class ApplicationViewportInsetSupplier extends ObservableSupplierImpl<ViewportInsets>
-        implements Destroyable {
+public class ApplicationViewportInsetTracker implements Destroyable {
     /** Keyboard related suppliers */
     private @Nullable NonNullObservableSupplier<Integer> mKeyboardInsetSupplier;
 
@@ -60,31 +60,31 @@ public class ApplicationViewportInsetSupplier extends ObservableSupplierImpl<Vie
     /** The observer that gets attached to all inset suppliers. */
     private final Callback<Integer> mInsetSupplierObserver = (unused) -> computeInsets();
 
+    private final SettableNonNullObservableSupplier<ViewportInsets> mInsetSupplier =
+            ObservableSuppliers.createNonNull(new ViewportInsets());
+
     /**
      * By default, the virtual keyboard overlays content, only resizing the visual viewport.
      *
-     * Web content has APIs that change how the virtual keyboard interacts with content. This class
-     * needs to know which mode we're in to determine how different kinds of insets are computed.
+     * <p>Web content has APIs that change how the virtual keyboard interacts with content. This
+     * class needs to know which mode we're in to determine how different kinds of insets are
+     * computed.
      */
     @VirtualKeyboardMode.EnumType
     private int mVirtualKeyboardMode = VirtualKeyboardMode.RESIZES_VISUAL;
 
-    /** Default constructor. */
-    ApplicationViewportInsetSupplier() {
-        super();
-        // Make sure this is initialized to 0 since "Integer" is an object and would be null
-        // otherwise.
-        super.set(new ViewportInsets());
+    ApplicationViewportInsetTracker() {}
+
+    public static ApplicationViewportInsetTracker createForTests() {
+        return new ApplicationViewportInsetTracker();
     }
 
-    public static ApplicationViewportInsetSupplier createForTests() {
-        return new ApplicationViewportInsetSupplier();
+    public NonNullObservableSupplier<ViewportInsets> getSupplier() {
+        return mInsetSupplier;
     }
 
-    @Override
-    public void set(ViewportInsets value) {
-        throw new IllegalStateException(
-                "#set(...) should not be called directly on ApplicationViewportInsetSupplier.");
+    public ViewportInsets getInsets() {
+        return mInsetSupplier.get();
     }
 
     /** Clean up observers and suppliers. */
@@ -92,13 +92,14 @@ public class ApplicationViewportInsetSupplier extends ObservableSupplierImpl<Vie
     public void destroy() {
         setKeyboardInsetSupplier(null);
         setKeyboardAccessoryInsetSupplier(null);
+        mInsetSupplier.destroy();
     }
 
     /**
      * Notifies this object when the VirtualKeyboardMode of the currently active WebContents is
      * changed.
      *
-     * This can happen as a result of a web content API call or swapping a WebContents or Tab.
+     * <p>This can happen as a result of a web content API call or swapping a WebContents or Tab.
      */
     public void setVirtualKeyboardMode(@VirtualKeyboardMode.EnumType int mode) {
         if (mVirtualKeyboardMode == mode) return;
@@ -222,7 +223,7 @@ public class ApplicationViewportInsetSupplier extends ObservableSupplierImpl<Vie
 
         newValues.webContentsHeightInset = webContentsInset;
 
-        super.set(newValues);
+        mInsetSupplier.set(newValues);
     }
 
     private int intFromSupplier(@Nullable ObservableSupplier<Integer> supplier) {

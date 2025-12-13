@@ -21,7 +21,7 @@ import org.chromium.ui.mojom.VirtualKeyboardMode;
 /** Unit tests for the ApplicationViewportInsetSupplier. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
-public class ApplicationViewportInsetSupplierTest {
+public class ApplicationViewportInsetTrackerTest {
     /** A callback with the ability to get the last value pushed to it. */
     private static class CapturingCallback<T> implements Callback<T> {
         private T mValue;
@@ -36,20 +36,20 @@ public class ApplicationViewportInsetSupplierTest {
         }
     }
 
-    private ApplicationViewportInsetSupplier mWindowApplicationInsetSupplier;
+    private ApplicationViewportInsetTracker mWindowApplicationInsetSupplier;
     private ObservableSupplierImpl<Integer> mKeyboardInsetSupplier;
     private CapturingCallback<ViewportInsets> mInsetObserver;
 
     @Before
     public void setUp() {
-        mWindowApplicationInsetSupplier = new ApplicationViewportInsetSupplier();
+        mWindowApplicationInsetSupplier = new ApplicationViewportInsetTracker();
         mKeyboardInsetSupplier = new ObservableSupplierImpl<>();
 
         mInsetObserver = new CapturingCallback<>();
 
         mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);
         mWindowApplicationInsetSupplier.setKeyboardInsetSupplier(mKeyboardInsetSupplier);
-        mWindowApplicationInsetSupplier.addObserver(mInsetObserver);
+        mWindowApplicationInsetSupplier.getSupplier().addObserver(mInsetObserver);
 
         // Clear the observer initially so tests can check whether it was called.
         mInsetObserver.onResult(null);
@@ -59,19 +59,19 @@ public class ApplicationViewportInsetSupplierTest {
     public void testSupplierDidNotSetValue() {
         assertNotNull(
                 "Supplier should provide a non-null value even when unset.",
-                mWindowApplicationInsetSupplier.get());
+                mWindowApplicationInsetSupplier.getInsets());
         assertEquals(
                 "Initial value for viewVisibleHeightInset is incorrect.",
                 0,
-                mWindowApplicationInsetSupplier.get().viewVisibleHeightInset);
+                mWindowApplicationInsetSupplier.getInsets().viewVisibleHeightInset);
         assertEquals(
                 "Initial value for webContentsHeightInset is incorrect.",
                 0,
-                mWindowApplicationInsetSupplier.get().webContentsHeightInset);
+                mWindowApplicationInsetSupplier.getInsets().webContentsHeightInset);
         assertEquals(
                 "Initial value for visualViewportBottomInset is incorrect.",
                 0,
-                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+                mWindowApplicationInsetSupplier.getInsets().visualViewportBottomInset);
     }
 
     @Test
@@ -259,35 +259,35 @@ public class ApplicationViewportInsetSupplierTest {
         assertEquals(
                 "VisualViewport inset initially 0",
                 0,
-                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+                mWindowApplicationInsetSupplier.getInsets().visualViewportBottomInset);
 
         mKeyboardInsetSupplier.set(10);
 
         assertEquals(
                 "Keyboard insets visual viewport",
                 10,
-                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+                mWindowApplicationInsetSupplier.getInsets().visualViewportBottomInset);
 
         accessorySupplier.set(20);
 
         assertEquals(
                 "Accessory insets visual viewport",
                 30,
-                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+                mWindowApplicationInsetSupplier.getInsets().visualViewportBottomInset);
 
         mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(null);
 
         assertEquals(
                 "Removing accessory removes visual viewport inset",
                 10,
-                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+                mWindowApplicationInsetSupplier.getInsets().visualViewportBottomInset);
 
         mWindowApplicationInsetSupplier.setKeyboardInsetSupplier(null);
 
         assertEquals(
                 "Removing keyboard removes visual viewport inset",
                 0,
-                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+                mWindowApplicationInsetSupplier.getInsets().visualViewportBottomInset);
     }
 
     @Test
@@ -300,7 +300,7 @@ public class ApplicationViewportInsetSupplierTest {
         assertEquals(
                 "VisualViewport inset initially 0",
                 0,
-                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+                mWindowApplicationInsetSupplier.getInsets().visualViewportBottomInset);
 
         mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_CONTENT);
 
@@ -308,13 +308,13 @@ public class ApplicationViewportInsetSupplierTest {
         assertEquals(
                 "Keyboard doesn't inset visual viewport with RESIZES_CONTENT",
                 0,
-                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+                mWindowApplicationInsetSupplier.getInsets().visualViewportBottomInset);
 
         accessorySupplier.set(20);
         assertEquals(
                 "Accessory doesn't inset visual viewport with RESIZES_CONTENT",
                 0,
-                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+                mWindowApplicationInsetSupplier.getInsets().visualViewportBottomInset);
 
         mWindowApplicationInsetSupplier.setVirtualKeyboardMode(
                 VirtualKeyboardMode.OVERLAYS_CONTENT);
@@ -323,19 +323,19 @@ public class ApplicationViewportInsetSupplierTest {
         assertEquals(
                 "Keyboard doesn't inset visual viewport with OVERLAYS_CONTENT",
                 0,
-                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+                mWindowApplicationInsetSupplier.getInsets().visualViewportBottomInset);
 
         accessorySupplier.set(25);
         assertEquals(
                 "Accessory doesn't inset visual viewport with OVERLAYS_CONTENT",
                 0,
-                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+                mWindowApplicationInsetSupplier.getInsets().visualViewportBottomInset);
 
         mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);
         assertEquals(
                 "Accessory and keyboard inset visual viewport with RESIZES_VISUAL",
                 37,
-                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+                mWindowApplicationInsetSupplier.getInsets().visualViewportBottomInset);
     }
 
     @Test
