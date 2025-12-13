@@ -9,6 +9,7 @@ import type {ComposeboxElement} from 'chrome://resources/cr_components/composebo
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
+import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -154,6 +155,8 @@ suite('Composebox voice search', () => {
         assertTrue(mockSpeechRecognition.voiceSearchInProgress);
         assertStyle(composeboxElement.$.composebox, 'opacity', '0');
         assertStyle(composeboxElement.$.voiceSearch, 'display', 'inline');
+        assertEquals(
+            composeboxElement.animationState, GlowAnimationState.LISTENING);
       });
 
   test('on result updates the searchbox input', async () => {
@@ -236,6 +239,7 @@ suite('Composebox voice search', () => {
     assertEquals(searchboxHandler.getCallCount('submitQuery'), 0);
     assertStyle(composeboxElement.$.composebox, 'display', 'flex');
     assertStyle(composeboxElement.$.voiceSearch, 'display', 'none');
+    assertEquals(composeboxElement.animationState, GlowAnimationState.NONE);
   });
 
   test('idle timer submits voice search if final result exists', async () => {
@@ -322,6 +326,7 @@ suite('Composebox voice search', () => {
         assertEquals(searchboxHandler.getCallCount('submitQuery'), 0);
         assertStyle(composeboxElement.$.composebox, 'display', 'flex');
         assertStyle(composeboxElement.$.voiceSearch, 'display', 'none');
+        assertEquals(composeboxElement.animationState, GlowAnimationState.NONE);
       });
 
   test('on error shows error container for NOT_ALLOWED', async () => {
@@ -351,6 +356,8 @@ suite('Composebox voice search', () => {
     assertTrue(inputElement!.hidden);
     assertStyle(composeboxElement.$.composebox, 'opacity', '0');
     assertStyle(composeboxElement.$.voiceSearch, 'display', 'inline');
+    assertEquals(
+        composeboxElement.animationState, GlowAnimationState.LISTENING);
   });
 
   test('on error closes voice search for other errors', async () => {
@@ -383,6 +390,7 @@ suite('Composebox voice search', () => {
 
     assertStyle(composeboxElement.$.composebox, 'display', 'flex');
     assertStyle(composeboxElement.$.voiceSearch, 'display', 'none');
+    assertEquals(composeboxElement.animationState, GlowAnimationState.NONE);
   });
 
 });
