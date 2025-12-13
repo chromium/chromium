@@ -4436,6 +4436,11 @@ Called by update_autofill_enums.py.-->
   <int value="12" label="Not shown: some inputs already contain values"/>
 </enum>
 
+<enum name="TouchToFillBnplSuggestionInteraction">
+  <int value="0" label="BNPL suggestion was shown and remained selectable"/>
+  <int value="1" label="BNPL suggestion was selected"/>
+</enum>
+
 <enum name="UploadPaymentMethodOrigin">
   <int value="0" label="Upload was for existing local payment method"/>
   <int value="1" label="Upload was for newly-seen payment method"/>

@@ -7962,6 +7962,27 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
+    name="Autofill.TouchToFill.Bnpl.HomeScreen.SuggestionInteraction.{BnplSuggestionVisibility}"
+    enum="TouchToFillBnplSuggestionInteraction" expires_after="2026-06-01">
+  <owner>ferny@google.com</owner>
+  <owner>viplavkadam@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records user interaction with the BNPL suggestion, based on its initial
+    visibility in the Touch to Fill bottom sheet. The {BnplSuggestionVisibility}
+    variants specify the suggestion's initial visibility when the Touch To Fill
+    bottom sheet opens. The metric is recorded when the BNPL suggestion was
+    shown and remained selectable after amount extraction completed, and when it
+    is selected. Logged only when touch exploration is disabled.
+  </summary>
+  <token key="BnplSuggestionVisibility">
+    <variant name="StartedFullyVisible"/>
+    <variant name="StartedNotVisible"/>
+    <variant name="StartedPartiallyVisible"/>
+  </token>
+</histogram>
+
+<histogram
     name="Autofill.TouchToFill.Bnpl.SelectIssuerScreen.NumberOfIssuersShown"
     units="issuers" expires_after="2026-06-01">
   <owner>vinnypersky@google.com</owner>

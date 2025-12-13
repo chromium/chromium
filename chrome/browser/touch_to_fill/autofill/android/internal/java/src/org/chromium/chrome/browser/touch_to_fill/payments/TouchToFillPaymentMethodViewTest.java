@@ -115,6 +115,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodViewBinder.COMPLETE_OPACITY_ALPHA;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodViewBinder.GRAYED_OUT_OPACITY_ALPHA;
 
+import android.graphics.Rect;
 import android.text.SpannableString;
 import android.text.style.ClickableSpan;
 import android.view.MotionEvent;
@@ -729,6 +730,115 @@ public class TouchToFillPaymentMethodViewTest {
                 mBottomSheetController, BottomSheetController.SheetState.FULL);
 
         assertFalse(recyclerView.isLayoutSuppressed());
+    }
+
+    @Test
+    @MediumTest
+    public void testSheetAtHalfHeightShowsThreeAndAHalfItems() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(new ListItem(HEADER, createHeaderModel()));
+                    // Add 5 credit card suggestions to the model.
+                    for (int i = 0; i < 5; i++) {
+                        mTouchToFillPaymentMethodModel
+                                .get(SHEET_ITEMS)
+                                .add(
+                                        new ListItem(
+                                                CREDIT_CARD,
+                                                createCardSuggestionModel(
+                                                        VISA_SUGGESTION, mItemCollectionInfo)));
+                    }
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // The sheet should be in the half-open state.
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+
+        // The header is at position 0, so the suggestions are at positions 1, 2, 3, 4, and 5.
+        RecyclerView recyclerView = mTouchToFillPaymentMethodView.getSheetItemListView();
+        View thirdItem = recyclerView.getLayoutManager().findViewByPosition(3);
+        View fourthItem = recyclerView.getLayoutManager().findViewByPosition(4);
+        View fifthItem = recyclerView.getLayoutManager().findViewByPosition(5);
+
+        assertNotNull("Third item should not be null", thirdItem);
+        assertNotNull("Fourth item should not be null", fourthItem);
+        assertNotNull("Fifth item should not be null", fifthItem);
+
+        // Check the visibility of the third, fourth, and fifth items.
+        Rect thirdItemRect = new Rect();
+        boolean thirdItemIsFullyVisible = thirdItem.getGlobalVisibleRect(thirdItemRect);
+        assertTrue(
+                "Third item should be fully visible",
+                thirdItemIsFullyVisible && thirdItemRect.height() == thirdItem.getHeight());
+
+        Rect fourthItemRect = new Rect();
+        boolean fourthItemIsPartiallyVisible = fourthItem.getGlobalVisibleRect(fourthItemRect);
+        assertTrue(
+                "Fourth item should be partially visible",
+                fourthItemIsPartiallyVisible
+                        && fourthItemRect.height() < fourthItem.getHeight()
+                        && fourthItemRect.height() > 0);
+
+        Rect fifthItemRect = new Rect();
+        boolean fifthItemIsFullyVisible = fifthItem.getGlobalVisibleRect(fifthItemRect);
+        assertFalse("Fifth item should not be visible", fifthItemIsFullyVisible);
+    }
+
+    @Test
+    @MediumTest
+    public void testSheetAtFullHeightShowsFiveItems() {
+        runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
+                });
+
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(new ListItem(HEADER, createHeaderModel()));
+                    // Add 5 credit card suggestions to the model.
+                    for (int i = 0; i < 5; i++) {
+                        mTouchToFillPaymentMethodModel
+                                .get(SHEET_ITEMS)
+                                .add(
+                                        new ListItem(
+                                                CREDIT_CARD,
+                                                createCardSuggestionModel(
+                                                        VISA_SUGGESTION, mItemCollectionInfo)));
+                    }
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // The sheet should be expanded to full height.
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+
+        // The header is at position 0, so the suggestions are at positions 1, 2, 3, 4, and 5.
+        View fifthItem =
+                mTouchToFillPaymentMethodView
+                        .getSheetItemListView()
+                        .getLayoutManager()
+                        .findViewByPosition(5);
+        assertNotNull("Fifth item should not be null", fifthItem);
+
+        // Check the visibility of the fifth item.
+        pollUiThread(
+                () -> {
+                    Rect fifthItemRect = new Rect();
+                    return fifthItem.getGlobalVisibleRect(fifthItemRect);
+                },
+                "Fifth item should be fully visible when touch exploration is enabled.");
+
+        runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
+                });
     }
 
     @Test

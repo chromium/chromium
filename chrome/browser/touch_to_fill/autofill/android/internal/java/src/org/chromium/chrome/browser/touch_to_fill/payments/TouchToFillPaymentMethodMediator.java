@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import static org.chromium.chrome.browser.autofill.AutofillUiUtils.openLink;
+import static org.chromium.chrome.browser.touch_to_fill.common.TouchToFillViewBase.MAX_FULLY_VISIBLE_SUGGESTION_COUNT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.APPLY_ISSUER_DEACTIVATED_STYLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ISSUER_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ISSUER_LINKED;
@@ -133,6 +134,7 @@ import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.payments.ui.InputProtector;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -231,6 +233,32 @@ class TouchToFillPaymentMethodMediator {
         int WALLET_LINK_CLICKED = 3;
         int LEGAL_MESSAGE_LINK_CLICKED = 4;
         int MAX_VALUE = LEGAL_MESSAGE_LINK_CLICKED;
+    }
+
+    /** The BNPL suggestion visibility when the Touch To Fill sheet opens. */
+    @IntDef({
+        TouchToFillBnplSuggestionVisibility.STARTED_NOT_VISIBLE,
+        TouchToFillBnplSuggestionVisibility.STARTED_PARTIALLY_VISIBLE,
+        TouchToFillBnplSuggestionVisibility.STARTED_FULLY_VISIBLE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface TouchToFillBnplSuggestionVisibility {
+        int STARTED_NOT_VISIBLE = 0;
+        int STARTED_PARTIALLY_VISIBLE = 1;
+        int STARTED_FULLY_VISIBLE = 2;
+        int MAX_VALUE = STARTED_FULLY_VISIBLE;
+    }
+
+    /** The BNPL suggestion interaction used for logging when the Touch To Fill sheet opens. */
+    @IntDef({
+        TouchToFillBnplSuggestionInteraction.SHOWN_AND_SELECTABLE,
+        TouchToFillBnplSuggestionInteraction.SELECTED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface TouchToFillBnplSuggestionInteraction {
+        int SHOWN_AND_SELECTABLE = 0;
+        int SELECTED = 1;
+        int MAX_VALUE = SELECTED;
     }
 
     @VisibleForTesting
@@ -350,6 +378,18 @@ class TouchToFillPaymentMethodMediator {
 
     // LINT.ThenChange(/tools/metrics/actions/actions.xml)
 
+    @VisibleForTesting
+    static final String TOUCH_TO_FILL_BNPL_SUGGESTION_STARTED_NOT_VISIBLE_HISTOGRAM =
+            "Autofill.TouchToFill.Bnpl.HomeScreen.SuggestionInteraction.StartedNotVisible";
+
+    @VisibleForTesting
+    static final String TOUCH_TO_FILL_BNPL_SUGGESTION_STARTED_PARTIALLY_VISIBLE_HISTOGRAM =
+            "Autofill.TouchToFill.Bnpl.HomeScreen.SuggestionInteraction.StartedPartiallyVisible";
+
+    @VisibleForTesting
+    static final String TOUCH_TO_FILL_BNPL_SUGGESTION_STARTED_FULLY_VISIBLE_HISTOGRAM =
+            "Autofill.TouchToFill.Bnpl.HomeScreen.SuggestionInteraction.StartedFullyVisible";
+
     // LINT.IfChange
     private static final String WALLET_LINK_TEXT = "wallet.google.com";
 
@@ -374,7 +414,7 @@ class TouchToFillPaymentMethodMediator {
     // It holds the properties needed to render the BNPL chip on the bottom sheet.
     // It acts as a bridge between the data and the view.
     private PropertyModel mBnplSuggestionModel;
-
+    private @TouchToFillBnplSuggestionVisibility int mBnplSuggestionVisibility;
     private InputProtector mInputProtector = new InputProtector();
 
     void initialize(
@@ -429,6 +469,19 @@ class TouchToFillPaymentMethodMediator {
                                 suggestion,
                                 new FillableItemCollectionInfo(i + 1, mSuggestions.size()));
                 sheetItems.add(new ListItem(BNPL, mBnplSuggestionModel));
+
+                // The 1-based index of the BNPL suggestion in mSuggestions.
+                int bnplSuggestionPosition = i + 1;
+                if (bnplSuggestionPosition <= MAX_FULLY_VISIBLE_SUGGESTION_COUNT) {
+                    mBnplSuggestionVisibility =
+                            TouchToFillBnplSuggestionVisibility.STARTED_FULLY_VISIBLE;
+                } else if (bnplSuggestionPosition == MAX_FULLY_VISIBLE_SUGGESTION_COUNT + 1) {
+                    mBnplSuggestionVisibility =
+                            TouchToFillBnplSuggestionVisibility.STARTED_PARTIALLY_VISIBLE;
+                } else {
+                    mBnplSuggestionVisibility =
+                            TouchToFillBnplSuggestionVisibility.STARTED_NOT_VISIBLE;
+                }
             } else {
                 sheetItems.add(
                         new ListItem(
@@ -636,6 +689,10 @@ class TouchToFillPaymentMethodMediator {
                 mBnplSuggestion.getPaymentsPayload().setExtractedAmount(extractedAmount);
                 mBnplSuggestionModel.set(IS_ENABLED, true);
                 mBnplSuggestionModel.set(SECONDARY_TEXT, mBnplSuggestion.getSublabel());
+
+                recordTouchToFillBnplSuggestionVisibility(
+                        mBnplSuggestionVisibility,
+                        TouchToFillBnplSuggestionInteraction.SHOWN_AND_SELECTABLE);
             } else {
                 mBnplSuggestion.getPaymentsPayload().setExtractedAmount(null);
                 mBnplSuggestionModel.set(IS_ENABLED, false);
@@ -1046,6 +1103,9 @@ class TouchToFillPaymentMethodMediator {
     private void onAcceptedBnplSuggestion(AutofillSuggestion suggestion) {
         if (!mInputProtector.shouldInputBeProcessed()) return;
         mDelegate.bnplSuggestionSelected(suggestion.getPaymentsPayload().getExtractedAmount());
+
+        recordTouchToFillBnplSuggestionVisibility(
+                mBnplSuggestionVisibility, TouchToFillBnplSuggestionInteraction.SELECTED);
     }
 
     private void onAcceptedBnplIssuer(String issuerId, boolean isLinked) {
@@ -1486,6 +1546,38 @@ class TouchToFillPaymentMethodMediator {
 
     private static void recordTouchToFillBnplUserAction(String userAction) {
         RecordUserAction.record(TOUCH_TO_FILL_BNPL_USER_ACTION + userAction);
+    }
+
+    @VisibleForTesting
+    static void recordTouchToFillBnplSuggestionVisibility(
+            @TouchToFillBnplSuggestionVisibility int visibility,
+            @TouchToFillBnplSuggestionInteraction int interaction) {
+        // These metrics are only logged when touch exploration is disabled. With touch exploration,
+        // the bottom sheet opens to its full height, so all suggestions are visible. Without it,
+        // the sheet opens to half height, guaranteeing that at most
+        // MAX_FULLY_VISIBLE_SUGGESTION_COUNT suggestions are fully visible initially. For more
+        // information, see TouchToFillViewBase.java.
+        if (AccessibilityState.isTouchExplorationEnabled()) return;
+
+        boolean wasSuggestionSelected =
+                interaction == TouchToFillBnplSuggestionInteraction.SELECTED;
+        switch (visibility) {
+            case TouchToFillBnplSuggestionVisibility.STARTED_NOT_VISIBLE:
+                RecordHistogram.recordBooleanHistogram(
+                        TOUCH_TO_FILL_BNPL_SUGGESTION_STARTED_NOT_VISIBLE_HISTOGRAM,
+                        wasSuggestionSelected);
+                break;
+            case TouchToFillBnplSuggestionVisibility.STARTED_PARTIALLY_VISIBLE:
+                RecordHistogram.recordBooleanHistogram(
+                        TOUCH_TO_FILL_BNPL_SUGGESTION_STARTED_PARTIALLY_VISIBLE_HISTOGRAM,
+                        wasSuggestionSelected);
+                break;
+            case TouchToFillBnplSuggestionVisibility.STARTED_FULLY_VISIBLE:
+                RecordHistogram.recordBooleanHistogram(
+                        TOUCH_TO_FILL_BNPL_SUGGESTION_STARTED_FULLY_VISIBLE_HISTOGRAM,
+                        wasSuggestionSelected);
+                break;
+        }
     }
 
     void setInputProtectorForTesting(InputProtector inputProtector) {

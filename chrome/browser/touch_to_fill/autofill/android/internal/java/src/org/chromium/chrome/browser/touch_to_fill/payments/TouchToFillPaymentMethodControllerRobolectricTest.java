@@ -44,6 +44,9 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_AFFILIATED_LOYALTY_CARDS_SCREEN_INDEX_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_ALL_LOYALTY_CARDS_SCREEN_INDEX_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_BNPL_SELECT_ISSUER_NUMBER_OF_ISSUERS_SHOWN;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_BNPL_SUGGESTION_STARTED_FULLY_VISIBLE_HISTOGRAM;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_BNPL_SUGGESTION_STARTED_NOT_VISIBLE_HISTOGRAM;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_BNPL_SUGGESTION_STARTED_PARTIALLY_VISIBLE_HISTOGRAM;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_BNPL_USER_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_CREDIT_CARD_INDEX_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_CREDIT_CARD_OUTCOME_HISTOGRAM;
@@ -166,6 +169,8 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillResourceProvider;
+import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TouchToFillBnplSuggestionInteraction;
+import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TouchToFillBnplSuggestionVisibility;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TouchToFillCreditCardOutcome;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TouchToFillIbanOutcome;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TouchToFillLoyaltyCardOutcome;
@@ -182,6 +187,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.payments.ui.InputProtector;
 import org.chromium.components.payments.ui.test_support.FakeClock;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -909,6 +915,162 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                                 R.string
                                         .autofill_card_bnpl_select_provider_bottom_sheet_footnote_hide_option),
                 /* expectedEnabled= */ false);
+    }
+
+    @Test
+    public void testBnplSuggestionPosition() {
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION, BNPL_SUGGESTION), /* shouldShowScanCreditCard= */ false);
+        ModelList sheetItems = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+
+        assertThat(sheetItems.size(), is(4));
+        assertThat(getModelsOfType(sheetItems, HEADER).size(), is(1));
+        assertThat(getModelsOfType(sheetItems, CREDIT_CARD).size(), is(1));
+        assertThat(getModelsOfType(sheetItems, BNPL).size(), is(1));
+        assertThat(getModelsOfType(sheetItems, FOOTER).size(), is(1));
+
+        ListItem bnplSuggestion = sheetItems.get(2);
+        assertThat(bnplSuggestion.type, is(TouchToFillPaymentMethodProperties.ItemType.BNPL));
+    }
+
+    @Test
+    public void testRecordsBnplSuggestionStartedFullyVisibleHistograms() {
+        // The BNPL suggestion is the third suggestion to ensure that it starts fully visible.
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION, VISA_SUGGESTION, BNPL_SUGGESTION),
+                /* shouldShowScanCreditCard= */ false);
+
+        // Simulate amount extraction succeeding, which ensures the BNPL suggestion remains
+        // selectable.
+        mCoordinator
+                .getMediatorForTesting()
+                .onPurchaseAmountExtracted(
+                        /* bnplIssuerContexts= */ Collections.emptyList(),
+                        /* extractedAmount= */ 5L,
+                        /* isAmountSupportedByAnyIssuer= */ true);
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        TOUCH_TO_FILL_BNPL_SUGGESTION_STARTED_FULLY_VISIBLE_HISTOGRAM,
+                        /* sample= */ TouchToFillBnplSuggestionInteraction.SHOWN_AND_SELECTABLE));
+
+        // Simulate the user selecting the BNPL suggestion.
+        PropertyModel bnplSuggestionModel =
+                mCoordinator.getMediatorForTesting().getBnplSuggestionModelForTesting();
+        assertNotNull(bnplSuggestionModel);
+        mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
+        bnplSuggestionModel.get(ON_BNPL_CLICK_ACTION).run();
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        TOUCH_TO_FILL_BNPL_SUGGESTION_STARTED_FULLY_VISIBLE_HISTOGRAM,
+                        /* sample= */ TouchToFillBnplSuggestionInteraction.SELECTED));
+    }
+
+    @Test
+    public void testRecordsBnplSuggestionStartedPartiallyVisibleHistograms() {
+        // The BNPL suggestion is the fourth suggestion to ensure that it starts partially visible.
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION, VISA_SUGGESTION, VISA_SUGGESTION, BNPL_SUGGESTION),
+                /* shouldShowScanCreditCard= */ false);
+
+        // Simulate amount extraction succeeding, which ensures the BNPL suggestion remains
+        // selectable.
+        mCoordinator
+                .getMediatorForTesting()
+                .onPurchaseAmountExtracted(
+                        /* bnplIssuerContexts= */ Collections.emptyList(),
+                        /* extractedAmount= */ 5L,
+                        /* isAmountSupportedByAnyIssuer= */ true);
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        TOUCH_TO_FILL_BNPL_SUGGESTION_STARTED_PARTIALLY_VISIBLE_HISTOGRAM,
+                        /* sample= */ TouchToFillBnplSuggestionInteraction.SHOWN_AND_SELECTABLE));
+
+        // Simulate the user selecting the BNPL suggestion.
+        PropertyModel bnplSuggestionModel =
+                mCoordinator.getMediatorForTesting().getBnplSuggestionModelForTesting();
+        assertNotNull(bnplSuggestionModel);
+        mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
+        bnplSuggestionModel.get(ON_BNPL_CLICK_ACTION).run();
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        TOUCH_TO_FILL_BNPL_SUGGESTION_STARTED_PARTIALLY_VISIBLE_HISTOGRAM,
+                        /* sample= */ TouchToFillBnplSuggestionInteraction.SELECTED));
+    }
+
+    @Test
+    public void testRecordsBnplSuggestionStartedNotVisibleHistograms() {
+        // The BNPL suggestion is the fifth suggestion to ensure that it starts not visible.
+        mCoordinator.showPaymentMethods(
+                List.of(
+                        VISA_SUGGESTION,
+                        VISA_SUGGESTION,
+                        VISA_SUGGESTION,
+                        VISA_SUGGESTION,
+                        BNPL_SUGGESTION),
+                /* shouldShowScanCreditCard= */ false);
+
+        // Simulate amount extraction succeeding, which ensures the BNPL suggestion remains
+        // selectable.
+        mCoordinator
+                .getMediatorForTesting()
+                .onPurchaseAmountExtracted(
+                        /* bnplIssuerContexts= */ Collections.emptyList(),
+                        /* extractedAmount= */ 5L,
+                        /* isAmountSupportedByAnyIssuer= */ true);
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        TOUCH_TO_FILL_BNPL_SUGGESTION_STARTED_NOT_VISIBLE_HISTOGRAM,
+                        /* sample= */ TouchToFillBnplSuggestionInteraction.SHOWN_AND_SELECTABLE));
+
+        // Simulate the user selecting the BNPL suggestion.
+        PropertyModel bnplSuggestionModel =
+                mCoordinator.getMediatorForTesting().getBnplSuggestionModelForTesting();
+        assertNotNull(bnplSuggestionModel);
+        mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
+        bnplSuggestionModel.get(ON_BNPL_CLICK_ACTION).run();
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        TOUCH_TO_FILL_BNPL_SUGGESTION_STARTED_NOT_VISIBLE_HISTOGRAM,
+                        /* sample= */ TouchToFillBnplSuggestionInteraction.SELECTED));
+    }
+
+    @Test
+    public void testDoesNotRecordBnplSuggestionVisibilityHistograms() {
+        // BNPL suggestion visibility metrics should not be logged when touch exploration is
+        // enabled.
+        AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
+
+        for (int visibility = 0;
+                visibility <= TouchToFillBnplSuggestionVisibility.MAX_VALUE;
+                visibility++) {
+            for (int interaction = 0;
+                    interaction <= TouchToFillBnplSuggestionInteraction.MAX_VALUE;
+                    interaction++) {
+                TouchToFillPaymentMethodMediator.recordTouchToFillBnplSuggestionVisibility(
+                        visibility, interaction);
+            }
+        }
+
+        assertEquals(
+                0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        TOUCH_TO_FILL_BNPL_SUGGESTION_STARTED_NOT_VISIBLE_HISTOGRAM));
+        assertEquals(
+                0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        TOUCH_TO_FILL_BNPL_SUGGESTION_STARTED_PARTIALLY_VISIBLE_HISTOGRAM));
+        assertEquals(
+                0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        TOUCH_TO_FILL_BNPL_SUGGESTION_STARTED_FULLY_VISIBLE_HISTOGRAM));
+
+        AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
     }
 
     @Test
