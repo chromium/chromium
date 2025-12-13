@@ -272,6 +272,11 @@ using base::UserMetricsAction;
   self.forwardingOnDidChange = NO;
 }
 
+- (void)textInputDidUpdateUIForText:(id<OmniboxTextInput>)textInput {
+  [self updateLeadingImage];
+  [self updateClearButtonVisibility];
+}
+
 - (BOOL)textInputShouldReturn:(id<OmniboxTextInput>)textInput {
   // Forward kReturnKey action to the keyboard handler.
   if ([self canPerformKeyboardAction:OmniboxKeyboardAction::kReturnKey]) {

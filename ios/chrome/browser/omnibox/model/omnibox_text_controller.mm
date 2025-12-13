@@ -382,6 +382,15 @@ const char kOmniboxFocusResultedInNavigation[] =
            !_omniboxAutocompleteController.hasSuggestions));
 }
 
+- (void)removePreEditText {
+  if (self.textInput.isPreEditing) {
+    [self.textInput exitPreEditState];
+    [self.textInput setText:@""];
+    [self setUserText:u""];
+    [self onTextChanged];
+  }
+}
+
 #pragma mark - Autocomplete events
 
 - (void)setAdditionalText:(const std::u16string&)text {

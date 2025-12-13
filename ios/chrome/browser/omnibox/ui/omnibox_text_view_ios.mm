@@ -1103,8 +1103,7 @@ using enum OmniboxKeyboardAction;
   // baseline changes so text is out of alignment.
   [self setFont:self.currentFont];
   [self updateTextDirection];
-  [self updatePlaceholderVisibility];
-  [self.heightDelegate textViewContentChanged:self];
+  [self updateUIForCurrentText];
 }
 
 /// Returns the background color for selected text.
@@ -1178,9 +1177,7 @@ using enum OmniboxKeyboardAction;
 
 - (void)textViewDidChange:(UITextView*)textView {
   [self.omniboxTextInputDelegate textInputDidChange:self];
-  [self updatePlaceholderVisibility];
-  [self.heightDelegate textViewContentChanged:self];
-  self.typingAttributes = _omniboxTypingAttributes;
+  [self updateUIForCurrentText];
 }
 
 - (void)textViewDidChangeSelection:(UITextView*)textView {
@@ -1218,6 +1215,16 @@ using enum OmniboxKeyboardAction;
   return [self.omniboxTextInputDelegate textInput:self
                      editMenuForCharactersInRange:range
                                  suggestedActions:suggestedActions];
+}
+
+#pragma mark - Private
+
+/// Updates the UI for the current text without triggering autocomplete.
+- (void)updateUIForCurrentText {
+  [self updatePlaceholderVisibility];
+  [self.heightDelegate textViewContentChanged:self];
+  self.typingAttributes = _omniboxTypingAttributes;
+  [self.omniboxTextInputDelegate textInputDidUpdateUIForText:self];
 }
 
 @end

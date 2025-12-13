@@ -122,6 +122,9 @@ class OmniboxClient;
 /// editing or the edit does not have focus.
 - (bool)resetDisplayTexts;
 
+/// Removes the pre-edit text.
+- (void)removePreEditText;
+
 #pragma mark - Autocomplete event
 
 /// Sets the additional text.

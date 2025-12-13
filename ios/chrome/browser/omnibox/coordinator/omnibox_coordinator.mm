@@ -345,6 +345,7 @@
 }
 
 - (void)clearSuggestionsWithRestartAutocomplete:(BOOL)restartAutocomplete {
+  [_omniboxTextController removePreEditText];
   if (restartAutocomplete) {
     [_omniboxAutocompleteController clearAndRestartAutocomplete];
   } else {
