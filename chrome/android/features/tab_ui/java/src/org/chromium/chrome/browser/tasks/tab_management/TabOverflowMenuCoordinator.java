@@ -497,11 +497,15 @@ public abstract class TabOverflowMenuCoordinator<T>
                 if (mMultiInstanceManager.getCurrentInstanceId() == instanceInfo.instanceId) {
                     continue;
                 }
+                String windowDisplayName =
+                        instanceInfo.title.isBlank()
+                                ? mActivity.getString(R.string.instance_switcher_entry_empty_window)
+                                : instanceInfo.title;
                 submenuItems.add(
                         new ListItem(
                                 MENU_ITEM,
                                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                                        .with(TITLE, instanceInfo.title)
+                                        .with(TITLE, windowDisplayName)
                                         .with(
                                                 CLICK_LISTENER,
                                                 (v) -> {

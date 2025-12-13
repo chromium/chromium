@@ -20,6 +20,8 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP;
 import static org.chromium.chrome.browser.multiwindow.InstanceInfo.Type.CURRENT;
 import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType.ACTIVE;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
+import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
 import android.app.Activity;
 import android.os.SystemClock;
@@ -959,5 +961,43 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         when(mTabModel.getCount()).thenReturn(3);
         when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
         return tabsInGroup;
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveToWindow_EmptyWindowTitle() {
+        final InstanceInfo emptyTitleInstance =
+                new InstanceInfo(
+                        INSTANCE_ID_2,
+                        TASK_ID,
+                        CURRENT,
+                        EXAMPLE_URL.toString(),
+                        "",
+                        /* customTitle= */ null,
+                        NUM_TABS,
+                        NUM_INCOGNITO_TABS,
+                        /* isIncognitoSelected= */ false,
+                        LAST_ACCESSED_TIME,
+                        /* markedForDeletion= */ false);
+
+        setUpTabGroupModelFilter();
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, emptyTitleInstance));
+        var modelList = new ModelList();
+        mTabGroupContextMenuCoordinator.configureMenuItemsForTesting(modelList, TAB_GROUP_ID);
+
+        ListItem moveToWindowItem = modelList.get(4);
+        assertNotNull(moveToWindowItem);
+
+        var subMenu = moveToWindowItem.model.get(SUBMENU_ITEMS);
+        assertEquals("Submenu should have 3 items", 3, subMenu.size());
+
+        ListItem otherWindowItem = subMenu.get(2);
+        assertEquals(
+                "The title for the other window should be the incognito window title string.",
+                mActivity.getString(R.string.instance_switcher_entry_empty_window),
+                otherWindowItem.model.get(TITLE));
     }
 }
