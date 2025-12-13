@@ -597,6 +597,11 @@ ci.thin_tester(
                     shards = 4,
                 ),
             ),
+            "headless_shell_wpt_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 26,
+                ),
+            ),
             "interactive_ui_tests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests.filter",
