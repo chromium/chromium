@@ -145,6 +145,9 @@ extern NSString* const
 // current group, then it simply returns.
 - (void)showGroup:(FormInputAccessoryViewSubitemGroup)group;
 
+// Returns the group of buttons currently being shown.
+- (FormInputAccessoryViewSubitemGroup)currentGroup;
+
 @end
 
 #endif  // IOS_CHROME_COMMON_UI_ELEMENTS_FORM_INPUT_ACCESSORY_VIEW_H_

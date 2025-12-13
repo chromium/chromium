@@ -211,11 +211,8 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 #pragma mark - FormInputAccessoryConsumer
 
 - (void)showAccessorySuggestions:(NSArray<FormSuggestion*>*)suggestions {
-  BOOL hasSingleManualFillButton =
-      suggestions.count > 0 &&
-      (_mainFillingProduct != FillingProduct::kAutocomplete);
   [self.formInputAccessoryView
-      showGroup:hasSingleManualFillButton
+      showGroup:[self hasSingleManualFillButton:suggestions.count > 0]
                     ? FormInputAccessoryViewSubitemGroup::kExpandButton
                     : FormInputAccessoryViewSubitemGroup::kManualFillButtons];
   [self updateFormSuggestionView:suggestions];
@@ -330,6 +327,13 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 }
 
 #pragma mark - Private
+
+// Returns whether to use the single manual fill button.
+- (BOOL)hasSingleManualFillButton:(BOOL)hasSuggestions {
+  ManualFillDataType dataType =
+      [ManualFillUtil manualFillDataTypeFromFillingProduct:_mainFillingProduct];
+  return hasSuggestions && (dataType != ManualFillDataType::kOther);
+}
 
 // Invoked after the user taps any of the `manual fill` buttons.
 - (void)manualFillButtonPressed:(UIButton*)button

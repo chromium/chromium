@@ -68,32 +68,10 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
                                       NSInteger index) {
   FillingProduct filling_product =
       GetFillingProductFromSuggestionType(suggestion_type);
-  std::string filling_product_bucket;
-  switch (filling_product) {
-    case FillingProduct::kCreditCard:
-    case FillingProduct::kIban:
-    case FillingProduct::kLoyaltyCard:
-    case FillingProduct::kAddress:
-    case FillingProduct::kPlusAddresses:
-    case FillingProduct::kPassword:
-    case FillingProduct::kNone:
-    case FillingProduct::kAutocomplete:
-    case FillingProduct::kDataList:
-      filling_product_bucket = FillingProductToString(filling_product);
-      break;
-    case FillingProduct::kPasskey:
-    case FillingProduct::kCompose:
-    case FillingProduct::kAutofillAi:
-    case FillingProduct::kMerchantPromoCode:
-    case FillingProduct::kIdentityCredential:
-    case FillingProduct::kOneTimePassword:
-      // These cases are currently not available on iOS.
-      NOTREACHED();
-  }
-  UmaHistogramSparse(
-      base::StrCat({"Autofill.UserAcceptedSuggestionAtIndex.",
-                    filling_product_bucket, ".KeyboardAccessory"}),
-      index);
+  UmaHistogramSparse(base::StrCat({"Autofill.UserAcceptedSuggestionAtIndex.",
+                                   FillingProductToString(filling_product),
+                                   ".KeyboardAccessory"}),
+                     index);
 }
 
 }  // namespace

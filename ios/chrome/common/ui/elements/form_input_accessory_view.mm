@@ -328,6 +328,10 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   }
 }
 
+- (FormInputAccessoryViewSubitemGroup)currentGroup {
+  return _currentGroup;
+}
+
 #pragma mark - UIInputViewAudioFeedback
 
 - (BOOL)enableInputClicksWhenVisible {
