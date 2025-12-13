@@ -21,7 +21,9 @@ enum class WalletablePassOptInFunnelEvents {
   kConsentBubbleWasRejected = 5,
   kConsentBubbleWasClosed = 6,
   kConsentBubbleLostFocus = 7,
-  kMaxValue = kConsentBubbleLostFocus,
+  kConsentBubbleClosedUnknownReason = 8,
+  kConsentBubbleWasDiscarded = 9,
+  kMaxValue = kConsentBubbleWasDiscarded,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/wallet/enums.xml:WalletablePassOptInFunnelEvents)
 
@@ -41,11 +43,30 @@ enum class WalletablePassServerExtractionFunnelEvents {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/wallet/enums.xml:WalletablePassServerExtractionFunnelEvents)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(WalletablePassSaveFunnelEvents)
+enum class WalletablePassSaveFunnelEvents {
+  kSaveBubbleWasShown = 0,
+  kGoToWalletButtonClicked = 1,
+  kSaveBubbleWasAccepted = 2,
+  kSaveBubbleWasRejected = 3,
+  kSaveBubbleWasClosed = 4,
+  kSaveBubbleLostFocus = 5,
+  kSaveBubbleClosedUnknownReason = 6,
+  kSaveBubbleWasDiscarded = 7,
+  kMaxValue = kSaveBubbleWasDiscarded,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/wallet/enums.xml:WalletablePassSaveFunnelEvents)
+
 void LogOptInEvent(PassCategory pass_category,
                    WalletablePassOptInFunnelEvents event);
 
 void LogServerExtractionEvent(PassCategory pass_category,
                               WalletablePassServerExtractionFunnelEvents event);
+
+void LogSaveEvent(PassCategory pass_category,
+                  WalletablePassSaveFunnelEvents event);
 
 }  // namespace wallet::metrics
 

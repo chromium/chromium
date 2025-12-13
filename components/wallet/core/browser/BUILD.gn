@@ -9,6 +9,8 @@ static_library("browser") {
     "data_models/boarding_pass.cc",
     "data_models/boarding_pass.h",
     "data_models/country_type.h",
+    "data_models/data_model_utils.cc",
+    "data_models/data_model_utils.h",
     "data_models/wallet_barcode.h",
     "data_models/walletable_pass.cc",
     "data_models/walletable_pass.h",

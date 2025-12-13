@@ -16,6 +16,8 @@
 #include "chrome/common/url_constants.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/wallet/core/browser/data_models/walletable_pass.h"
+#include "components/wallet/core/browser/metrics/wallet_metrics.h"
 #include "components/wallet/core/browser/walletable_pass_client.h"
 #include "content/public/browser/web_contents.h"
 
@@ -87,6 +89,9 @@ void WalletablePassSaveBubbleController::OnGoToWalletClicked() {
     SetReshowOnActivation(true);
     ShowSingletonTab(browser, GURL(chrome::kWalletPassesPageURL));
   }
+  metrics::LogSaveEvent(
+      pass_->GetPassCategory(),
+      metrics::WalletablePassSaveFunnelEvents::kGoToWalletButtonClicked);
 }
 
 }  // namespace wallet

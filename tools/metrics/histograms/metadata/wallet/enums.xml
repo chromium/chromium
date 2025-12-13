@@ -35,6 +35,19 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Consent bubble was rejected"/>
   <int value="6" label="Consent bubble was closed"/>
   <int value="7" label="Consent bubble lost focus"/>
+  <int value="8" label="Consent bubble closed with unknown reason"/>
+  <int value="9" label="Consent bubble was discarded"/>
+</enum>
+
+<enum name="WalletablePassSaveFunnelEvents">
+  <int value="0" label="Save bubble was shown"/>
+  <int value="1" label="Go to Wallet button was clicked"/>
+  <int value="2" label="Save bubble was accepted"/>
+  <int value="3" label="Save bubble was rejected"/>
+  <int value="4" label="Save bubble was closed"/>
+  <int value="5" label="Save bubble lost focus"/>
+  <int value="6" label="Save bubble closed with unknown reason"/>
+  <int value="7" label="Save bubble was discarded"/>
 </enum>
 
 <enum name="WalletablePassServerExtractionFunnelEvents">

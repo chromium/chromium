@@ -31,9 +31,6 @@ enum class PassCategory {
   kMaxValue = kBoardingPass,
 };
 
-// Returns the string name of the pass category.
-std::string PassCategoryToString(PassCategory category);
-
 // Represents a loyalty card with its relevant details.
 struct LoyaltyCard {
   static LoyaltyCard FromProto(
@@ -141,6 +138,9 @@ struct WalletablePass {
   ~WalletablePass();
 
   bool operator==(const WalletablePass& other) const = default;
+
+  // Returns the pass category of the walletable pass.
+  PassCategory GetPassCategory() const;
 
   std::variant<LoyaltyCard, EventPass, BoardingPass, TransitTicket> pass_data;
 };

@@ -44,6 +44,18 @@ chromium-metrics-reviews@google.com.
   <token key="PassCategory" variants="Wallet.WalletablePass.PassCategory"/>
 </histogram>
 
+<histogram name="Wallet.WalletablePass.Save.Funnel.{PassCategory}"
+    enum="WalletablePassSaveFunnelEvents" expires_after="2026-12-31">
+  <owner>hanfeng@google.com</owner>
+  <owner>wallet-chrome-integration@google.com</owner>
+  <summary>
+    Records the funnel of events for the {PassCategory} save flow. This
+    identifies whether the user engaged with the save bubble. All events are
+    logged only when the bubble is displayed.
+  </summary>
+  <token key="PassCategory" variants="Wallet.WalletablePass.PassCategory"/>
+</histogram>
+
 <histogram name="Wallet.WalletablePass.ServerExtraction.Funnel.{PassCategory}"
     enum="WalletablePassServerExtractionFunnelEvents"
     expires_after="2026-12-31">

@@ -10,11 +10,11 @@
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/strike_database/strike_database_base.h"
+#include "components/wallet/core/browser/data_models/data_model_utils.h"
 #include "components/wallet/core/browser/data_models/walletable_pass.h"
 #include "components/wallet/core/browser/metrics/wallet_metrics.h"
 #include "components/wallet/core/browser/walletable_pass_client.h"
 #include "components/wallet/core/browser/walletable_permission_utils.h"
-#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 
 namespace wallet {
@@ -25,16 +25,6 @@ using WalletablePassOptInFunnelEvents =
     metrics::WalletablePassOptInFunnelEvents;
 using WalletablePassServerExtractionFunnelEvents =
     metrics::WalletablePassServerExtractionFunnelEvents;
-
-PassCategory GetPassCategory(const WalletablePass& walletable_pass) {
-  return std::visit(
-      absl::Overload(
-          [](const LoyaltyCard&) { return PassCategory::kLoyaltyCard; },
-          [](const EventPass&) { return PassCategory::kEventPass; },
-          [](const TransitTicket&) { return PassCategory::kTransitTicket; },
-          [](const BoardingPass&) { return PassCategory::kBoardingPass; }),
-      walletable_pass.pass_data);
-}
 
 optimization_guide::proto::PassCategory ToProtoPassCategory(
     PassCategory pass_category) {
@@ -176,12 +166,22 @@ void WalletablePassIngestionController::OnGetConsentBubbleResult(
           WalletablePassOptInFunnelEvents::kConsentBubbleWasClosed);
       break;
     case kLostFocus:
-    case kUnknown:
-    case kDiscarded:
       consent_strike_db_->AddStrike();
       metrics::LogOptInEvent(
           pass_category,
           WalletablePassOptInFunnelEvents::kConsentBubbleLostFocus);
+      break;
+    case kUnknown:
+      consent_strike_db_->AddStrike();
+      metrics::LogOptInEvent(
+          pass_category,
+          WalletablePassOptInFunnelEvents::kConsentBubbleClosedUnknownReason);
+      break;
+    case kDiscarded:
+      consent_strike_db_->AddStrike();
+      metrics::LogOptInEvent(
+          pass_category,
+          WalletablePassOptInFunnelEvents::kConsentBubbleWasDiscarded);
       break;
   }
 }
@@ -294,8 +294,7 @@ void WalletablePassIngestionController::OnExtractWalletablePass(
 void WalletablePassIngestionController::ShowSaveBubble(
     const GURL& url,
     WalletablePass walletable_pass) {
-  const std::string category =
-      PassCategoryToString(GetPassCategory(walletable_pass));
+  const PassCategory pass_category = walletable_pass.GetPassCategory();
 
   // Create a copy of walletable_pass for the callback to avoid use-after-move.
   WalletablePass walletable_pass_for_callback = walletable_pass;
@@ -305,32 +304,57 @@ void WalletablePassIngestionController::ShowSaveBubble(
       base::BindOnce(&WalletablePassIngestionController::OnGetSaveBubbleResult,
                      weak_ptr_factory_.GetWeakPtr(), url,
                      std::move(walletable_pass_for_callback)));
+  metrics::LogSaveEvent(
+      pass_category,
+      metrics::WalletablePassSaveFunnelEvents::kSaveBubbleWasShown);
 }
 
 void WalletablePassIngestionController::OnGetSaveBubbleResult(
     const GURL& url,
     WalletablePass walletable_pass,
     WalletablePassClient::WalletablePassBubbleResult result) {
-  const std::string category =
-      PassCategoryToString(GetPassCategory(walletable_pass));
+  const PassCategory pass_category = walletable_pass.GetPassCategory();
+  const std::string category = PassCategoryToString(pass_category);
   switch (result) {
     case kAccepted:
       // TODO(crbug.com/452579752): Save pass to Wallet.
       save_strike_db_->ClearStrikes(
           WalletablePassSaveStrikeDatabaseByHost::GetId(category,
                                                         url.GetHost()));
+      metrics::LogSaveEvent(
+          pass_category,
+          metrics::WalletablePassSaveFunnelEvents::kSaveBubbleWasAccepted);
       break;
     case kDeclined:
-    case kClosed:
-      // Add strikes for cases where user rejects explicitly
+      // Add strikes for cases where user rejects explicitly.
       save_strike_db_->AddStrike(WalletablePassSaveStrikeDatabaseByHost::GetId(
           category, url.GetHost()));
-      // TODO(crbug.com/452779539): Report user rejects explicitly to UMA.
+      metrics::LogSaveEvent(
+          pass_category,
+          metrics::WalletablePassSaveFunnelEvents::kSaveBubbleWasRejected);
+      break;
+    case kClosed:
+      // Add strikes for cases where user rejects explicitly.
+      save_strike_db_->AddStrike(WalletablePassSaveStrikeDatabaseByHost::GetId(
+          category, url.GetHost()));
+      metrics::LogSaveEvent(
+          pass_category,
+          metrics::WalletablePassSaveFunnelEvents::kSaveBubbleWasClosed);
       break;
     case kLostFocus:
+      metrics::LogSaveEvent(
+          pass_category,
+          metrics::WalletablePassSaveFunnelEvents::kSaveBubbleLostFocus);
+      break;
     case kUnknown:
+      metrics::LogSaveEvent(pass_category,
+                            metrics::WalletablePassSaveFunnelEvents::
+                                kSaveBubbleClosedUnknownReason);
+      break;
     case kDiscarded:
-      // TODO(crbug.com/452779539): Report other outcomes to UMA.
+      metrics::LogSaveEvent(
+          pass_category,
+          metrics::WalletablePassSaveFunnelEvents::kSaveBubbleWasDiscarded);
       break;
   }
 }

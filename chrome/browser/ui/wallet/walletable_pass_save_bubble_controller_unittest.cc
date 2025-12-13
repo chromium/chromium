@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/wallet/walletable_pass_save_bubble_controller.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -14,6 +15,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/wallet/core/browser/metrics/wallet_metrics.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -134,6 +136,24 @@ TEST_F(WalletablePassSaveBubbleControllerTest, Accepted) {
   controller()->OnBubbleClosed(WalletablePassBubbleClosedReason::kAccepted);
   EXPECT_FALSE(controller()->IsShowingBubble());
   EXPECT_EQ(future.Get(), WalletablePassBubbleResult::kAccepted);
+}
+
+// Tests that the kGoToWalletButtonClicked metric is logged when "Go to Wallet"
+// is clicked.
+TEST_F(WalletablePassSaveBubbleControllerTest, GoToWalletClicked) {
+  base::HistogramTester histogram_tester;
+  // Set up a pass with a specific category (e.g., LoyaltyCard).
+  WalletablePass pass;
+  LoyaltyCard loyalty_card;
+  pass.pass_data = std::move(loyalty_card);
+
+  controller()->SetUpAndShowSaveBubble(std::move(pass), base::DoNothing());
+
+  controller()->OnGoToWalletClicked();
+
+  histogram_tester.ExpectUniqueSample(
+      "Wallet.WalletablePass.Save.Funnel.LoyaltyCard",
+      metrics::WalletablePassSaveFunnelEvents::kGoToWalletButtonClicked, 1);
 }
 
 // Tests that the callback is run with kDeclined when the bubble is declined.

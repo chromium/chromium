@@ -18,6 +18,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/strike_database/test_inmemory_strike_database.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/wallet/core/browser/data_models/data_model_utils.h"
 #include "components/wallet/core/browser/metrics/wallet_metrics.h"
 #include "components/wallet/core/browser/walletable_pass_client.h"
 #include "components/wallet/core/browser/walletable_pass_ingestion_controller_test_api.h"
@@ -628,7 +629,9 @@ TEST_F(WalletablePassIngestionControllerTest,
       metrics::WalletablePassOptInFunnelEvents::kConsentBubbleWasShown, 1);
   histogram_tester().ExpectBucketCount(
       "Wallet.WalletablePass.OptIn.Funnel.LoyaltyCard",
-      metrics::WalletablePassOptInFunnelEvents::kConsentBubbleLostFocus, 1);
+      metrics::WalletablePassOptInFunnelEvents::
+          kConsentBubbleClosedUnknownReason,
+      1);
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
@@ -694,6 +697,12 @@ TEST_F(WalletablePassIngestionControllerTest,
   EXPECT_EQ(test_strike_database().GetStrikes(
                 "WalletablePassSaveByHost__LoyaltyCard;example.com"),
             0);
+  histogram_tester().ExpectBucketCount(
+      "Wallet.WalletablePass.Save.Funnel.LoyaltyCard",
+      metrics::WalletablePassSaveFunnelEvents::kSaveBubbleWasShown, 1);
+  histogram_tester().ExpectBucketCount(
+      "Wallet.WalletablePass.Save.Funnel.LoyaltyCard",
+      metrics::WalletablePassSaveFunnelEvents::kSaveBubbleWasAccepted, 1);
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
@@ -716,6 +725,12 @@ TEST_F(WalletablePassIngestionControllerTest,
   EXPECT_EQ(test_strike_database().GetStrikes(
                 "WalletablePassSaveByHost__LoyaltyCard;example.com"),
             2);
+  histogram_tester().ExpectBucketCount(
+      "Wallet.WalletablePass.Save.Funnel.LoyaltyCard",
+      metrics::WalletablePassSaveFunnelEvents::kSaveBubbleWasShown, 1);
+  histogram_tester().ExpectBucketCount(
+      "Wallet.WalletablePass.Save.Funnel.LoyaltyCard",
+      metrics::WalletablePassSaveFunnelEvents::kSaveBubbleWasRejected, 1);
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
@@ -738,6 +753,40 @@ TEST_F(WalletablePassIngestionControllerTest,
   EXPECT_EQ(test_strike_database().GetStrikes(
                 "WalletablePassSaveByHost__LoyaltyCard;example.com"),
             1);
+  histogram_tester().ExpectBucketCount(
+      "Wallet.WalletablePass.Save.Funnel.LoyaltyCard",
+      metrics::WalletablePassSaveFunnelEvents::kSaveBubbleWasShown, 1);
+  histogram_tester().ExpectBucketCount(
+      "Wallet.WalletablePass.Save.Funnel.LoyaltyCard",
+      metrics::WalletablePassSaveFunnelEvents::kSaveBubbleLostFocus, 1);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       ShowSaveBubble_Closed_AddsStrikes) {
+  GURL url("https://example.com");
+  WalletablePass walletable_pass = CreateLoyaltyCard();
+  test_strike_database().SetStrikeData(
+      "WalletablePassSaveByHost__LoyaltyCard;example.com", 1);
+
+  WalletablePassClient::WalletablePassBubbleResultCallback bubble_callback;
+  ExpectSaveBubbleOnClient(walletable_pass, &bubble_callback);
+
+  test_api(controller()).ShowSaveBubble(url, walletable_pass);
+
+  // Simulate closing the bubble.
+  std::move(bubble_callback)
+      .Run(WalletablePassClient::WalletablePassBubbleResult::kClosed);
+
+  // Verify strikes are added.
+  EXPECT_EQ(test_strike_database().GetStrikes(
+                "WalletablePassSaveByHost__LoyaltyCard;example.com"),
+            2);
+  histogram_tester().ExpectBucketCount(
+      "Wallet.WalletablePass.Save.Funnel.LoyaltyCard",
+      metrics::WalletablePassSaveFunnelEvents::kSaveBubbleWasShown, 1);
+  histogram_tester().ExpectBucketCount(
+      "Wallet.WalletablePass.Save.Funnel.LoyaltyCard",
+      metrics::WalletablePassSaveFunnelEvents::kSaveBubbleWasClosed, 1);
 }
 
 TEST_F(WalletablePassIngestionControllerTest,

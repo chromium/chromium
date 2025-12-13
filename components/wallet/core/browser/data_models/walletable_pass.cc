@@ -4,28 +4,10 @@
 
 #include "components/wallet/core/browser/data_models/walletable_pass.h"
 
-#include "base/notreached.h"
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace wallet {
-
-// LINT.IfChange(PassCategoryToString)
-std::string PassCategoryToString(PassCategory category) {
-  switch (category) {
-    case PassCategory::kLoyaltyCard:
-      return "LoyaltyCard";
-    case PassCategory::kEventPass:
-      return "EventPass";
-    case PassCategory::kTransitTicket:
-      return "TransitTicket";
-    case PassCategory::kBoardingPass:
-      return "BoardingPass";
-    case PassCategory::kUnspecified:
-      return "Unspecified";
-  }
-  NOTREACHED();
-}
-// LINT.ThenChange(//tools/metrics/histograms/metadata/wallet/histograms.xml:Wallet.WalletablePass.PassCategory)
 
 // static
 LoyaltyCard LoyaltyCard::FromProto(
@@ -153,5 +135,15 @@ WalletablePass& WalletablePass::operator=(const WalletablePass&) = default;
 WalletablePass::WalletablePass(WalletablePass&&) = default;
 WalletablePass& WalletablePass::operator=(WalletablePass&&) = default;
 WalletablePass::~WalletablePass() = default;
+
+PassCategory WalletablePass::GetPassCategory() const {
+  return std::visit(
+      absl::Overload(
+          [](const LoyaltyCard&) { return PassCategory::kLoyaltyCard; },
+          [](const EventPass&) { return PassCategory::kEventPass; },
+          [](const TransitTicket&) { return PassCategory::kTransitTicket; },
+          [](const BoardingPass&) { return PassCategory::kBoardingPass; }),
+      pass_data);
+}
 
 }  // namespace wallet

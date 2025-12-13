@@ -5,6 +5,7 @@
 #include "components/wallet/core/browser/data_models/walletable_pass.h"
 
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
+#include "components/wallet/core/browser/data_models/data_model_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace wallet {
