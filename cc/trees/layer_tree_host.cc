@@ -376,6 +376,7 @@ void LayerTreeHost::DidBeginMainFrame() {
   DCHECK(IsMainThread());
   inside_main_frame_ = false;
   client_->DidBeginMainFrame();
+  force_commit_for_propagation_ = false;
 }
 
 void LayerTreeHost::BeginMainFrameNotExpectedSoon() {
@@ -813,9 +814,10 @@ void LayerTreeHost::SetNeedsCommitWithForcedRedraw() {
 }
 
 void LayerTreeHost::RequestMainFrameOnCompositorAnimation(
-    PropertyChangeForcesCommitCriteria property_change_forces_commit_criteria) {
-  pending_commit_state()->property_change_forces_commit_criteria =
-      property_change_forces_commit_criteria;
+    PropertyChangeForcesCommitCriteria criteria,
+    bool force_propagation) {
+  pending_commit_state()->property_change_forces_commit_criteria = criteria;
+  force_commit_for_propagation_ |= force_propagation;
 }
 
 void LayerTreeHost::SetDebugState(const LayerTreeDebugState& new_debug_state) {

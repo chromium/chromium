@@ -1208,12 +1208,11 @@ void ChromeClientImpl::SetShouldThrottleFrameRate(bool flag,
 
 void ChromeClientImpl::RequestMainFrameOnCompositorAnimation(
     LocalFrame& frame,
-    cc::PropertyChangeForcesCommitCriteria
-        property_change_forces_commit_criteria) {
+    cc::PropertyChangeForcesCommitCriteria criteria,
+    bool force_propagation) {
   WebFrameWidgetImpl* widget =
       WebLocalFrameImpl::FromFrame(frame)->LocalRootFrameWidget();
-  widget->RequestMainFrameOnCompositorAnimation(
-      property_change_forces_commit_criteria);
+  widget->RequestMainFrameOnCompositorAnimation(criteria, force_propagation);
 }
 
 void ChromeClientImpl::SetHasScrollEventHandlers(LocalFrame* frame,

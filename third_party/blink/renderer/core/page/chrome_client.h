@@ -236,8 +236,8 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                                           LocalFrame& main_frame) = 0;
   virtual void RequestMainFrameOnCompositorAnimation(
       LocalFrame&,
-      cc::PropertyChangeForcesCommitCriteria
-          property_change_forces_commit_criteria) = 0;
+      cc::PropertyChangeForcesCommitCriteria criteria,
+      bool force_propagation) = 0;
 
   virtual std::unique_ptr<cc::ScopedPauseRendering> PauseRendering(
       LocalFrame& main_frame) = 0;

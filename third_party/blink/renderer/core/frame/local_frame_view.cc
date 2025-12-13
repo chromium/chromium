@@ -2280,6 +2280,19 @@ bool LocalFrameView::UpdateLifecyclePhases(
   return Lifecycle().GetState() == target_state;
 }
 
+cc::PropertyChangeForcesCommitCriteria LocalFrameView::ForceCommitCriteria()
+    const {
+  cc::PropertyChangeForcesCommitCriteria criteria =
+      cc::PropertyChangeForcesCommitCriteria::kNone;
+  if (HasActiveIntersectionObservations() ||
+      HasRunningAnchorTransformAnimation()) {
+    criteria = NeedsOcclusionTracking() && HasActiveIntersectionObservations()
+                   ? cc::PropertyChangeForcesCommitCriteria::kAny
+                   : cc::PropertyChangeForcesCommitCriteria::kTransform;
+  }
+  return criteria;
+}
+
 void LocalFrameView::UpdateLifecyclePhasesInternal(
     DocumentLifecycle::LifecycleState target_state) {
   // TODO(https://crbug.com/1196853): Switch to ScriptForbiddenScope once
@@ -2288,6 +2301,8 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
 
   // RunPostLayoutSnapshotClientSteps must not run more than once.
   bool should_run_post_layout_snapshot_client_steps = true;
+
+  auto old_force_commit_criteria = ForceCommitCriteria();
 
   // Run style, layout, compositing and prepaint lifecycle phases and deliver
   // resize observations if required. Resize observer callbacks/delegates have
@@ -2437,12 +2452,15 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
   }
 
   UpdateIntersectionObserverStatus();
-  if (HasActiveIntersectionObservations() ||
-      HasRunningAnchorTransformAnimation()) {
+
+  auto new_force_commit_criteria = ForceCommitCriteria();
+  bool force_propagation =
+      new_force_commit_criteria != old_force_commit_criteria;
+  if (force_propagation || new_force_commit_criteria !=
+                               cc::PropertyChangeForcesCommitCriteria::kNone) {
+    // Force a commit even if there are no updates, to propagate these bits.
     GetChromeClient()->RequestMainFrameOnCompositorAnimation(
-        *frame_, NeedsOcclusionTracking() && HasActiveIntersectionObservations()
-                     ? cc::PropertyChangeForcesCommitCriteria::kAny
-                     : cc::PropertyChangeForcesCommitCriteria::kTransform);
+        *frame_, new_force_commit_criteria, force_propagation);
   }
 
   // 21. For each doc of docs, mark paint timing for doc.

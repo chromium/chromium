@@ -379,6 +379,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     return defer_main_frame_update_count_;
   }
 
+  bool force_commit_for_propagation() const {
+    return force_commit_for_propagation_;
+  }
+
   // Synchronously performs a complete main frame update, commit and compositor
   // frame. Used only in single threaded mode when the compositor's internal
   // scheduling is disabled.
@@ -396,8 +400,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   // Requests a main frame if a composited animation changes a draw property.
   void RequestMainFrameOnCompositorAnimation(
-      PropertyChangeForcesCommitCriteria
-          property_change_forces_commit_criteria);
+      PropertyChangeForcesCommitCriteria criteria,
+      bool force_propagation);
 
   // Input Handling ---------------------------------------------
 
@@ -1088,6 +1092,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // Track when we're inside a main frame to see if compositor is being
   // destroyed midway which causes a crash. crbug.com/654672
   bool inside_main_frame_ = false;
+
+  // Set to force a commit during BeginMainFrame even if there are no actual
+  // rendering changes, to ensure the bits in CommitState are propagated.
+  bool force_commit_for_propagation_ = true;
 
   // State cached until impl side is initialized.
   raw_ptr<TaskGraphRunner> task_graph_runner_;

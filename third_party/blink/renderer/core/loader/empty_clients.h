@@ -135,8 +135,8 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void SetShouldThrottleFrameRate(bool flag, LocalFrame& main_frame) override {}
   void RequestMainFrameOnCompositorAnimation(
       LocalFrame&,
-      cc::PropertyChangeForcesCommitCriteria animation_forces_commit) override {
-  }
+      cc::PropertyChangeForcesCommitCriteria criteria,
+      bool force_propagation) override {}
   void StartDragging(LocalFrame*,
                      const WebDragData&,
                      DragOperationsMask,

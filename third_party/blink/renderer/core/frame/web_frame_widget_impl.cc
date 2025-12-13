@@ -2133,10 +2133,10 @@ void WebFrameWidgetImpl::SetShouldThrottleFrameRate(bool flag) {
 }
 
 void WebFrameWidgetImpl::RequestMainFrameOnCompositorAnimation(
-    cc::PropertyChangeForcesCommitCriteria
-        property_change_forces_commit_criteria) {
+    cc::PropertyChangeForcesCommitCriteria criteria,
+    bool force_propagation) {
   widget_base_->LayerTreeHost()->RequestMainFrameOnCompositorAnimation(
-      property_change_forces_commit_criteria);
+      criteria, force_propagation);
 }
 
 std::optional<int> WebFrameWidgetImpl::GetMaxRenderBufferBounds() const {

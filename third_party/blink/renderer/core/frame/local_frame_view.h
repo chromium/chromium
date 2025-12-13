@@ -71,6 +71,7 @@ class AnimationTimeline;
 class Layer;
 class PaintRecord;
 enum class PaintHoldingCommitTrigger;
+enum class PropertyChangeForcesCommitCriteria;
 struct PaintBenchmarkResult;
 }
 
@@ -979,6 +980,8 @@ class CORE_EXPORT LocalFrameView final
   void PaintFrame(GraphicsContext&, PaintFlags = PaintFlag::kNoFlag) const;
 
   LayoutSVGRoot* EmbeddedReplacedContent() const;
+
+  cc::PropertyChangeForcesCommitCriteria ForceCommitCriteria() const;
 
   void PrepareForLifecycleUpdateRecursive();
 

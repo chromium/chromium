@@ -401,7 +401,8 @@ void ProxyMain::BeginMainFrame(
   // to corresponding  cc display list. An exception is for painted scrollbars,
   // which paint eagerly during layer update.
   bool updated = should_update_layers && layer_tree_host_->UpdateLayers();
-  if (synchronous_composite_for_test_callback_) {
+  if (layer_tree_host_->force_commit_for_propagation() ||
+      synchronous_composite_for_test_callback_) {
     updated = true;
   }
 

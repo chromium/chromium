@@ -95,8 +95,8 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void SetShouldThrottleFrameRate(bool flag, LocalFrame& main_frame) override;
   void RequestMainFrameOnCompositorAnimation(
       LocalFrame&,
-      cc::PropertyChangeForcesCommitCriteria
-          property_change_forces_commit_criteria) override;
+      cc::PropertyChangeForcesCommitCriteria criteria,
+      bool force_propagation) override;
   std::unique_ptr<cc::ScopedPauseRendering> PauseRendering(
       LocalFrame&) override;
   std::optional<int> GetMaxRenderBufferBounds(LocalFrame&) const override;
