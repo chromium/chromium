@@ -918,27 +918,33 @@ const FeatureEntry::FeatureVariation
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonNone[] = {
     {"AddContextButtonVariant", "none"},
-    {"ForceToolsAndModels", "true"},
+    {"ShowCreateImageTool", "true"},
+    {"ShowToolsAndModels", "true"},
 };
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonBelowResults[] = {
         {"AddContextButtonVariant", "below_results"},
-        {"ForceToolsAndModels", "true"},
+        {"ShowCreateImageTool", "true"},
+        {"ShowToolsAndModels", "true"},
 };
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonAboveResults[] = {
         {"AddContextButtonVariant", "above_results"},
-        {"ForceToolsAndModels", "true"},
+        {"ShowCreateImageTool", "true"},
+        {"ShowToolsAndModels", "true"},
+
 };
 const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonInline[] =
     {
         {"AddContextButtonVariant", "inline"},
-        {"ForceToolsAndModels", "true"},
+        {"ShowCreateImageTool", "true"},
+        {"ShowToolsAndModels", "true"},
 };
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonMultiFile[] = {
         {"AddContextButtonVariant", "below_results"},
-        {"ForceToolsAndModels", "true"},
+        {"ShowCreateImageTool", "true"},
+        {"ShowToolsAndModels", "true"},
         {"MaxNumFiles", "5"},
 };
 
