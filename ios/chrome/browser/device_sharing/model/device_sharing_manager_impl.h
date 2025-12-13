@@ -9,7 +9,6 @@
 
 #import <memory>
 
-#import "base/gtest_prod_util.h"
 #import "base/memory/raw_ptr.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/device_sharing/model/device_sharing_manager.h"

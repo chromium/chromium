@@ -11,7 +11,6 @@
 #include <optional>
 #include <string>
 
-#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/color_space_export.h"

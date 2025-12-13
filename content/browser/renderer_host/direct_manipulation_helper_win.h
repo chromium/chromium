@@ -6,14 +6,12 @@
 #define CONTENT_BROWSER_RENDERER_HOST_DIRECT_MANIPULATION_HELPER_WIN_H_
 
 #include <windows.h>
-
 #include <directmanipulation.h>
 #include <wrl.h>
 
 #include <memory>
 #include <string>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/direct_manipulation_event_handler_win.h"

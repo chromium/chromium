@@ -8,7 +8,6 @@
 #include <map>
 #include <utility>
 
-#include "base/gtest_prod_util.h"
 #include "components/page_image_annotation/core/page_annotator.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"

@@ -6,12 +6,12 @@
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_REMOTE_WEB_APPROVALS_MANAGER_H_
 
 #include <stddef.h>
+
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

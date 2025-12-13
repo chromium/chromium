@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 

@@ -10,7 +10,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"

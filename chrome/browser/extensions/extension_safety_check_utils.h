@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_SAFETY_CHECK_UTILS_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_SAFETY_CHECK_UTILS_H_
 
-#include "base/gtest_prod_util.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_prefs.h"

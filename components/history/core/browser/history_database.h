@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/download_database.h"

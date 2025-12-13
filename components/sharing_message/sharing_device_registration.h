@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"

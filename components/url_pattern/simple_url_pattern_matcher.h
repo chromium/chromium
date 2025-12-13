@@ -10,7 +10,6 @@
 #include <string_view>
 
 #include "base/component_export.h"
-#include "base/gtest_prod_util.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "third_party/liburlpattern/parse.h"

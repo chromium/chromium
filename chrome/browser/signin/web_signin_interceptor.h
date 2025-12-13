@@ -10,7 +10,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/functional/callback_forward.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"

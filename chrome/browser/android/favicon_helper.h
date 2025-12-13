@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/favicon_service.h"

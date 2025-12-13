@@ -34,7 +34,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"

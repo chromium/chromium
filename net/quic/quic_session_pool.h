@@ -17,7 +17,6 @@
 
 #include "base/containers/lru_cache.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/raw_ptr.h"

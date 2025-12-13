@@ -15,7 +15,6 @@
 #include <utility>
 
 #include "base/component_export.h"
-#include "base/gtest_prod_util.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "base/unguessable_token.h"

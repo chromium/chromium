@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/gtest_prod_util.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/user_education/webui/help_bubble_handler.h"

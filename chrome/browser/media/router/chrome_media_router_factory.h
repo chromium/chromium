@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_CHROME_MEDIA_ROUTER_FACTORY_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_CHROME_MEDIA_ROUTER_FACTORY_H_
 
-#include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
 #include "components/media_router/browser/media_router_factory.h"
 

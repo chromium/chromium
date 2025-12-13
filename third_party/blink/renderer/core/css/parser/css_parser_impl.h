@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/gtest_prod_util.h"
 #include "css_at_rule_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"

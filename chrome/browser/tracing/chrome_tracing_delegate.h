@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/gtest_prod_util.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

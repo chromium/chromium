@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_ASH_SERVICES_CELLULAR_SETUP_EUICC_H_
 #define CHROMEOS_ASH_SERVICES_CELLULAR_SETUP_EUICC_H_
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"

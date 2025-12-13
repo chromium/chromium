@@ -29,7 +29,6 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
 #include "base/files/file_path.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/accelerators/accelerator.h"

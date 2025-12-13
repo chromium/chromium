@@ -13,7 +13,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/small_map.h"
 #include "base/containers/span.h"
-#include "base/gtest_prod_util.h"
 #include "extensions/common/manifest.h"
 
 namespace extensions {

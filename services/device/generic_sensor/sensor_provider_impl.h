@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

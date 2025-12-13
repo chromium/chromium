@@ -101,7 +101,6 @@
 #if BUILDFLAG(IS_WIN)
 #include <string>
 
-#include "base/gtest_prod_util.h"
 #include "base/win/windows_types.h"
 
 namespace ABI {

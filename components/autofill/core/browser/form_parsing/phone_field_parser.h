@@ -11,7 +11,6 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
-#include "base/gtest_prod_util.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/phone_number.h"

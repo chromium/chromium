@@ -41,7 +41,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/gtest_prod_util.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

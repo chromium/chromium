@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/navigation_subresource_loader_params.h"

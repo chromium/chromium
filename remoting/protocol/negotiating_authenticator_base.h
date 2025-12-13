@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/host_authentication_config.h"
 

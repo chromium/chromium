@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
-#include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/phonehub/notification.h"

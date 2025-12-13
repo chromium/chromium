@@ -15,7 +15,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/lru_cache.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"

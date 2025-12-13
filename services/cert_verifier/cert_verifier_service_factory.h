@@ -5,7 +5,6 @@
 #ifndef SERVICES_CERT_VERIFIER_CERT_VERIFIER_SERVICE_FACTORY_H_
 #define SERVICES_CERT_VERIFIER_CERT_VERIFIER_SERVICE_FACTORY_H_
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "net/base/load_timing_info.h"

@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/managed_state.h"
 #include "chromeos/ash/components/network/network_config.h"

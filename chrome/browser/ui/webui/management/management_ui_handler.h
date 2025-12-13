@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "chrome/common/url_constants.h"
 #include "components/enterprise/browser/promotion/promotion_eligibility_checker.h"

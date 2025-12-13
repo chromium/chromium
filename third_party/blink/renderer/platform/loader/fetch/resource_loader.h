@@ -33,7 +33,6 @@
 #include <variant>
 
 #include "base/containers/span.h"
-#include "base/gtest_prod_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"

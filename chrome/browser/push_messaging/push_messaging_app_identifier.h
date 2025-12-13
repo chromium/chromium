@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
 #include "components/push_messaging/app_identifier.h"
 #include "url/gurl.h"
 

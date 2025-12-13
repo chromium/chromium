@@ -7,7 +7,6 @@
 
 #include <cstdint>
 
-#include "base/gtest_prod_util.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/cpu_performance.mojom.h"
 

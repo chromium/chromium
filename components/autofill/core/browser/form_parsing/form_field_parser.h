@@ -17,7 +17,6 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/function_ref.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/country_type.h"

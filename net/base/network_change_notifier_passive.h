@@ -5,7 +5,6 @@
 #ifndef NET_BASE_NETWORK_CHANGE_NOTIFIER_PASSIVE_H_
 #define NET_BASE_NETWORK_CHANGE_NOTIFIER_PASSIVE_H_
 
-#include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
