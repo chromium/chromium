@@ -885,14 +885,15 @@ void WebGLRenderingContextWebGPUBase::deleteTexture(WebGLTexture* texture) {
     return;
   }
 
-  size_t texture_type_idx =
-      static_cast<size_t>(GLenumToTextureTarget(texture->GetTarget()));
-  for (size_t texture_unit_idx = 0; texture_unit_idx < bound_textures_.size();
-       texture_unit_idx++) {
-    Member<WebGLTexture>& bound_texture =
-        bound_textures_[texture_type_idx][texture_unit_idx];
-    if (bound_texture == texture) {
-      bound_texture = nullptr;
+  TextureTarget texture_target = GLenumToTextureTarget(texture->GetTarget());
+  if (texture_target != TextureTarget::kUnkown) {
+    size_t texture_type_idx = static_cast<size_t>(texture_target);
+    CHECK_LT(texture_type_idx, bound_textures_.size());
+    auto& bound_textures_for_type = bound_textures_[texture_type_idx];
+    for (auto& bound_texture : bound_textures_for_type) {
+      if (bound_texture == texture) {
+        bound_texture = nullptr;
+      }
     }
   }
 
