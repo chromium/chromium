@@ -84,6 +84,10 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
                           ContextualTasksService::Observer>
       contextual_tasks_service_observation_{this};
 
+  // Adds the tabs associated with the given `task_id` to `tabs_to_underline`.
+  void AddAssociatedTabsToSet(const base::Uuid& task_id,
+                              std::set<tabs::TabHandle>& tabs_to_underline);
+
   base::WeakPtrFactory<ActiveTaskContextProviderImpl> weak_ptr_factory_{this};
 };
 
