@@ -12,9 +12,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
-#include "cc/metrics/event_metrics.h"
 #include "cc/metrics/histogram_macros.h"
-#include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
+#include "cc/metrics/scroll_jank_v4_result.h"
 
 namespace cc {
 
@@ -111,7 +110,7 @@ void ScrollJankV4HistogramEmitter::OnFrameWithScrollUpdates(
 }
 
 void ScrollJankV4HistogramEmitter::OnScrollStarted() {
-  // In case ScrollJankDroppedFrameTracker wasn't informed about the end of the
+  // In case ScrollJankV4HistogramEmitter wasn't informed about the end of the
   // previous scroll, emit histograms for the previous scroll now.
   EmitPerScrollHistogramsAndResetCounters();
   // Don't carry jank data from non-damaging frames across scrolls.

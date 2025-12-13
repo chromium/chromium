@@ -12,6 +12,7 @@
 #include "cc/cc_export.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
 #include "cc/metrics/scroll_jank_v4_frame_stage.h"
+#include "cc/metrics/scroll_jank_v4_result.h"
 
 namespace cc {
 
@@ -68,8 +69,7 @@ class CC_EXPORT ScrollJankV4Decider {
   // ```
   //
   // `args2.frame_time` must be strictly greater than `args1.frame_time`.
-  ScrollUpdateEventMetrics::ScrollJankV4Result
-  DecideJankForFrameWithRealScrollUpdates(
+  ScrollJankV4Result DecideJankForFrameWithRealScrollUpdates(
       const ScrollJankV4FrameStage::ScrollUpdates& updates,
       const ScrollJankV4Frame::ScrollDamage& damage,
       const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args);
@@ -94,8 +94,7 @@ class CC_EXPORT ScrollJankV4Decider {
   // janky, the decider needs information about the speed of a future real
   // frame. `ScrollJankV4DecisionQueue` takes care of this "look-ahead"
   // dependency and presents a simpler callback-based API.
-  ScrollUpdateEventMetrics::ScrollJankV4Result
-  DecideJankForFrameWithSyntheticScrollUpdatesOnly(
+  ScrollJankV4Result DecideJankForFrameWithSyntheticScrollUpdatesOnly(
       const ScrollJankV4FrameStage::ScrollUpdates& updates,
       const ScrollJankV4Frame::ScrollDamage& damage,
       const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
@@ -252,8 +251,7 @@ class CC_EXPORT ScrollJankV4Decider {
     std::optional<base::TimeDelta> running_delivery_cutoff;
   };
 
-  ScrollUpdateEventMetrics::ScrollJankV4Result
-  DecideJankForFrameWithScrollUpdates(
+  ScrollJankV4Result DecideJankForFrameWithScrollUpdates(
       const ScrollJankV4FrameStage::ScrollUpdates& updates,
       const ScrollJankV4Frame::ScrollDamage& damage,
       const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
@@ -266,7 +264,7 @@ class CC_EXPORT ScrollJankV4Decider {
       const ScrollJankV4Frame::ScrollDamage& damage,
       const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
       bool treat_as_fast_scroll,
-      ScrollUpdateEventMetrics::ScrollJankV4Result& result) const;
+      ScrollJankV4Result& result) const;
 
   std::optional<base::TimeDelta> CalculateRunningDeliveryCutoff(
       int vsyncs_since_previous_frame,
@@ -274,7 +272,7 @@ class CC_EXPORT ScrollJankV4Decider {
       const ScrollJankV4FrameStage::ScrollUpdates& updates,
       const ScrollJankV4Frame::ScrollDamage& damage,
       const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
-      ScrollUpdateEventMetrics::ScrollJankV4Result& result) const;
+      ScrollJankV4Result& result) const;
 
   void Reset();
 

@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
+#include "cc/metrics/scroll_jank_v4_result.h"
 #include "cc/test/event_metrics_test_creator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,7 +30,6 @@ using DamagingFrame = ScrollJankV4Frame::DamagingFrame;
 using ScrollUpdates = ScrollJankV4FrameStage::ScrollUpdates;
 using Real = ScrollUpdates::Real;
 using Synthetic = ScrollUpdates::Synthetic;
-using ScrollJankV4Result = ScrollUpdateEventMetrics::ScrollJankV4Result;
 
 using ::testing::_;
 using ::testing::InSequence;
@@ -57,7 +57,7 @@ class MockResultConsumer : public ScrollJankV4DecisionQueue::ResultConsumer {
  public:
   MOCK_METHOD(void,
               OnFrameResult,
-              (ScrollUpdateEventMetrics::ScrollJankV4Result result,
+              (ScrollJankV4Result result,
                ScrollUpdateEventMetrics* earliest_event),
               (override));
   MOCK_METHOD(void, OnScrollStarted, (), (override));
@@ -73,7 +73,7 @@ class ForwardingResultConsumer
  public:
   explicit ForwardingResultConsumer(R* forwardee) : forwardee_(forwardee) {}
 
-  void OnFrameResult(ScrollUpdateEventMetrics::ScrollJankV4Result result,
+  void OnFrameResult(ScrollJankV4Result result,
                      ScrollUpdateEventMetrics* earliest_event) override {
     forwardee_->OnFrameResult(result, earliest_event);
   }

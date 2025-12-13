@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
                regular scroll (violates fling continuity rule)"/>
 </variants>
 
-<!-- LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:JankReason,//cc/metrics/event_metrics.h:JankReason) -->
+<!-- LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:JankReason,//cc/metrics/scroll_jank_v4_result.h:JankReason) -->
 
 <histogram name="Event.AndroidActionDown.ToolType" enum="MotionEventToolType"
     expires_after="never">

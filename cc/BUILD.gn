@@ -249,6 +249,7 @@ cc_component("cc") {
     "metrics/scroll_jank_v4_histogram_emitter.h",
     "metrics/scroll_jank_v4_processor.cc",
     "metrics/scroll_jank_v4_processor.h",
+    "metrics/scroll_jank_v4_result.h",
     "metrics/shared_metrics_buffer.h",
     "metrics/stub_compositor_frame_reporting_controller.cc",
     "metrics/stub_compositor_frame_reporting_controller.h",

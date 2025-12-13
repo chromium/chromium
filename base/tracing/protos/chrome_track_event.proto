@@ -919,7 +919,7 @@ message EventLatency {
       // Chrome missed one or more VSyncs in the middle of a fling.
       MISSED_VSYNC_DURING_FLING = 4;
     }
-    // LINT.ThenChange(//cc/metrics/event_metrics.h:JankReason,//tools/metrics/histograms/metadata/event/histograms.xml:ScrollJankReasonV4)
+    // LINT.ThenChange(//cc/metrics/scroll_jank_v4_result.h:JankReason,//tools/metrics/histograms/metadata/event/histograms.xml:ScrollJankReasonV4)
 
     // Number of VSyncs that that Chrome missed before presenting the scroll
     // update for each reason. Essentially a map<JankReason, int32>.

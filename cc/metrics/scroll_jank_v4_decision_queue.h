@@ -11,10 +11,10 @@
 
 #include "base/time/time.h"
 #include "cc/cc_export.h"
-#include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_decider.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
 #include "cc/metrics/scroll_jank_v4_frame_stage.h"
+#include "cc/metrics/scroll_jank_v4_result.h"
 
 namespace cc {
 
@@ -47,7 +47,7 @@ class CC_EXPORT ScrollJankV4DecisionQueue {
    public:
     virtual ~ResultConsumer();
     virtual void OnFrameResult(
-        ScrollUpdateEventMetrics::ScrollJankV4Result result,
+        ScrollJankV4Result result,
         // TODO(crbug.com/456180776): Remove this argument once scroll jank v4
         // metrics are recorded in dedicated trace events.
         ScrollUpdateEventMetrics* earliest_event) = 0;
