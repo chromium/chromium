@@ -7386,6 +7386,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "ntp-feature-optimization",
+    "owners": [ "hannahrogers@chromium.org", "tiborg@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "ntp-footer",
     "owners": [ "pauladedeji@chromium.org", "tiborg@chromium.org" ],
     "expiry_milestone": 140

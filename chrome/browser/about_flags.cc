@@ -1818,6 +1818,30 @@ const FeatureEntry::FeatureVariation kNtpNextVariations[] = {
      std::size(kNtpNextShowSimplificationUI), nullptr},
 };
 
+const FeatureEntry::FeatureParam kNtpFeatureOptimizationDefault[] = {
+    {"EnableStaleShortcutsAutoRemoval", "true"},
+    {"EnableStaleModulesAutoRemoval", "true"},
+    {"RemoveDismissModules", "true"},
+};
+
+const FeatureEntry::FeatureParam kNtpFeatureOptimizationTesting[] = {
+    {"EnableStaleShortcutsAutoRemoval", "true"},
+    {"EnableStaleModulesAutoRemoval", "true"},
+    {"RemoveDismissModules", "true"},
+    {"MinStalenessUpdateTimeInterval", "1m"},
+    {"StaleShortcutsCountThreshold", "5"},
+    {"StaleModulesCountThreshold", "2"},
+};
+
+const FeatureEntry::FeatureVariation kNtpFeatureOptimizationVariations[] = {
+    {"- Default Auto-Removal Timing",
+     kNtpFeatureOptimizationDefault,
+     std::size(kNtpFeatureOptimizationDefault), nullptr},
+    {"- Auto-Removal Timing for Testing",
+     kNtpFeatureOptimizationTesting,
+     std::size(kNtpFeatureOptimizationTesting), nullptr},
+};
+
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
@@ -7733,6 +7757,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpDummyModulesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpDummyModules)},
 #endif
+
+    {"ntp-feature-optimization",
+     flag_descriptions::kNtpFeatureOptimizationName,
+     flag_descriptions::kNtpFeatureOptimizationDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpFeatureOptimization,
+                                    kNtpFeatureOptimizationVariations,
+                                    "NtpFeatureOptimization")},
 
     {"ntp-footer", flag_descriptions::kNtpFooterName,
      flag_descriptions::kNtpFooterDescription, kOsDesktop,

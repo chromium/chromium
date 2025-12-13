@@ -6218,6 +6218,11 @@ inline constexpr char kNtpDummyModulesDescription[] =
     "Adds dummy modules to New Tab Page when 'NTP Modules Redesigned' is "
     "enabled.";
 
+inline constexpr char kNtpFeatureOptimizationName[] =
+    "NTP Feature Optimization";
+inline constexpr char kNtpFeatureOptimizationDescription[] =
+    "Enables auto-removal of stale features from the NTP.";
+
 inline constexpr char kNtpFooterName[] = "NTP Footer";
 inline constexpr char kNtpFooterDescription[] =
     "Adds footer to New Tab Page that encapsulates customize buttons and "
