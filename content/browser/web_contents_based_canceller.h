@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WEB_CONTENTS_BASED_CANCELLER_H_
 #define CONTENT_BROWSER_WEB_CONTENTS_BASED_CANCELLER_H_
 
+#include "base/functional/callback.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 
