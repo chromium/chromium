@@ -156,9 +156,11 @@ MATCHER(UniquePtrMatches, negation ? "do not match" : "match") {
 
 }  // namespace
 
+class CommitToPendingTreeLayerTreeHostImplTest : public LayerTreeHostImplTest {
+};
 
-
-using CommitToPendingTreeLayerTreeHostImplTest = LayerTreeHostImplTestBase;
+INSTANTIATE_COMMIT_TO_TREE_BASE_TEST_P(CommitToPendingTreeLayerTreeHostImplTest,
+                                       CommitToPendingTree);
 
 class CommitToActiveTreeLayerTreeHostImplTest
     : public LayerTreeHostImplTestBase {
@@ -225,8 +227,9 @@ class LayerTreeHostImplTimelinesTest : public LayerTreeHostImplTest {
 
 INSTANTIATE_ANIMATIONS_TREE_TEST_P(LayerTreeHostImplTimelinesTest);
 
+// TODO(468470705): Switch this to use LayerTreeHostImplTest.
 class FluentOverlayScrollbarLayerTreeHostImplTest
-    : public CommitToPendingTreeLayerTreeHostImplTest {
+    : public LayerTreeHostImplTestBase {
  public:
   void SetUp() override {
     LayerTreeSettings settings = DefaultSettings();
@@ -551,7 +554,7 @@ TEST_F(CommitToActiveTreeLayerTreeHostImplTest, ScrollDeltaRepeatedScrolls) {
             gfx::Vector2dF(0, 0));
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest, SyncedScrollAbortedCommit) {
+TEST_P(PendingTreeLayerTreeHostImplTest, SyncedScrollAbortedCommit) {
   CreateHostImpl(DefaultSettings(), CreateLayerTreeFrameSink());
   CreatePendingTree();
   gfx::PointF scroll_offset(20, 30);
@@ -920,8 +923,7 @@ TEST_P(LayerTreeHostImplTest, ReplaceTreeWhileScrolling) {
                                  scroll_delta));
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
-       ActivateTreeScrollingNodeDisappeared) {
+TEST_P(PendingTreeLayerTreeHostImplTest, ActivateTreeScrollingNodeDisappeared) {
   SetupViewportLayersOuterScrolls(gfx::Size(100, 100), gfx::Size(1000, 1000));
 
   auto status = GetInputHandler().ScrollBegin(
@@ -2718,8 +2720,7 @@ TEST_P(LayerTreeHostImplTest, ScrollNodeWithoutScrollLayer) {
             status.main_thread_hit_test_reasons);
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
-       AnimationSchedulingPendingTree) {
+TEST_P(PendingTreeLayerTreeHostImplTest, AnimationSchedulingPendingTree) {
   CreatePendingTree();
   auto* root =
       SetupRootLayer<LayerImpl>(host_impl_->pending_tree(), gfx::Size(50, 50));
@@ -2775,8 +2776,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
   EXPECT_FALSE(did_request_commit_);
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
-       AnimationSchedulingActiveTree) {
+TEST_P(PendingTreeLayerTreeHostImplTest, AnimationSchedulingActiveTree) {
   LayerImpl* root = SetupDefaultRootLayer(gfx::Size(50, 50));
   LayerImpl* child = AddLayerInActiveTree();
   child->SetBounds(gfx::Size(10, 10));
@@ -4932,7 +4932,7 @@ TEST_P(LayerTreeHostImplTestScrollbarAnimation, NoAnimator) {
 }
 
 class LayerTreeHostImplTestScrollbarOpacity
-    : public CommitToPendingTreeLayerTreeHostImplTest {
+    : public PendingTreeLayerTreeHostImplTest {
  protected:
   void RunTest(LayerTreeSettings::ScrollbarAnimator animator) {
     LayerTreeSettings settings = DefaultSettings();
@@ -5022,15 +5022,18 @@ class LayerTreeHostImplTestScrollbarOpacity
   }
 };
 
-TEST_F(LayerTreeHostImplTestScrollbarOpacity, Android) {
+INSTANTIATE_COMMIT_TO_PENDING_TREE_TEST_P(
+    LayerTreeHostImplTestScrollbarOpacity);
+
+TEST_P(LayerTreeHostImplTestScrollbarOpacity, Android) {
   RunTest(LayerTreeSettings::ANDROID_OVERLAY);
 }
 
-TEST_F(LayerTreeHostImplTestScrollbarOpacity, AuraOverlay) {
+TEST_P(LayerTreeHostImplTestScrollbarOpacity, AuraOverlay) {
   RunTest(LayerTreeSettings::AURA_OVERLAY);
 }
 
-TEST_F(LayerTreeHostImplTestScrollbarOpacity, NoAnimator) {
+TEST_P(LayerTreeHostImplTestScrollbarOpacity, NoAnimator) {
   RunTest(LayerTreeSettings::NO_ANIMATOR);
 }
 
@@ -5562,7 +5565,7 @@ TEST_P(LayerTreeHostImplTest, NullScrollerLayerForScrollbarLayer) {
   GetInputHandler().ScrollEnd();
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
+TEST_P(PendingTreeLayerTreeHostImplTest,
        ScrollbarVisibilityChangeCausesRedrawAndCommit) {
   LayerTreeSettings settings = DefaultSettings();
   settings.scrollbar_animator = LayerTreeSettings::AURA_OVERLAY;
@@ -6575,7 +6578,7 @@ TEST_P(LayerTreeHostImplTest, ScrollRootIgnored) {
   EXPECT_FALSE(did_request_commit_);
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest, ClampingAfterActivation) {
+TEST_P(PendingTreeLayerTreeHostImplTest, ClampingAfterActivation) {
   CreatePendingTree();
   host_impl_->pending_tree()->PushPageScaleFromMainThread(1, 1, 1);
   SetupViewportLayers(host_impl_->pending_tree(), gfx::Size(50, 50),
@@ -8900,8 +8903,7 @@ TEST_P(LayerTreeHostImplTest, ScrollViewportRounding) {
   EXPECT_EQ(gfx::PointF(0, 0), MaxScrollOffset(inner_viewport_scroll_layer));
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
-       RootLayerScrollOffsetDelegation) {
+TEST_P(PendingTreeLayerTreeHostImplTest, RootLayerScrollOffsetDelegation) {
   TestInputHandlerClient scroll_watcher;
   SetupViewportLayersInnerScrolls(gfx::Size(10, 20), gfx::Size(100, 100));
   auto* scroll_layer = InnerViewportScrollLayer();
@@ -10463,7 +10465,7 @@ class LayerTreeHostImplViewportCoveredTest : public LayerTreeHostImplTest {
   }
 
   void DidActivateSyncTree() override {
-    CommitToPendingTreeLayerTreeHostImplTest::DidActivateSyncTree();
+    LayerTreeHostImplTest::DidActivateSyncTree();
     did_activate_pending_tree_ = true;
   }
 
@@ -10926,7 +10928,9 @@ TEST_P(LayerTreeHostImplTestDrawAndTestDamage, FrameIncludesDamageRect) {
   DrawFrameAndTestDamage(no_damage, child);
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest, FarAwayQuadsDontNeedAA) {
+// This test relies on LayerTreeHostImpl to produce CompositorFrames, which it
+// doesn't do in TreesInViz mode.
+TEST_P(CommitToPendingTreeLayerTreeHostImplTest, FarAwayQuadsDontNeedAA) {
   // Due to precision issues (especially on Android), sometimes far
   // away quads can end up thinking they need AA.
   float device_scale_factor = 4 / 3;
@@ -12536,14 +12540,17 @@ TEST_P(LayerTreeHostImplTest, FullViewportDamageAfterOnDraw) {
 }
 
 class ResourcelessSoftwareLayerTreeHostImplTest
-    : public CommitToPendingTreeLayerTreeHostImplTest {
+    : public PendingTreeLayerTreeHostImplTest {
  protected:
   std::unique_ptr<LayerTreeFrameSink> CreateLayerTreeFrameSink() override {
     return FakeLayerTreeFrameSink::Create3d();
   }
 };
 
-TEST_F(ResourcelessSoftwareLayerTreeHostImplTest,
+INSTANTIATE_COMMIT_TO_PENDING_TREE_TEST_P(
+    ResourcelessSoftwareLayerTreeHostImplTest);
+
+TEST_P(ResourcelessSoftwareLayerTreeHostImplTest,
        ResourcelessSoftwareSetNeedsRedraw) {
   const gfx::Size viewport_size(100, 100);
   SetupDefaultRootLayer(viewport_size);
@@ -12572,7 +12579,7 @@ TEST_F(ResourcelessSoftwareLayerTreeHostImplTest,
   EXPECT_FALSE(last_on_draw_frame_->has_no_damage);
 }
 
-TEST_F(ResourcelessSoftwareLayerTreeHostImplTest,
+TEST_P(ResourcelessSoftwareLayerTreeHostImplTest,
        ResourcelessSoftwareDrawSkipsUpdateTiles) {
   const gfx::Size viewport_size(100, 100);
 
@@ -12607,7 +12614,7 @@ TEST_F(ResourcelessSoftwareLayerTreeHostImplTest,
   EXPECT_FALSE(did_request_prepare_tiles_);
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
+TEST_P(PendingTreeLayerTreeHostImplTest,
        ExternalTileConstraintReflectedInPendingTree) {
   const gfx::Size layer_size(100, 100);
 
@@ -12741,7 +12748,7 @@ TEST_P(LayerTreeHostImplTest, ExternalTransformAffectsSublayerScaleFactor) {
   EXPECT_EQ(node->surface_contents_scale, gfx::Vector2dF(1, 1));
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest, OneScrollForFirstScrollDelay) {
+TEST_P(PendingTreeLayerTreeHostImplTest, OneScrollForFirstScrollDelay) {
   CreateHostImpl(DefaultSettings(), CreateLayerTreeFrameSink());
   SetupRootLayer<SolidColorLayerImpl>(host_impl_->active_tree(),
                                       gfx::Size(10, 10));
@@ -12772,8 +12779,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest, OneScrollForFirstScrollDelay) {
   EXPECT_EQ(first_scroll_observed, 1);
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
-       OtherInputsForFirstScrollDelay) {
+TEST_P(PendingTreeLayerTreeHostImplTest, OtherInputsForFirstScrollDelay) {
   CreateHostImpl(DefaultSettings(), CreateLayerTreeFrameSink());
   SetupRootLayer<SolidColorLayerImpl>(host_impl_->active_tree(),
                                       gfx::Size(10, 10));
@@ -12803,8 +12809,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
   EXPECT_EQ(first_scroll_observed, 0);
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
-       MultipleScrollsForFirstScrollDelay) {
+TEST_P(PendingTreeLayerTreeHostImplTest, MultipleScrollsForFirstScrollDelay) {
   CreateHostImpl(DefaultSettings(), CreateLayerTreeFrameSink());
   SetupRootLayer<SolidColorLayerImpl>(host_impl_->active_tree(),
                                       gfx::Size(10, 10));
@@ -15183,8 +15188,7 @@ TEST_P(LayerTreeHostImplTimelinesTest, ScrollAnimatedChangingBounds) {
   EXPECT_EQ(gfx::PointF(250, 250), CurrentScrollOffset(scrolling_layer));
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
-       InvalidLayerNotAddedToRasterQueue) {
+TEST_P(PendingTreeLayerTreeHostImplTest, InvalidLayerNotAddedToRasterQueue) {
   CreatePendingTree();
 
   scoped_refptr<RasterSource> raster_source_with_tiles(
@@ -15216,7 +15220,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
   EXPECT_TRUE(empty_raster_priority_queue_all->IsEmpty());
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest, DidBecomeActive) {
+TEST_P(PendingTreeLayerTreeHostImplTest, DidBecomeActive) {
   CreatePendingTree();
   host_impl_->ActivateSyncTree();
   CreatePendingTree();
@@ -15583,8 +15587,7 @@ TEST_F(MsaaIsSlowLayerTreeHostImplTest, GpuRasterizationStatusMsaaIsSlow) {
   EXPECT_FALSE(host_impl_->can_use_msaa());
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
-       UpdatePageScaleFactorOnActiveTree) {
+TEST_P(PendingTreeLayerTreeHostImplTest, UpdatePageScaleFactorOnActiveTree) {
   // Check page scale factor updates the property trees when an update is made
   // on the active tree.
   CreatePendingTree();
@@ -15703,8 +15706,7 @@ TEST_P(LayerTreeHostImplTest,
   SetupMouseMoveAtTestScrollbarStates(false);
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
-       CheckerImagingTileInvalidation) {
+TEST_P(PendingTreeLayerTreeHostImplTest, CheckerImagingTileInvalidation) {
   LayerTreeSettings settings = LegacySWSettings();
   settings.enable_checker_imaging = true;
   settings.min_image_bytes_to_checker = 512 * 1024;
@@ -15844,8 +15846,7 @@ TEST_P(LayerTreeHostImplTest, RasterColorSpaceHDR) {
   EXPECT_EQ(hdr_params.GetHdrHeadroom(), std::log2(kHDRMaxLuminanceRelative));
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
-       UpdatedTilingsForNonDrawingLayers) {
+TEST_P(PendingTreeLayerTreeHostImplTest, UpdatedTilingsForNonDrawingLayers) {
   gfx::Size layer_bounds(500, 500);
 
   CreatePendingTree();
@@ -15897,7 +15898,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
                    ->can_require_tiles_for_activation());
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
+TEST_P(PendingTreeLayerTreeHostImplTest,
        RasterTilePrioritizationForNonDrawingLayers) {
   gfx::Size layer_bounds(500, 500);
   CreatePendingTree();
@@ -15954,8 +15955,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
   EXPECT_EQ(queue->Top().tile()->layer_id(), 3);
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
-       DrawAfterDroppingTileResources) {
+TEST_P(PendingTreeLayerTreeHostImplTest, DrawAfterDroppingTileResources) {
   LayerTreeSettings settings = DefaultSettings();
   settings.using_synchronous_renderer_compositor = true;
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
@@ -16744,8 +16744,7 @@ TEST_P(LayerTreeHostImplTest, TouchScrollOnAndroidScrollbar) {
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
-       CommitWithNoPaintWorkletLayerPainter) {
+TEST_P(PendingTreeLayerTreeHostImplTest, CommitWithNoPaintWorkletLayerPainter) {
   ASSERT_FALSE(host_impl_->GetPaintWorkletLayerPainterForTesting());
   host_impl_->CreatePendingTree();
 
@@ -16756,7 +16755,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
   EXPECT_TRUE(did_prepare_tiles_);
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest, CommitWithNoPaintWorklets) {
+TEST_P(PendingTreeLayerTreeHostImplTest, CommitWithNoPaintWorklets) {
   host_impl_->SetPaintWorkletLayerPainter(
       std::make_unique<TestPaintWorkletLayerPainter>());
   host_impl_->CreatePendingTree();
@@ -16768,7 +16767,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest, CommitWithNoPaintWorklets) {
   EXPECT_TRUE(did_prepare_tiles_);
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest, CommitWithDirtyPaintWorklets) {
+TEST_P(PendingTreeLayerTreeHostImplTest, CommitWithDirtyPaintWorklets) {
   auto painter_owned = std::make_unique<TestPaintWorkletLayerPainter>();
   TestPaintWorkletLayerPainter* painter = painter_owned.get();
   host_impl_->SetPaintWorkletLayerPainter(std::move(painter_owned));
@@ -16817,8 +16816,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest, CommitWithDirtyPaintWorklets) {
   EXPECT_TRUE(did_prepare_tiles_);
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
-       CommitWithNoDirtyPaintWorklets) {
+TEST_P(PendingTreeLayerTreeHostImplTest, CommitWithNoDirtyPaintWorklets) {
   host_impl_->SetPaintWorkletLayerPainter(
       std::make_unique<TestPaintWorkletLayerPainter>());
 
@@ -16847,7 +16845,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
 }
 
 class ForceActivateAfterPaintWorkletPaintLayerTreeHostImplTest
-    : public CommitToPendingTreeLayerTreeHostImplTest {
+    : public PendingTreeLayerTreeHostImplTest {
  public:
   void NotifyPaintWorkletStateChange(
       Scheduler::PaintWorkletState state) override {
@@ -16859,7 +16857,10 @@ class ForceActivateAfterPaintWorkletPaintLayerTreeHostImplTest
   }
 };
 
-TEST_F(ForceActivateAfterPaintWorkletPaintLayerTreeHostImplTest,
+INSTANTIATE_COMMIT_TO_PENDING_TREE_TEST_P(
+    ForceActivateAfterPaintWorkletPaintLayerTreeHostImplTest);
+
+TEST_P(ForceActivateAfterPaintWorkletPaintLayerTreeHostImplTest,
        ForceActivationAfterPaintWorkletsFinishPainting) {
   auto painter_owned = std::make_unique<TestPaintWorkletLayerPainter>();
   TestPaintWorkletLayerPainter* painter = painter_owned.get();

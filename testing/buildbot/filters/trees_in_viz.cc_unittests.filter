@@ -1,6 +1,3 @@
-# These tests rely on LayerTreeHostImpl to produce CompositorFrames, which it
-# doesn't do in TreesInViz mode.
--CommitToPendingTreeLayerTreeHostImplTest.FarAwayQuadsDontNeedAA
 
 # TODO(crbug.com/448874765): Fix RunMultiThread_DelegatingRenderer unittests
 -LayerTreeHostAnimationTestNoDamageAnimation.RunMultiThread_DelegatingRenderer
