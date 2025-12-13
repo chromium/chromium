@@ -6410,7 +6410,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) vai perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />"</translation>
 <translation id="5420935737933866496">Copiar link</translation>
 <translation id="5421048291985386320">&amp;Faça login novamente</translation>
-<translation id="542237158771780634">Quando ativada, os dados são salvos na sua Conta do Google e podem ser usados em todos os dispositivos. Quando desativada, os dados são salvos apenas neste dispositivo.</translation>
+<translation id="542237158771780634">Quando uma opção está ativada, os dados relacionados a ela são salvos na sua Conta do Google e podem ser usados em todos os dispositivos. Quando está desativada, os dados ficam só neste dispositivo.</translation>
 <translation id="5422781158178868512">Seu dispositivo de armazenamento externo não foi reconhecido.</translation>
 <translation id="5423505005476604112">Crostini</translation>
 <translation id="5423600335480706727">Na próxima vez que você visitar o site <ph name="SITE" />, ele vai usar as permissões padrão</translation>
@@ -9520,7 +9520,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7617263010641145920">Ativar a Play Store</translation>
 <translation id="7617648809369507487">Usar mensagens mais silenciosas</translation>
 <translation id="7619937211696316184">A manutenção foi concluída</translation>
-<translation id="7620083113061729689">Histórico de sincronizações</translation>
+<translation id="7620083113061729689">Sincronizar histórico</translation>
 <translation id="7620616707541471029">Escolha uma conta para continuar</translation>
 <translation id="7621382409404463535">Falha do sistema ao salvar a configuração do dispositivo.</translation>
 <translation id="7621595347123595643">Não vai ser possível recuperar dados locais se você esquecer a senha ou o PIN.</translation>
