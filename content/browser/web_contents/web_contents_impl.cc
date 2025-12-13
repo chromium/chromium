@@ -3855,14 +3855,18 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences(
         prefs.main_frame_resizes_are_orientation_changes = false;
         break;
       case ui::DEVICE_FORM_FACTOR_TABLET:
-        // Specific to large tablets (10"), by default they request desktop
-        // site, but can per-site optionally override it to request mobile
-        // instead.
+      case ui::DEVICE_FORM_FACTOR_XR:
+        // Specific to large tablets (10") and XR devices, by default they
+        // request desktop site, but can per-site optionally override it to
+        // request mobile instead.
         if (is_request_android_desktop_site) {
           apply_desktop_common_settings = true;
         }
         break;
-      default:
+      case ui::DEVICE_FORM_FACTOR_AUTOMOTIVE:
+      case ui::DEVICE_FORM_FACTOR_TV:
+      case ui::DEVICE_FORM_FACTOR_FOLDABLE:
+      case ui::DEVICE_FORM_FACTOR_PHONE:
         break;
     }
 
