@@ -775,16 +775,6 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "params": {
-                        "desktop-zoom-scaling-factor": "100",
-                        "monitor-zoom-scaling-factor": "100"
-                    },
-                    "enable_features": [
-                        "AndroidDesktopZoomScaling"
-                    ]
-                },
-                {
                     "name": "EnabledSmall",
                     "params": {
                         "desktop-zoom-scaling-factor": "109",
