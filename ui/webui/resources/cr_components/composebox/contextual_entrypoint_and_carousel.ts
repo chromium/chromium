@@ -528,9 +528,14 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   private isFileAllowed_(file: File, acceptedFileTypes: string): boolean {
+    // TODO(crbug.com/466876679):refractor isFileAllowed_ to use pre-split string arrays
     const fileType = file.type.toLowerCase();
     const allowedTypes = acceptedFileTypes.split(',');
     return allowedTypes.some(type => {
+      if (type.endsWith('/*')) {
+        const prefix = type.slice(0, -1);
+        return fileType.startsWith(prefix);
+      }
       return fileType === type;
     });
   }
