@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
@@ -153,6 +154,9 @@ class ContextualTasksUI : public TaskInfoDelegate,
       override;
 
   static constexpr std::string_view GetWebUIName() { return "ContextualTasks"; }
+
+  static base::RefCountedMemory* GetFaviconResourceBytes(
+      ui::ResourceScaleFactor scale_factor);
 
   // Notify the UI that the WebContents has moved to or from the side panel or
   // tab.

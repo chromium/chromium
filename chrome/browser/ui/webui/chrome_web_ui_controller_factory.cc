@@ -66,6 +66,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected_macros.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals_ui.h"
@@ -452,6 +453,10 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
   if (page_url.host() == commerce::kChromeUICompareHost) {
     return commerce::ProductSpecificationsUI::GetFaviconResourceBytes(
         scale_factor);
+  }
+
+  if (page_url.host() == chrome::kChromeUIContextualTasksHost) {
+    return ContextualTasksUI::GetFaviconResourceBytes(scale_factor);
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)

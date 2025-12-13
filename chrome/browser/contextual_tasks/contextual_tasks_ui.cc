@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/uuid.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
@@ -35,6 +36,7 @@
 #include "chrome/grit/contextual_tasks_resources.h"
 #include "chrome/grit/contextual_tasks_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
@@ -603,6 +605,23 @@ void ContextualTasksUI::CreatePageHandler(
       std::make_unique<ContextualTasksInternalsPageHandler>(
           context_service, optimization_guide_keyed_service,
           std::move(receiver), std::move(page));
+}
+
+// static
+base::RefCountedMemory* ContextualTasksUI::GetFaviconResourceBytes(
+    ui::ResourceScaleFactor scale_factor) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Use the Google G favicon for Google Chrome branded builds.
+  // TODO(crbug.com/467038817): Update to 16px gradient PNG.
+  return static_cast<base::RefCountedMemory*>(
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
+          IDR_GOOGLE_G, scale_factor));
+#else
+  // Use the Chromium favicon for Chromium builds.
+  return static_cast<base::RefCountedMemory*>(
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
+          IDR_NTP_FAVICON, scale_factor));
+#endif
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ContextualTasksUI)
