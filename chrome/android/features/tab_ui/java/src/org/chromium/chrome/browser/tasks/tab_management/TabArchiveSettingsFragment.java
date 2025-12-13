@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
+import android.content.Context;
 import android.os.Bundle;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -13,17 +16,21 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabArchiveSettings.Observer;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData.Entry;
 
 /** Fragment for tab archive configurations to Chrome. */
 @NullMarked
 public class TabArchiveSettingsFragment extends ChromeBaseSettingsFragment {
     // Must match key in tab_archive_settings.xml
+    static final String PREF_TAB_ARCHIVE_SETTINGS_DESCRIPTION = "tab_archive_settings_description";
     static final String PREF_TAB_ARCHIVE_ALLOW_AUTODELETE = "tab_archive_allow_autodelete";
     static final String INACTIVE_TIMEDELTA_PREF = "tab_archive_time_delta";
     static final String PREF_TAB_ARCHIVE_INCLUDE_DUPLICATE_TABS =
@@ -117,5 +124,30 @@ public class TabArchiveSettingsFragment extends ChromeBaseSettingsFragment {
 
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
-                    TabArchiveSettingsFragment.class.getName(), R.xml.tab_archive_settings);
+                    TabArchiveSettingsFragment.class.getName(), R.xml.tab_archive_settings) {
+                @Override
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
+                    // In the layout, PREF_TAB_ARCHIVE_SETTINGS_DESCRIPTION is meant to be a
+                    // description of the INACTIVE_TIMEDELTA_PREF. As for Dec 2025, these two
+                    // preferences are list as independent items in the settings xml, and there's no
+                    // meaningful title being associated with them.
+                    // As a result, we remove the text pref from the searchable index, and use the
+                    // literal string as summary for the radio button.
+                    indexData.removeEntry(getUniqueId(PREF_TAB_ARCHIVE_SETTINGS_DESCRIPTION));
+
+                    String idInactiveTimeDelta = getUniqueId(INACTIVE_TIMEDELTA_PREF);
+                    Entry prevEntry = assertNonNull(indexData.getEntry(idInactiveTimeDelta));
+                    // LINT.IfChange(archive_settings_description_section)
+                    Entry newEntry =
+                            new Entry.Builder(prevEntry)
+                                    .setSummary(
+                                            context.getString(
+                                                    R.string.archive_settings_description_section))
+                                    .build();
+                    // LINT.ThenChange(/chrome/android/features/tab_ui/java/res/xml/tab_archive_settings.xml:archive_settings_description_section)
+
+                    indexData.updateEntry(idInactiveTimeDelta, newEntry);
+                }
+            };
 }

@@ -9,10 +9,12 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!-- LINT.IfChange(archive_settings_description_section) -->
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="tab_archive_settings_description"
         android:summary="@string/archive_settings_description_section"
         app:allowDividerBelow="false" />
+    <!-- LINT.ThenChange(/chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabArchiveSettingsFragment.java:archive_settings_description_section) -->
 
     <org.chromium.chrome.browser.tasks.tab_management.TabArchiveTimeDeltaPreference
         android:key="tab_archive_time_delta" />
