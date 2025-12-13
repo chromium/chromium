@@ -11,8 +11,8 @@
 namespace blink {
 
 // This class is used to represent the possible values for the
-// 'item-tolerance' property in the CSS Masonry Layout. More information can be
-// found here: https://drafts.csswg.org/css-grid-3/#item-slack.
+// 'item-tolerance' property in the CSS Grid Lanes Layout. More information can
+// be found here: https://drafts.csswg.org/css-grid-3/#item-slack.
 class ItemTolerance {
   DISALLOW_NEW();
 

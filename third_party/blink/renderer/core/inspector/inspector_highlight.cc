@@ -1001,70 +1001,71 @@ std::unique_ptr<protocol::DictionaryValue> BuildAreaNamePaths(
   return area_paths;
 }
 
-std::unique_ptr<protocol::DictionaryValue> BuildAreaNamePathsForMasonry(
+std::unique_ptr<protocol::DictionaryValue> BuildAreaNamePathsForGridLanes(
     Node* node,
     float scale,
     GridTrackSizingDirection direction,
-    const Vector<LayoutUnit>& masonry_tracks,
+    const Vector<LayoutUnit>& grid_lanes_tracks,
     bool is_for_columns) {
-  const auto* masonry = To<LayoutGridLanes>(node->GetLayoutObject());
+  const auto* grid_lanes = To<LayoutGridLanes>(node->GetLayoutObject());
   std::unique_ptr<protocol::DictionaryValue> area_paths =
       protocol::DictionaryValue::create();
 
-  if (!masonry->StyleRef().GridTemplateAreas()) {
+  if (!grid_lanes->StyleRef().GridTemplateAreas()) {
     return area_paths;
   }
 
   if (const NamedGridAreaMap* named_area_map =
-          masonry->CachedPlacementData().line_resolver.NamedAreasMap()) {
+          grid_lanes->CachedPlacementData().line_resolver.NamedAreasMap()) {
     const LayoutUnit gap =
-        masonry->GridGap(is_for_columns ? kForColumns : kForRows);
+        grid_lanes->GridGap(is_for_columns ? kForColumns : kForRows);
 
-    // Get container bounds for the cross-axis (non-masonry direction).
+    // Get container bounds for the cross-axis (non-stacking direction).
     const LayoutUnit cross_axis_start =
-        is_for_columns ? masonry->ContentTop() : masonry->ContentLeft();
-    const LayoutUnit cross_axis_size =
-        is_for_columns ? masonry->ContentHeight() : masonry->ContentWidth();
-
+        is_for_columns ? grid_lanes->ContentTop() : grid_lanes->ContentLeft();
+    const LayoutUnit cross_axis_size = is_for_columns
+                                           ? grid_lanes->ContentHeight()
+                                           : grid_lanes->ContentWidth();
     for (const auto& item : *named_area_map) {
       const GridArea& area = item.value;
       const String& name = item.key;
-      const GridSpan masonry_span = is_for_columns ? area.columns : area.rows;
+      const GridSpan grid_lanes_span =
+          is_for_columns ? area.columns : area.rows;
 
-      // Validate that the area span fits within our masonry tracks.
-      if (masonry_span.StartLine() >= masonry_tracks.size() ||
-          masonry_span.EndLine() >= masonry_tracks.size()) {
+      // Validate that the area span fits within our grid-lanes tracks.
+      if (grid_lanes_span.StartLine() >= grid_lanes_tracks.size() ||
+          grid_lanes_span.EndLine() >= grid_lanes_tracks.size()) {
         continue;
       }
 
-      const LayoutUnit masonry_start_offset = GetPositionForTrackAt(
-          masonry, masonry_span.StartLine(),
-          is_for_columns ? kForColumns : kForRows, masonry_tracks);
-      const LayoutUnit masonry_end_offset = GetPositionForTrackAt(
-          masonry, masonry_span.EndLine(),
-          is_for_columns ? kForColumns : kForRows, masonry_tracks);
-
+      const LayoutUnit grid_lanes_start_offset = GetPositionForTrackAt(
+          grid_lanes, grid_lanes_span.StartLine(),
+          is_for_columns ? kForColumns : kForRows, grid_lanes_tracks);
+      const LayoutUnit grid_lanes_end_offset = GetPositionForTrackAt(
+          grid_lanes, grid_lanes_span.EndLine(),
+          is_for_columns ? kForColumns : kForRows, grid_lanes_tracks);
       LayoutUnit gap_offset =
-          (masonry_span.EndLine() == masonry_tracks.size() - 1) ? LayoutUnit()
-                                                                : gap;
+          (grid_lanes_span.EndLine() == grid_lanes_tracks.size() - 1)
+              ? LayoutUnit()
+              : gap;
       // In RTL layouts, `gap_offset` need to be negated due to the reversed
-      // coordinate system to ensure correct masonry size calculations.
+      // coordinate system to ensure correct grid-lanes size calculations.
       if ((direction == kForColumns) &&
-          !masonry->StyleRef().IsLeftToRightDirection()) {
+          !grid_lanes->StyleRef().IsLeftToRightDirection()) {
         gap_offset = -gap_offset;
       }
-      const LayoutUnit masonry_area_size =
-          masonry_end_offset - masonry_start_offset - gap_offset;
+      const LayoutUnit grid_lanes_area_size =
+          grid_lanes_end_offset - grid_lanes_start_offset - gap_offset;
 
       PhysicalOffset position =
           is_for_columns
-              ? PhysicalOffset(masonry_start_offset, cross_axis_start)
-              : PhysicalOffset(cross_axis_start, masonry_start_offset);
+              ? PhysicalOffset(grid_lanes_start_offset, cross_axis_start)
+              : PhysicalOffset(cross_axis_start, grid_lanes_start_offset);
       PhysicalSize size =
-          is_for_columns ? PhysicalSize(masonry_area_size, cross_axis_size)
-                         : PhysicalSize(cross_axis_size, masonry_area_size);
-
-      gfx::QuadF area_quad = masonry->LocalRectToAbsoluteQuad({position, size});
+          is_for_columns ? PhysicalSize(grid_lanes_area_size, cross_axis_size)
+                         : PhysicalSize(cross_axis_size, grid_lanes_area_size);
+      gfx::QuadF area_quad =
+          grid_lanes->LocalRectToAbsoluteQuad({position, size});
       FrameQuadToViewport(node->GetDocument().View(), area_quad);
       HighlightPathBuilder area_builder;
       area_builder.AppendPath(QuadToPath(area_quad), scale);
@@ -1156,26 +1157,26 @@ std::unique_ptr<protocol::ListValue> BuildGridLineNamesForGrid(
                                 implicit_lines_map, is_rtl);
 }
 
-std::unique_ptr<protocol::ListValue> BuildGridLineNamesForMasonry(
+std::unique_ptr<protocol::ListValue> BuildGridLineNamesForGridLanes(
     Node* node,
     GridTrackSizingDirection direction,
     float scale,
     const Vector<LayoutUnit>& positions,
     LayoutUnit alt_axis_pos) {
-  auto* masonry = To<LayoutGridLanes>(node->GetLayoutObject());
+  auto* grid_lanes = To<LayoutGridLanes>(node->GetLayoutObject());
   const bool is_rtl = (direction == kForColumns) &&
-                      !masonry->StyleRef().IsLeftToRightDirection();
-  const LayoutUnit gap = masonry->GridGap(direction);
+                      !grid_lanes->StyleRef().IsLeftToRightDirection();
+  const LayoutUnit gap = grid_lanes->GridGap(direction);
 
   const NamedGridLinesMap& explicit_lines_map =
-      masonry->CachedPlacementData().line_resolver.ExplicitNamedLinesMap(
+      grid_lanes->CachedPlacementData().line_resolver.ExplicitNamedLinesMap(
           direction);
   const NamedGridLinesMap& implicit_lines_map =
-      masonry->CachedPlacementData().line_resolver.ImplicitNamedLinesMap(
+      grid_lanes->CachedPlacementData().line_resolver.ImplicitNamedLinesMap(
           direction);
 
   return BuildGridLineNamesInfo(node, direction, scale, positions, alt_axis_pos,
-                                gap, masonry, explicit_lines_map,
+                                gap, grid_lanes, explicit_lines_map,
                                 implicit_lines_map, is_rtl);
 }
 
@@ -1460,7 +1461,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexItemInfo(
   return flex_info;
 }
 
-// Builds track paths for grid/masonry layout.
+// Builds track paths for grid/grid-lanes layout.
 std::unique_ptr<protocol::ListValue> BuildTrackPaths(
     const LayoutObject* layout_object,
     LocalFrameView* containing_view,
@@ -1510,7 +1511,7 @@ std::unique_ptr<protocol::ListValue> BuildTrackPaths(
   return track_builder.Release();
 }
 
-// Builds gap paths for grid/masonry layout.
+// Builds gap paths for grid/grid-lanes layout.
 std::unique_ptr<protocol::ListValue> BuildGapPaths(
     const LayoutObject* layout_object,
     LocalFrameView* containing_view,
@@ -1554,63 +1555,64 @@ std::unique_ptr<protocol::ListValue> BuildGapPaths(
   return gap_builder.Release();
 }
 
-std::unique_ptr<protocol::DictionaryValue> BuildGridInfoForMasonry(
+std::unique_ptr<protocol::DictionaryValue> BuildGridInfoForGridLanes(
     Element* element,
     const InspectorGridHighlightConfig& grid_highlight_config,
     float scale) {
   LocalFrameView* containing_view = element->GetDocument().View();
-  auto* masonry = To<LayoutGridLanes>(element->GetLayoutObject());
+  auto* grid_lanes = To<LayoutGridLanes>(element->GetLayoutObject());
   std::unique_ptr<protocol::DictionaryValue> grid_info =
       protocol::DictionaryValue::create();
 
-  grid_info->setInteger("rotationAngle", GetRotationAngle(masonry));
-  grid_info->setString("writingMode", GetWritingMode(masonry->StyleRef()));
+  grid_info->setInteger("rotationAngle", GetRotationAngle(grid_lanes));
+  grid_info->setString("writingMode", GetWritingMode(grid_lanes->StyleRef()));
   const bool is_for_columns =
-      masonry->StyleRef().GridLanesTrackSizingDirection() == kForColumns;
+      grid_lanes->StyleRef().GridLanesTrackSizingDirection() == kForColumns;
 
-  const Vector<LayoutUnit> masonry_tracks =
-      masonry->GridTrackPositions(is_for_columns ? kForColumns : kForRows);
+  const Vector<LayoutUnit> grid_lanes_tracks =
+      grid_lanes->GridTrackPositions(is_for_columns ? kForColumns : kForRows);
   const LayoutUnit gap =
-      masonry->GridGap(is_for_columns ? kForColumns : kForRows) +
-      masonry->GridLanesItemOffset(is_for_columns ? kForColumns : kForRows);
+      grid_lanes->GridGap(is_for_columns ? kForColumns : kForRows) +
+      grid_lanes->GridLanesItemOffset(is_for_columns ? kForColumns : kForRows);
   const LayoutUnit span_start =
-      is_for_columns ? masonry->ContentTop() : masonry->ContentLeft();
+      is_for_columns ? grid_lanes->ContentTop() : grid_lanes->ContentLeft();
   const LayoutUnit span_size =
-      is_for_columns ? masonry->ContentHeight() : masonry->ContentWidth();
+      is_for_columns ? grid_lanes->ContentHeight() : grid_lanes->ContentWidth();
   const LayoutUnit rtl_offset =
-      is_for_columns ? masonry->LogicalWidth() - masonry_tracks.back() -
-                           masonry->BorderAndPaddingInlineEnd()
+      is_for_columns ? grid_lanes->LogicalWidth() - grid_lanes_tracks.back() -
+                           grid_lanes->BorderAndPaddingInlineEnd()
                      : LayoutUnit();
-  const bool is_rtl = !masonry->StyleRef().IsLeftToRightDirection();
+  const bool is_rtl = !grid_lanes->StyleRef().IsLeftToRightDirection();
   const std::optional<LayoutUnit> optional_rtl_offset =
       is_rtl ? std::optional<LayoutUnit>(rtl_offset) : std::nullopt;
 
   // Sets empty value for columns/columnGaps and rows/rowGaps - frontend
   // expects both dimensions to be present in the `grid_info`.
   grid_info->setValue(
-      "columns", is_for_columns
-                     ? BuildTrackPaths(masonry, containing_view, masonry_tracks,
-                                       span_start, span_size, gap, kForColumns,
-                                       scale, optional_rtl_offset)
-                     : protocol::ListValue::create());
+      "columns", is_for_columns ? BuildTrackPaths(grid_lanes, containing_view,
+                                                  grid_lanes_tracks, span_start,
+                                                  span_size, gap, kForColumns,
+                                                  scale, optional_rtl_offset)
+                                : protocol::ListValue::create());
   grid_info->setValue(
       "columnGaps",
-      is_for_columns ? BuildGapPaths(masonry, containing_view, masonry_tracks,
-                                     span_start, span_size, gap, kForColumns,
-                                     scale, optional_rtl_offset)
-                     : protocol::ListValue::create());
+      is_for_columns
+          ? BuildGapPaths(grid_lanes, containing_view, grid_lanes_tracks,
+                          span_start, span_size, gap, kForColumns, scale,
+                          optional_rtl_offset)
+          : protocol::ListValue::create());
   grid_info->setValue(
       "rows", is_for_columns
                   ? protocol::ListValue::create()
-                  : BuildTrackPaths(masonry, containing_view, masonry_tracks,
-                                    span_start, span_size, gap, kForRows, scale,
-                                    optional_rtl_offset));
+                  : BuildTrackPaths(grid_lanes, containing_view,
+                                    grid_lanes_tracks, span_start, span_size,
+                                    gap, kForRows, scale, optional_rtl_offset));
   grid_info->setValue(
-      "rowGaps", is_for_columns
-                     ? protocol::ListValue::create()
-                     : BuildGapPaths(masonry, containing_view, masonry_tracks,
-                                     span_start, span_size, gap, kForRows,
-                                     scale, optional_rtl_offset));
+      "rowGaps", is_for_columns ? protocol::ListValue::create()
+                                : BuildGapPaths(grid_lanes, containing_view,
+                                                grid_lanes_tracks, span_start,
+                                                span_size, gap, kForRows, scale,
+                                                optional_rtl_offset));
 
   // Track sizes.
   if (grid_highlight_config.show_track_sizes) {
@@ -1624,18 +1626,19 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfoForMasonry(
       auto it = cascaded_values.find(CSSPropertyName(id));
       return it != cascaded_values.end() ? it->value : nullptr;
     };
-    Vector<String> masonry_tracks_authored_values = GetAuthoredGridTrackSizes(
-        FindCSSValue(is_for_columns ? CSSPropertyID::kGridTemplateColumns
-                                    : CSSPropertyID::kGridTemplateRows),
-        masonry->AutoRepeatCountForDirection(is_for_columns ? kForColumns
-                                                            : kForRows),
-        masonry_tracks.size());
+    Vector<String> grid_lanes_tracks_authored_values =
+        GetAuthoredGridTrackSizes(
+            FindCSSValue(is_for_columns ? CSSPropertyID::kGridTemplateColumns
+                                        : CSSPropertyID::kGridTemplateRows),
+            grid_lanes->AutoRepeatCountForDirection(is_for_columns ? kForColumns
+                                                                   : kForRows),
+            grid_lanes_tracks.size());
     grid_info->setValue(
         is_for_columns ? "columnTrackSizes" : "rowTrackSizes",
         BuildGridTrackSizes(element, is_for_columns ? kForColumns : kForRows,
-                            scale, gap, optional_rtl_offset, masonry_tracks,
-                            masonry_tracks, &masonry_tracks_authored_values,
-                            span_start));
+                            scale, gap, optional_rtl_offset, grid_lanes_tracks,
+                            grid_lanes_tracks,
+                            &grid_lanes_tracks_authored_values, span_start));
   }
 
   // Positive column/row line positions.
@@ -1645,67 +1648,72 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfoForMasonry(
                        : "positiveRowLineNumberPositions",
         BuildGridPositiveLineNumberPositions(
             element, gap, is_for_columns ? kForColumns : kForRows, scale,
-            optional_rtl_offset, masonry_tracks, masonry_tracks, span_start));
+            optional_rtl_offset, grid_lanes_tracks, grid_lanes_tracks,
+            span_start));
   }
 
   // Negative column/row line positions.
   if (grid_highlight_config.show_negative_line_numbers) {
     LayoutUnit span_end =
-        is_for_columns ? masonry->ContentTop() + masonry->ContentHeight()
-                       : masonry->ContentLeft() + masonry->ContentWidth();
+        is_for_columns ? grid_lanes->ContentTop() + grid_lanes->ContentHeight()
+                       : grid_lanes->ContentLeft() + grid_lanes->ContentWidth();
     grid_info->setValue(
         is_for_columns ? "negativeColumnLineNumberPositions"
                        : "negativeRowLineNumberPositions",
         BuildGridNegativeLineNumberPositions(
             element, gap, is_for_columns ? kForColumns : kForRows, scale,
-            optional_rtl_offset, masonry_tracks, masonry_tracks, span_end));
+            optional_rtl_offset, grid_lanes_tracks, grid_lanes_tracks,
+            span_end));
   }
 
   // Area names.
   if (grid_highlight_config.show_area_names) {
     grid_info->setValue(
         "areaNames",
-        BuildAreaNamePathsForMasonry(element, scale,
-                                     is_for_columns ? kForColumns : kForRows,
-                                     masonry_tracks, is_for_columns));
+        BuildAreaNamePathsForGridLanes(element, scale,
+                                       is_for_columns ? kForColumns : kForRows,
+                                       grid_lanes_tracks, is_for_columns));
   }
 
   // Line names.
   if (grid_highlight_config.show_line_names) {
     grid_info->setValue(
         is_for_columns ? "columnLineNameOffsets" : "rowLineNameOffsets",
-        BuildGridLineNamesForMasonry(element,
-                                     is_for_columns ? kForColumns : kForRows,
-                                     scale, masonry_tracks, span_start));
+        BuildGridLineNamesForGridLanes(element,
+                                       is_for_columns ? kForColumns : kForRows,
+                                       scale, grid_lanes_tracks, span_start));
   }
 
-  // Masonry layout only has one direction, so it doesn't have a grid border
+  // Grid Lanes layout only has one direction, so it doesn't have a grid border
   // constructed by two directions data like grid layout. We'll use the
-  // container bounds and masonry tracks to construct the border quad.
-  HighlightPathBuilder masonry_border_builder;
-  LayoutUnit masonry_container_size =
-      GetPositionForLastTrack(masonry, is_for_columns ? kForColumns : kForRows,
-                              masonry_tracks) -
-      GetPositionForFirstTrack(masonry, is_for_columns ? kForColumns : kForRows,
-                               masonry_tracks);
+  // container bounds and grid-lanes tracks to construct the border quad.
+  HighlightPathBuilder grid_lanes_border_builder;
+  LayoutUnit grid_lanes_container_size =
+      GetPositionForLastTrack(grid_lanes,
+                              is_for_columns ? kForColumns : kForRows,
+                              grid_lanes_tracks) -
+      GetPositionForFirstTrack(grid_lanes,
+                               is_for_columns ? kForColumns : kForRows,
+                               grid_lanes_tracks);
   // In RTL layouts, the track size calculation results in a negative value
   // (e.g., -150 instead of 150) due to coordinate system differences.
   // We need to flip the sign to get the correct positive size for rendering.
   if (is_rtl) {
-    masonry_container_size = -masonry_container_size;
+    grid_lanes_container_size = -grid_lanes_container_size;
   }
-  PhysicalSize masonry_size(
-      is_for_columns ? masonry_container_size : masonry->ContentWidth(),
-      is_for_columns ? masonry->ContentHeight() : masonry_container_size);
-  PhysicalRect masonry_rect(
-      PhysicalOffset(
-          is_rtl ? masonry->ContentLeft() + rtl_offset : masonry->ContentLeft(),
-          masonry->ContentTop()),
-      masonry_size);
-  gfx::QuadF masonry_quad = masonry->LocalRectToAbsoluteQuad(masonry_rect);
-  FrameQuadToViewport(containing_view, masonry_quad);
-  masonry_border_builder.AppendPath(QuadToPath(masonry_quad), scale);
-  grid_info->setValue("gridBorder", masonry_border_builder.Release());
+  PhysicalSize grid_lanes_size(
+      is_for_columns ? grid_lanes_container_size : grid_lanes->ContentWidth(),
+      is_for_columns ? grid_lanes->ContentHeight() : grid_lanes_container_size);
+  PhysicalRect grid_lanes_rect(
+      PhysicalOffset(is_rtl ? grid_lanes->ContentLeft() + rtl_offset
+                            : grid_lanes->ContentLeft(),
+                     grid_lanes->ContentTop()),
+      grid_lanes_size);
+  gfx::QuadF grid_lanes_quad =
+      grid_lanes->LocalRectToAbsoluteQuad(grid_lanes_rect);
+  FrameQuadToViewport(containing_view, grid_lanes_quad);
+  grid_lanes_border_builder.AppendPath(QuadToPath(grid_lanes_quad), scale);
+  grid_info->setValue("gridBorder", grid_lanes_border_builder.Release());
   grid_info->setValue("gridHighlightConfig",
                       BuildGridHighlightConfigInfo(grid_highlight_config));
 
@@ -1863,7 +1871,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
   DCHECK(element->GetLayoutObject());
 
   if (element->GetLayoutObject()->IsLayoutGridLanes()) {
-    return BuildGridInfoForMasonry(element, grid_highlight_config, scale);
+    return BuildGridInfoForGridLanes(element, grid_highlight_config, scale);
   }
 
   return BuildGridInfoForGrid(element, grid_highlight_config, scale, isPrimary);

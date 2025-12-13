@@ -2182,7 +2182,7 @@
     "expiry_milestone": 126
   },
   {
-    "name": "css-masonry-layout",
+    "name": "css-grid-lanes-layout",
     "owners": ["almaher@microsoft.com", "celestepan@microsoft.com", "yanlingwang@microsoft.com"],
     "expiry_milestone": 152
   },
