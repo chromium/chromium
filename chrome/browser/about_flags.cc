@@ -935,6 +935,12 @@ const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonInline[] =
         {"AddContextButtonVariant", "inline"},
         {"ForceToolsAndModels", "true"},
 };
+const FeatureEntry::FeatureParam
+    kWebUIOmniboxAimPopupAddContextButtonMultiFile[] = {
+        {"AddContextButtonVariant", "below_results"},
+        {"ForceToolsAndModels", "true"},
+        {"MaxNumFiles", "5"},
+};
 
 const FeatureEntry::FeatureVariation kWebUIOmniboxAimPopupVariations[] = {
     {"- No \"Add Context\" Button", kWebUIOmniboxAimPopupAddContextButtonNone,
@@ -947,7 +953,10 @@ const FeatureEntry::FeatureVariation kWebUIOmniboxAimPopupVariations[] = {
      std::size(kWebUIOmniboxAimPopupAddContextButtonAboveResults), nullptr},
     {"- \"Add Context\" Button inline (Variant 3)",
      kWebUIOmniboxAimPopupAddContextButtonInline,
-     std::size(kWebUIOmniboxAimPopupAddContextButtonInline), nullptr}};
+     std::size(kWebUIOmniboxAimPopupAddContextButtonInline), nullptr},
+    {"- \"Add Context\" Button below results, 5 File Limit",
+     kWebUIOmniboxAimPopupAddContextButtonMultiFile,
+     std::size(kWebUIOmniboxAimPopupAddContextButtonMultiFile), nullptr}};
 
 const FeatureEntry::FeatureParam kWebUIOmniboxPopupDebugSxS[] = {
     {"SxS", "true"}};
