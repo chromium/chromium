@@ -3144,6 +3144,10 @@
       status: "stable",
     },
     {
+      name: "LazyImageConformantLoadEventTiming",
+      status: "stable",
+    },
+    {
       // Allow triggering the word suggestion from left click.
       // From crbug.com/433209485
       name: "LeftClickToHandleSuggestion",
