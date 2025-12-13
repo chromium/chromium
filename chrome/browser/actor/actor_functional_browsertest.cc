@@ -483,6 +483,33 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, PauseAndResumeInactiveTask) {
       ErrorHasSubstr("resumeActorTask failed: No such task"));
 }
 
+IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
+                       PerformActionsOnCrashedTabReloadsTab) {
+  const GURL& initial_url = web_contents()->GetLastCommittedURL();
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  ASSERT_NE(task_id, TaskId());
+
+  TestFuture<ActorTask::State> task_completion_state;
+  base::CallbackListSubscription subscription =
+      CreateTaskCompletionSubscription(task_id, task_completion_state);
+
+  // Crash the tab.
+  content::CrashTab(web_contents());
+
+  // Perform a click action on the crashed tab.
+  ::optimization_guide::proto::Actions action =
+      MakeClick(active_tab()->GetHandle(), gfx::Point(1, 1),
+                ::optimization_guide::proto::ClickAction::LEFT,
+                ::optimization_guide::proto::ClickAction::SINGLE);
+  action.set_task_id(task_id.value());
+
+  content::TestNavigationManager reload_observer(web_contents(), initial_url);
+  EXPECT_THAT(PerformActions(action),
+              HasResultCode(mojom::ActionResultCode::kRendererCrashed));
+  EXPECT_TRUE(reload_observer.WaitForNavigationFinished());
+  EXPECT_FALSE(web_contents()->IsCrashed());
+}
+
 class ActorFunctionalBrowserTestCreateActorTab
     : public ActorFunctionalBrowserTest,
       public ::testing::WithParamInterface<GURL> {

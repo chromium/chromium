@@ -136,9 +136,11 @@ void GlicActorTaskManager::PerformActionsFinished(
 void GlicActorTaskManager::ReloadTab(actor::ActorTask& task,
                                      base::OnceClosure callback) {
   CHECK(!attempted_reload_);
-  // TODO(b/464019189): This code only deals with a single tab crashing. If
-  // they are multiple tabs that crashed we might want to figure out how to
-  // deal with that.
+  attempted_reload_ = true;
+
+  // TODO(b/464019189): This code only deals with the first crashed tab per
+  // Task. If they are multiple tabs that crashed we might want to figure out
+  // how to deal with that.
   for (tabs::TabHandle tab_handle : task.GetLastActedTabs()) {
     tabs::TabInterface* tab = tab_handle.Get();
     if (!tab) {
@@ -147,7 +149,9 @@ void GlicActorTaskManager::ReloadTab(actor::ActorTask& task,
 
     if (content::WebContents* contents = tab->GetContents()) {
       if (contents->IsCrashed()) {
-        attempted_reload_ = true;
+        actor_keyed_service_->GetJournal().Log(
+            contents->GetLastCommittedURL(), task.id(),
+            "GlicActorTaskManager::ReloadTab", /*details=*/{});
         reload_observer_ = std::make_unique<actor::ObservationDelayController>(
             task.id(), actor_keyed_service_->GetJournal());
         contents->GetController().Reload(content::ReloadType::NORMAL, true);

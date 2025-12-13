@@ -76,6 +76,8 @@ namespace actor {
 
 namespace {
 
+BASE_FEATURE(kActorReloadCrashedTabBeforeAct, base::FEATURE_ENABLED_BY_DEFAULT);
+
 const RenderFrameHost* GetPrimaryMainFrame(
     content::NavigationHandle& navigation_handle) {
   return navigation_handle.GetWebContents()->GetPrimaryMainFrame();
@@ -628,6 +630,26 @@ void ExecutionEngine::KickOffNextAction() {
 
   SetState(State::kStartAction);
   action_start_time_ = base::TimeTicks::Now();
+
+  // TODO(b/467984847): ActorTask::AddTab isn't the best way to track a crashed
+  // tab here. We should refactor this to be more explicit.
+  if (tabs::TabInterface* tab = GetNextAction().GetTabHandle().Get();
+      tab && base::FeatureList::IsEnabled(kActorReloadCrashedTabBeforeAct)) {
+    content::WebContents* contents = tab->GetContents();
+    CHECK(contents);
+    if (contents->IsCrashed()) {
+      GetJournal().Log(
+          contents->GetLastCommittedURL(), task_->id(),
+          "ExecutionEngine::KickOffNextAction",
+          JournalDetailsBuilder().AddError("Renderer crashed").Build());
+      task_->AddTab(GetNextAction().GetTabHandle(), base::DoNothing());
+      CompleteActions(MakeResult(mojom::ActionResultCode::kRendererCrashed,
+                                 /*requires_page_stabilization=*/false,
+                                 "Renderer crashed."),
+                      next_action_index_);
+      return;
+    }
+  }
 
   if (GetNextAction().RequiresUrlCheckInCurrentTab()) {
     SafetyChecksForNextAction();
