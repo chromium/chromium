@@ -344,6 +344,9 @@ BASE_FEATURE(kMultilineEditField, "OmniboxMultilineEditField", DISABLED);
 // Controls whether the composebox
 BASE_FEATURE(kComposeboxUsesChromeComposeClient, ENABLED);
 
+// Controls whether or not contextual composebox should display suggestions.
+BASE_FEATURE(kComposeboxAttachmentsTypedState, DISABLED);
+
 #if BUILDFLAG(IS_ANDROID)
 // Accelerates time from cold start to focused Omnibox on low-end devices,
 // prioritizing Omnibox focus and background initialization.
