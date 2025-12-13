@@ -406,7 +406,7 @@ crbug.com/349132647 [ android android-sm-s911u1 android-chromium ] Pixel_WebGLCo
 # Meet effects tests currently take a while to actually start, which can cause
 # the initial heartbeat message to be delayed significantly. Additionally, these
 # are marked as failing until they are confirmed to be stable.
-crbug.com/286989320 [ linux ] Pixel_MeetEffects* [ Failure Slow ]
+crbug.com/286989320 [ linux ] Pixel_MeetEffects* [ Slow ]
 crbug.com/286989320 [ win amd ] Pixel_MeetEffects* [ Slow ]
 crbug.com/286989320 [ win nvidia ] Pixel_MeetEffects* [ Slow ]
 crbug.com/286989320 [ win qualcomm ] Pixel_MeetEffects* [ Slow ]
@@ -580,6 +580,9 @@ crbug.com/446157733 [ android-pixel-6 android-t angle-vulkan graphite-disabled r
 
 # Flakily runs into OOM issues in 32-bit browsers.
 crbug.com/466113477 [ win nvidia target-cpu-32 ] Pixel_MeetEffects_rainbow_wig_and_eyelashes [ Failure ]
+
+# MeetEffects failures
+crbug.com/286989320 [ linux nvidia ] Pixel_MeetEffects_rainbow_wig_and_eyelashes [ Failure Slow ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
